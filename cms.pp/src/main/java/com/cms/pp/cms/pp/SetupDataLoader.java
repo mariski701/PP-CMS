@@ -51,10 +51,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editCommentPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+        Role userRole = roleRepository.findByName("ROLE_USER");
         User user = new User();
-        user.setUserName("Test");
-        user.setUserPassword(passwordEncoder.encode("test"));
-        user.setUserMail("test@test.pl");
+        user.setUserName("admin");
+        user.setUserPassword(passwordEncoder.encode("admin"));
+        user.setUserMail("admin@cms.pp.com");
         user.setRoles(Arrays.asList(adminRole));
         user.setEnabled(true);
         userRepository.save(user);

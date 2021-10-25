@@ -14,7 +14,7 @@ public class User {
     @Id
     @GeneratedValue
     @Column(unique = true, length = 128)
-    private long id;
+    private int id;
     @Column(name = "user_name", unique = true)
     private String userName;
     @Column(name = "user_password")
