@@ -10,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+@Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
     boolean alreadySetup = false;
     @Autowired
@@ -36,10 +38,17 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+        Privilege writeCommentPrivilege = createPrivilegeIfNotFound("WRITE_COMMENT");
+        Privilege removeCommentPrivilege = createPrivilegeIfNotFound("REMOVE_COMMENT");
+        Privilege editCommentPrivilege = createPrivilegeIfNotFound("EDIT_COMMENT");
+        Privilege editArticlesPrivilege = createPrivilegeIfNotFound("EDIT_ARTICLE");
+        Privilege adminPanelAccess = createPrivilegeIfNotFound("ADMIN_PANEL");
 
-        List<Privilege> adminPriviliges = Arrays.asList(readPrivilege, writePrivilege);
+        List<Privilege> adminPriviliges = Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccess, editCommentPrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPriviliges);
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
+        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, removeCommentPrivilege, editCommentPrivilege));
+        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege));
+        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editCommentPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         User user = new User();
