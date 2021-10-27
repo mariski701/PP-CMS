@@ -14,8 +14,8 @@ public class Language {
     @Column(unique = true, length = 128)
     private int id;
 
-    @Column(name = "language_table")
-    private String language;
+    @Column(name = "language_name")
+    private String name;
 
     @ManyToMany
     @JoinTable(name = "Article_languages_content_relation",

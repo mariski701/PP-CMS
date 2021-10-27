@@ -23,8 +23,10 @@ public class Article {
     private User user;
 
     @Column(name = "article_date")
-    private Date date;
+    private java.sql.Date date;
 
+    @Column(name = "article_published")
+    private boolean published;
 
 
 }
