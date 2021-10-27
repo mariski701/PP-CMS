@@ -1,6 +1,7 @@
 package com.cms.pp.cms.pp.user;
 
 
+import com.cms.pp.cms.pp.Article.Article;
 import com.cms.pp.cms.pp.Role.Role;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class User {
     @Id
     @GeneratedValue
     @Column(unique = true, length = 128)
-    private long id;
+    private int id;
     @Column(name = "user_name", unique = true)
     private String userName;
     @Column(name = "user_password")
@@ -35,4 +36,5 @@ public class User {
 
     @Version
     private Long version;
+
 }
