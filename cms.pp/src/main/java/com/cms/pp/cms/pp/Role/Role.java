@@ -2,7 +2,10 @@ package com.cms.pp.cms.pp.Role;
 
 import com.cms.pp.cms.pp.Priviliges.Privilege;
 import com.cms.pp.cms.pp.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -15,8 +18,13 @@ public class Role {
     private Long id;
 
     private String name;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
+
 
     @ManyToMany
     @JoinTable(name = "roles_privileges",

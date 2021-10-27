@@ -26,6 +26,7 @@ public class User {
     private boolean enabled;
     private boolean tokenExpired;
 
+
     @ManyToMany
     @JoinTable(name = "user_roles",
     joinColumns = @JoinColumn(

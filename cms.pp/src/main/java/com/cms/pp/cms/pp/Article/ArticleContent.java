@@ -1,6 +1,9 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -24,6 +27,9 @@ public class ArticleContent {
     @ManyToOne
     private Language languages;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     @ManyToOne
     private Article article;
 }

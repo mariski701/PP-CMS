@@ -1,7 +1,10 @@
 package com.cms.pp.cms.pp.Priviliges;
 
 import com.cms.pp.cms.pp.Role.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -15,6 +18,9 @@ public class Privilege {
 
     private String name;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     @ManyToMany(mappedBy = "privileges")
     private Collection<Role> roles;
 }
