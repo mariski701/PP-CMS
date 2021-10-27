@@ -21,14 +21,8 @@ public class ArticleContent {
     @Column(name = "content")
     private String Content;
 
-    @ManyToMany
-    @JoinTable(name = "Article_languages_content_relation",
-    joinColumns = @JoinColumn(
-            name="articleContent_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "language_id", referencedColumnName = "id")
-    )
-    private Collection<Language> languages;
+    @ManyToOne
+    private Language languages;
 
     @ManyToOne
     private Article article;

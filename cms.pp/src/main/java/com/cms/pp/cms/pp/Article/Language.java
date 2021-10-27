@@ -17,13 +17,7 @@ public class Language {
     @Column(name = "language_name")
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "Article_languages_content_relation",
-            joinColumns = @JoinColumn(
-                    name="language_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "articleContent_id", referencedColumnName = "id")
-    )
+    @OneToMany
     private Collection<ArticleContent> articleContents;
 
 }
