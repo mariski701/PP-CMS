@@ -8,22 +8,22 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.Collection;
 
-@Data
 @Entity
-@Table(name = "Article_languages")
-public class Language {
+@Data
+@Table(name = "Article_tags")
+public class ArticleTag {
     @Id
-    @GeneratedValue
-    @Column(unique = true, length = 128)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "language_name")
     private String name;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "languages")
-    private Collection<ArticleContent> articleContents;
-
+    @ManyToMany
+    @JoinTable(
+    joinColumns = @JoinColumn(name = "articletag_id"),
+    inverseJoinColumns = @JoinColumn(name = "article_id"))
+    private Collection<Article> articles;
 }

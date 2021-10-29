@@ -2,8 +2,11 @@ package com.cms.pp.cms.pp.Comment;
 
 import com.cms.pp.cms.pp.Article.Article;
 import com.cms.pp.cms.pp.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Generated;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,8 +26,12 @@ public class Comment {
     private String content;
 
     @Column(name = "comment_date")
-    private Date date;
+    private java.sql.Date date;
 
-    @OneToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "article_id")
     private Article article;
 }

@@ -25,11 +25,13 @@ public class ArticleContent {
     private String Content;
 
     @ManyToOne
+    @JoinColumn(name ="language_id")
     private Language languages;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
     @ManyToOne
+    @JoinColumn(name="article_id")
     private Article article;
 }

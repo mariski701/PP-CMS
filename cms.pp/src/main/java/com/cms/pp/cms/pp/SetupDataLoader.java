@@ -1,6 +1,8 @@
 package com.cms.pp.cms.pp;
 
 import com.cms.pp.cms.pp.Article.*;
+import com.cms.pp.cms.pp.Comment.Comment;
+import com.cms.pp.cms.pp.Comment.CommentRepository;
 import com.cms.pp.cms.pp.Priviliges.Privilege;
 import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
 import com.cms.pp.cms.pp.Role.Role;
@@ -37,6 +39,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private ArticleRepository articleRepository;
     @Autowired
     private ArticleContentRepository articleContentRepository;
+    @Autowired
+    private ArticleTagRepository articleTagRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
 
     @Transactional
@@ -73,8 +79,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         Language englishLanguage = createLanguageIfNotFound("English");
         Language polishLanguage = createLanguageIfNotFound("Polish");
-        Language germanLanguage = createLanguageIfNotFound("German");
-        Language japanLanguage = createLanguageIfNotFound("Japan");
+
+        ArticleTag generalTag = createTagIfNotFound("general");
 
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
@@ -89,6 +95,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Article article = new Article();
         articleContentPolish.setArticle(article);
         articleContentEnglish.setArticle(article);
+        generalTag.setArticles(Arrays.asList(article));
+        article.setArticleTags(Arrays.asList(generalTag));
         article.setArticleContents(Arrays.asList(articleContentPolish, articleContentEnglish));
         article.setUser(user);
         article.setPublished(true);
@@ -96,8 +104,26 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         article.setDate(date);
         articleRepository.save(article);
 
+        Comment comment = new Comment();
+        comment.setContent("testowy komentarz do artykułu");
+        comment.setDate(date);
+        comment.setArticle(article);
+        comment.setUser(user);
+        commentRepository.save(comment);
+
         alreadySetup = true;
 
+    }
+
+    @Transactional
+    public ArticleTag createTagIfNotFound(String name) {
+        ArticleTag articleTag = articleTagRepository.findByName(name);
+        if (articleTag == null) {
+            articleTag = new ArticleTag();
+            articleTag.setName(name);
+            articleTagRepository.save(articleTag);
+        }
+        return articleTag;
     }
 
     @Transactional
