@@ -84,8 +84,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
+        articleContentPolish.setTitle("Tytuł");
         ArticleContent articleContentEnglish = new ArticleContent();
         articleContentEnglish.setContent("Test of article in English.");
+        articleContentEnglish.setTitle("title");
 
         articleContentPolish.setLanguages(polishLanguage);
         articleContentEnglish.setLanguages(englishLanguage);

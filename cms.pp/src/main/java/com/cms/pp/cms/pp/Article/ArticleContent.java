@@ -22,7 +22,10 @@ public class ArticleContent {
     private int id;
 
     @Column(name = "content")
-    private String Content;
+    private String content;
+
+    @Column(name = "title")
+    private String title;
 
     @ManyToOne
     @JoinColumn(name ="language_id")

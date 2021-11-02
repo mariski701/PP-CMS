@@ -4,11 +4,13 @@ package com.cms.pp.cms.pp.Article;
 import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -31,12 +33,19 @@ public class Article {
     private User user;
 
     @Column(name = "article_date")
-    private java.sql.Date date;
+    private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
     @Column(name = "article_published")
     private boolean published;
 
-    @ManyToMany(mappedBy = "articles")
+    /*@ManyToMany(mappedBy = "articles")
+    private Collection<ArticleTag> articleTags;*/
+
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "articletag_id", referencedColumnName = "id")
+    )
     private Collection<ArticleTag> articleTags;
 
     @OneToMany(mappedBy="article")
@@ -44,3 +53,28 @@ public class Article {
 
 
 }
+/*
+{
+    "articleContents":  [
+        {
+            "content" : "jakis tekst po polsku",
+            "title" : "jakis tytuł polski",
+            "languages" : {
+                "id" : 14
+            }
+        },
+        {
+            "content" : "some english stuff",
+            "title" : "english is power",
+            "languages" : {
+                "id" : 13
+            }
+        }
+    ],
+    "articleTags" : [
+        {
+            "id" : 15
+        }
+    ]
+}
+ */
