@@ -21,6 +21,9 @@ public class Article {
     @Column(unique = true, length = 128)
     private int id;
 
+    @Column(name = "views")
+    private long views = 0;
+
     @OneToMany(mappedBy = "article")
     private Collection<ArticleContent> articleContents;
 

@@ -25,6 +25,18 @@ public class ArticleService {
         return articleRepository.findAll();
     }
 
+    public Article getArticle(int id) {
+        Article article =  articleRepository.findById(id).orElse(null);
+        if (article == null)
+            return null;
+        else {
+            long views = article.getViews();
+            views++;
+            article.setViews(views);
+            articleRepository.save(article);
+            return article;
+        }
+    }
     /*public Article addArticle(Article article) {
         ArticleContent articleContent = new ArticleContent();
 

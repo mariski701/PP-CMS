@@ -102,6 +102,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         article.setPublished(true);
         java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         article.setDate(date);
+        //article.setViews(0);
         articleRepository.save(article);
 
         Comment comment = new Comment();
