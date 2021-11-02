@@ -42,17 +42,6 @@ public class ArticleService {
             return article;
         }
     }
-    /*public Article addArticle(Article article, List<ArticleContent> articleContents, int userId, List<ArticleTag> articleTags) {
-        for (int i = 0; i < articleContents.size(); i++) {
-            articleContents.get(i).setArticle(article);
-        }
-        articleContentRepository.saveAll(articleContents);
-        article.setUser(userRepository.findById(userId).orElse(null));
-        article.setArticleTags(articleTags);
-        article.setArticleContents(articleContents);
-        articleRepository.save(article);
-        return article;
-    }*/
     @Transactional
     public Article addArticle(Article article, int userId) {
 
@@ -81,3 +70,28 @@ public class ArticleService {
 
    // }
 }
+/*
+{
+    "articleContents":  [
+        {
+            "content" : "jakis tekst po polsku",
+            "title" : "jakis tytuł polski",
+            "languages" : {
+                "id" : 14
+            }
+        },
+        {
+            "content" : "some english stuff",
+            "title" : "english is power",
+            "languages" : {
+                "id" : 13
+            }
+        }
+    ],
+    "articleTags" : [
+        {
+            "id" : 15
+        }
+    ]
+}
+ */

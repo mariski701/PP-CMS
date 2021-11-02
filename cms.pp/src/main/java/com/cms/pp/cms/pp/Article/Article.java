@@ -38,9 +38,6 @@ public class Article {
     @Column(name = "article_published")
     private boolean published;
 
-    /*@ManyToMany(mappedBy = "articles")
-    private Collection<ArticleTag> articleTags;*/
-
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id"),
@@ -53,28 +50,3 @@ public class Article {
 
 
 }
-/*
-{
-    "articleContents":  [
-        {
-            "content" : "jakis tekst po polsku",
-            "title" : "jakis tytuł polski",
-            "languages" : {
-                "id" : 14
-            }
-        },
-        {
-            "content" : "some english stuff",
-            "title" : "english is power",
-            "languages" : {
-                "id" : 13
-            }
-        }
-    ],
-    "articleTags" : [
-        {
-            "id" : 15
-        }
-    ]
-}
- */

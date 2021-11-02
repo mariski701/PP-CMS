@@ -18,14 +18,6 @@ public class ArticleTag {
 
     private String name;
 
-    /*@EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-    joinColumns = @JoinColumn(name = "articletag_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id"))
-    private Collection<Article> articles;*/
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
