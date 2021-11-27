@@ -1,5 +1,9 @@
 package com.cms.pp.cms.pp;
 
+import com.cms.pp.cms.pp.Alerts.AlertCode;
+import com.cms.pp.cms.pp.Alerts.AlertCodeRepository;
+import com.cms.pp.cms.pp.Alerts.AlertTranslation;
+import com.cms.pp.cms.pp.Alerts.AlertTranslationRepository;
 import com.cms.pp.cms.pp.Article.*;
 import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.Comment.CommentRepository;
@@ -41,7 +45,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private ArticleTagRepository articleTagRepository;
     @Autowired
     private CommentRepository commentRepository;
-
+    @Autowired
+    private AlertCodeRepository alertCodeRepository;
+    @Autowired
+    private AlertTranslationRepository alertTranslationRepository;
 
     @Transactional
     @Override
@@ -112,6 +119,25 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         comment.setUser(user);
         commentRepository.save(comment);
 
+
+
+        AlertCode creatingArticleAlert = createAlertIfNotFound("Article was published.");
+        AlertCode creatingArticleFailAlert = createAlertIfNotFound("Article can not be published.");
+        alertCodeRepository.save(creatingArticleAlert);
+        alertCodeRepository.save(creatingArticleFailAlert);
+
+        AlertTranslation alertTranslation = new AlertTranslation();
+        alertTranslation.setErrorTranslation("Artykuł został pomyślnie opublikowany.");
+        alertTranslation.setLanguage(polishLanguage);
+        alertTranslation.setAlertCode(creatingArticleAlert);
+        alertTranslationRepository.save(alertTranslation);
+
+        AlertTranslation alertTranslation2 = new AlertTranslation();
+        alertTranslation2.setErrorTranslation("Artykuł nie może zostać opublikowany.");
+        alertTranslation2.setLanguage(polishLanguage);
+        alertTranslation2.setAlertCode(creatingArticleFailAlert);
+        alertTranslationRepository.save(alertTranslation2);
+
         alreadySetup = true;
 
     }
@@ -160,5 +186,16 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             roleRepository.save(role);
         }
         return role;
+    }
+
+    @Transactional
+    AlertCode createAlertIfNotFound(String name) {
+        AlertCode alertCode = alertCodeRepository.findByAlertName(name);
+        if (alertCode == null) {
+            alertCode = new AlertCode();
+            alertCode.setAlertName(name);
+            alertCodeRepository.save(alertCode);
+        }
+        return alertCode;
     }
 }
