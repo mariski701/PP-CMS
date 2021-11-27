@@ -81,6 +81,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         polishLanguage.setLanguageCode("pl_PL");
 
         ArticleTag generalTag = createTagIfNotFound("general");
+        generalTag.setLanguage(englishLanguage);
         java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
@@ -95,8 +96,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentEnglish.setUser(user);
         articleContentEnglish.setDate(date);
 
-        articleContentPolish.setLanguages(polishLanguage);
-        articleContentEnglish.setLanguages(englishLanguage);
+        articleContentPolish.setLanguage(polishLanguage);
+        articleContentEnglish.setLanguage(englishLanguage);
 
 
         articleContentPolish.setArticleTags(Arrays.asList(generalTag));

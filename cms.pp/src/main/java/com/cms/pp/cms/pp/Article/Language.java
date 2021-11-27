@@ -1,5 +1,7 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.Alerts.AlertCode;
+import com.cms.pp.cms.pp.Alerts.AlertTranslation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,7 +28,19 @@ public class Language {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "languages")
+    @OneToMany(mappedBy = "language")
     private Collection<ArticleContent> articleContents;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "language")
+    private Collection<ArticleTag> articleTags;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "language")
+    private Collection<AlertTranslation> alertTranslations;
 
 }

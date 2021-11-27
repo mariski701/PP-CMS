@@ -1,7 +1,6 @@
 package com.cms.pp.cms.pp.user;
 
 
-import com.cms.pp.cms.pp.Article.Article;
 import com.cms.pp.cms.pp.Role.Role;
 import lombok.Data;
 

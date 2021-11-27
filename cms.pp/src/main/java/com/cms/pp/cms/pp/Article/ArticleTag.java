@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Entity
 @Data
-@Table(name = "Article_tags")
+@Table(name = "tags")
 public class ArticleTag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,4 +24,8 @@ public class ArticleTag {
     @JsonIgnore
     @ManyToMany(mappedBy = "articleTags")
     private Collection<ArticleContent> articlesContent;
+
+    @ManyToOne
+    @JoinColumn(name ="language_id")
+    private Language language;
 }

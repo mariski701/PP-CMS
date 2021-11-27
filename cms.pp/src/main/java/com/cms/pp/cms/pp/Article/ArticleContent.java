@@ -44,13 +44,15 @@ public class ArticleContent {
 
     @ManyToOne
     @JoinColumn(name ="language_id")
-    private Language languages;
+    private Language language;
 
 
     @ManyToMany
     @JoinTable(
-            joinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "articletag_id", referencedColumnName = "id")
+            name = "article_tags",
+            joinColumns = @JoinColumn(name = "articlecontent_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tags_id", referencedColumnName = "id")
+
     )
     private Collection<ArticleTag> articleTags;
 
