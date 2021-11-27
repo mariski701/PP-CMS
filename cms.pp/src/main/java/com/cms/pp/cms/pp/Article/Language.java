@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Data
 @Entity
-@Table(name = "Article_languages")
+@Table(name = "languages")
 public class Language {
     @Id
     @GeneratedValue
@@ -19,6 +19,9 @@ public class Language {
 
     @Column(name = "language_name")
     private String name;
+
+    @Column(name = "language_code")
+    private String languageCode;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

@@ -36,8 +36,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Autowired
     private LanguageRepository languageRepository;
     @Autowired
-    private ArticleRepository articleRepository;
-    @Autowired
     private ArticleContentRepository articleContentRepository;
     @Autowired
     private ArticleTagRepository articleTagRepository;
@@ -77,40 +75,39 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setEnabled(true);
         userRepository.save(user);
 
-        Language englishLanguage = createLanguageIfNotFound("English");
-        Language polishLanguage = createLanguageIfNotFound("Polish");
+        Language englishLanguage = createLanguageIfNotFound("english");
+        Language polishLanguage = createLanguageIfNotFound("polish");
+        englishLanguage.setLanguageCode("en_EN");
+        polishLanguage.setLanguageCode("pl_PL");
 
         ArticleTag generalTag = createTagIfNotFound("general");
-
+        java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
         articleContentPolish.setTitle("Tytuł");
+        articleContentPolish.setPublished(true);
+        articleContentPolish.setUser(user);
+        articleContentPolish.setDate(date);
         ArticleContent articleContentEnglish = new ArticleContent();
         articleContentEnglish.setContent("Test of article in English.");
         articleContentEnglish.setTitle("title");
+        articleContentEnglish.setPublished(true);
+        articleContentEnglish.setUser(user);
+        articleContentEnglish.setDate(date);
 
         articleContentPolish.setLanguages(polishLanguage);
         articleContentEnglish.setLanguages(englishLanguage);
+
+
+        articleContentPolish.setArticleTags(Arrays.asList(generalTag));
+        generalTag.setArticlesContent(Arrays.asList(articleContentPolish));
         articleContentRepository.save(articleContentEnglish);
         articleContentRepository.save(articleContentPolish);
-
-        Article article = new Article();
-        articleContentPolish.setArticle(article);
-        articleContentEnglish.setArticle(article);
-        generalTag.setArticles(Arrays.asList(article));
-        article.setArticleTags(Arrays.asList(generalTag));
-        article.setArticleContents(Arrays.asList(articleContentPolish, articleContentEnglish));
-        article.setUser(user);
-        article.setPublished(true);
-        java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-        article.setDate(date);
-        //article.setViews(0);
-        articleRepository.save(article);
 
         Comment comment = new Comment();
         comment.setContent("testowy komentarz do artykułu");
         comment.setDate(date);
-        comment.setArticle(article);
+        comment.setArticleContent(articleContentPolish);
         comment.setUser(user);
         commentRepository.save(comment);
 

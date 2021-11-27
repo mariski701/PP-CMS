@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+//@RestController
 public class ArticleController {
-    @Autowired
+    /*@Autowired
     ArticleService articleService;
 
 
@@ -26,8 +26,8 @@ public class ArticleController {
         return articleService.addArticle(article, articleContents, userId, articleTags);
     }*/
 
-    @PostMapping(value = "/api/article/add/{userId}")
+    /*@PostMapping(value = "/api/article/add/{userId}")
     public Article addArticle(@RequestBody Article article, @PathVariable int userId) {
         return articleService.addArticle(article, userId);
-    }
+    }*/
 }

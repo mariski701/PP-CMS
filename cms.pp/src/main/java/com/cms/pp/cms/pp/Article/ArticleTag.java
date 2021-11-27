@@ -23,5 +23,5 @@ public class ArticleTag {
     @ToString.Exclude
     @JsonIgnore
     @ManyToMany(mappedBy = "articleTags")
-    private Collection<Article> articles;
+    private Collection<ArticleContent> articlesContent;
 }

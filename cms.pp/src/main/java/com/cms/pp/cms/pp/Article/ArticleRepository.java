@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ArticleRepository extends JpaRepository<Article, Integer> {
+public interface ArticleRepository{// extends JpaRepository<Article, Integer> {
 
 
     //@Query(value = "SELECT * FROM articles as a inner join ARTICLE_CONTENT as  ac on  a.id=ac.artiCLE_ID inner join article_languages as al on ac.LANGUAGES_ID=al.id", nativeQuery = true)

@@ -8,8 +8,7 @@ public class ArticleContentService {
     @Autowired
     ArticleContentRepository articleContentRepository;
 
-    @Autowired
-    ArticleRepository articleRepository;
+
 
     public ArticleContent addArticleContent(ArticleContent articleContent) {
         return articleContentRepository.save(articleContent);
@@ -25,3 +24,29 @@ public class ArticleContentService {
     }
 
 }
+
+/*
+{
+    "articleContents":  [
+        {
+            "content" : "jakis tekst po polsku",
+            "title" : "jakis tytuł polski",
+            "languages" : {
+                "id" : 14
+            }
+        },
+        {
+            "content" : "some english stuff",
+            "title" : "english is power",
+            "languages" : {
+                "id" : 13
+            }
+        }
+    ],
+    "articleTags" : [
+        {
+            "id" : 15
+        }
+    ]
+}
+ */

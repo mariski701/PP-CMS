@@ -10,8 +10,8 @@ public class ArticleContentController {
     @Autowired
     private ArticleContentService articleContentService;
 
-    /*@GetMapping("/api/articlecontent/{id}")
+    @GetMapping("/api/articlecontent/{id}")
     public ArticleContent getArticleContent(@PathVariable int id) {
         return articleContentService.getArticleContent(id);
-    }*/
+    }
 }

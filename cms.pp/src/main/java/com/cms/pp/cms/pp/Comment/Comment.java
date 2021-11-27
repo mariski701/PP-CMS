@@ -1,6 +1,7 @@
 package com.cms.pp.cms.pp.Comment;
 
 import com.cms.pp.cms.pp.Article.Article;
+import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -32,6 +33,6 @@ public class Comment {
     @ToString.Exclude
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "article_id")
-    private Article article;
+    @JoinColumn(name = "article_content_id")
+    private ArticleContent articleContent;
 }

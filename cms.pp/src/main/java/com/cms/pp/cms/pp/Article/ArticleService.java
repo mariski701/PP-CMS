@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@Service
+//@Service
 public class ArticleService {
-    @Autowired
+  /*  @Autowired
     ArticleContentRepository articleContentRepository;
 
     @Autowired
@@ -35,20 +35,20 @@ public class ArticleService {
         if (article == null)
             return null;
         else {
-            long views = article.getViews();
-            views++;
-            article.setViews(views);
+           // long views = article.getViews();
+           // views++;
+           // article.setViews(views);
             articleRepository.save(article);
             return article;
         }
     }
-    @Transactional
+   /* @Transactional
     public Article addArticle(Article article, int userId) {
 
-        article.setUser(userRepository.findById(userId).orElse(null));
+        //article.setUser(userRepository.findById(userId).orElse(null));
 
         articleRepository.save(article);
-        List<ArticleContent> articleContents = (List<ArticleContent>)(article.getArticleContents());
+       // List<ArticleContent> articleContents = (List<ArticleContent>)(article.getArticleContents());
         List<ArticleTag> articleTags = (List<ArticleTag>)(article.getArticleTags());
 
 
@@ -64,34 +64,9 @@ public class ArticleService {
 
         return article;
 
-    }
+    }*/
 
     //private ArticleDto convertArticleToArticleDto(Article article) {
 
    // }
 }
-/*
-{
-    "articleContents":  [
-        {
-            "content" : "jakis tekst po polsku",
-            "title" : "jakis tytuł polski",
-            "languages" : {
-                "id" : 14
-            }
-        },
-        {
-            "content" : "some english stuff",
-            "title" : "english is power",
-            "languages" : {
-                "id" : 13
-            }
-        }
-    ],
-    "articleTags" : [
-        {
-            "id" : 15
-        }
-    ]
-}
- */
