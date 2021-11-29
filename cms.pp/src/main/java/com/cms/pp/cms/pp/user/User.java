@@ -19,7 +19,7 @@ public class User {
     private String userName;
     @Column(name = "user_password")
     private String userPassword;
-    @Column(name = "user_mail")
+    @Column(name = "user_mail", unique = true)
     private String userMail;
     @Column(name = "user_active")
     private boolean enabled;
@@ -27,7 +27,7 @@ public class User {
 
 
     @ManyToMany
-    @JoinTable(name = "user_roles",
+    @JoinTable(name = "users_roles",
     joinColumns = @JoinColumn(
             name = "user_id", referencedColumnName = "id" ),
             inverseJoinColumns = @JoinColumn(

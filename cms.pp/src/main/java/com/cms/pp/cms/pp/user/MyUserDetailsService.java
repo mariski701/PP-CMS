@@ -34,8 +34,8 @@ public class MyUserDetailsService implements UserDetailsService {
     private RoleRepository roleRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(name);
+    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+        User user = userRepository.findByUserMail(mail);
         if (user == null) {
             return new org.springframework.security.core.userdetails.User(" ", " ",true, true, true, true, getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
         }
