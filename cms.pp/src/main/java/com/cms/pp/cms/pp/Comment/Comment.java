@@ -26,9 +26,9 @@ public class Comment {
     @Column(name = "comment_date")
     private java.sql.Date date;
 
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "article_content_id")
     private ArticleContent articleContent;
