@@ -78,6 +78,15 @@ public class ArticleContentService {
             return HttpStatus.OK.value();
         }
     }
+
+    public List<ArticleContent> findAllByLanguage(String lang) {
+        Language language = languageRepository.findByName(lang);
+        if (lang == null) return null;
+        else {
+            return articleContentRepository.findAllByLanguage(language);
+        }
+
+    }
 }
 
 /*

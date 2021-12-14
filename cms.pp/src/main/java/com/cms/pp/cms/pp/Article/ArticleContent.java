@@ -42,7 +42,7 @@ public class ArticleContent {
     @Column(name = "article_date")
     private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name ="language_id")
     private Language language;
 

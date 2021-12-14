@@ -1,5 +1,8 @@
 package com.cms.pp.cms.pp.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
-public interface ArticleContentRepository extends JpaRepository<ArticleContent, Integer> {
 
+import java.util.List;
+
+public interface ArticleContentRepository extends JpaRepository<ArticleContent, Integer> {
+    List<ArticleContent> findAllByLanguage(Language language);
 }

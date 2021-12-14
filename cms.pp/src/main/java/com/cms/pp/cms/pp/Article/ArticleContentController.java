@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/api/article/")
@@ -34,7 +35,6 @@ public class ArticleContentController {
     {
         if(articleContentDTO.getId().equals(null))
             articleContentDTO.setId(0);
-        System.out.println(articleContentDTO.toString());
         return articleContentService.editArticle(articleContentDTO.getId(),
                 articleContentDTO.getTitle(),
                 articleContentDTO.getLanguage(),
@@ -43,5 +43,9 @@ public class ArticleContentController {
     }
    // public int editArticle(int id, String title, String language, Collection<String> tags, String content)
 
+    @GetMapping("articles/{language}")
+    public List<ArticleContent> findAllByLanguage(@PathVariable String language) {
+        return articleContentService.findAllByLanguage(language);
+    }
 
 }
