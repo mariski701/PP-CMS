@@ -31,7 +31,7 @@ public class ArticleContent {
     private String title;
 
     @Column(name = "article_published")
-    private boolean published;
+    private String published;
 
     @Column(name = "views")
     private long views = 0;
@@ -42,7 +42,7 @@ public class ArticleContent {
     @Column(name = "article_date")
     private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name ="language_id")
     private Language language;
 

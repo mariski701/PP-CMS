@@ -1,6 +1,7 @@
 package com.cms.pp.cms.pp.user;
 
 
+import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.Role.Role;
 import lombok.Data;
 
@@ -24,7 +25,6 @@ public class User {
     @Column(name = "user_active")
     private boolean enabled;
     private boolean tokenExpired;
-
 
     @ManyToMany
     @JoinTable(name = "users_roles",

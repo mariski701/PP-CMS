@@ -93,13 +93,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
         articleContentPolish.setTitle("Tytuł");
-        articleContentPolish.setPublished(true);
+        articleContentPolish.setPublished("PUBLISHED");
         articleContentPolish.setUser(user);
         articleContentPolish.setDate(date);
         ArticleContent articleContentEnglish = new ArticleContent();
         articleContentEnglish.setContent("Test of article in English.");
         articleContentEnglish.setTitle("title");
-        articleContentEnglish.setPublished(true);
+        articleContentEnglish.setPublished("UNPUBLISHED");
         articleContentEnglish.setUser(user);
         articleContentEnglish.setDate(date);
 

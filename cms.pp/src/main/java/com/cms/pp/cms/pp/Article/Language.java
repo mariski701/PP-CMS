@@ -28,8 +28,8 @@ public class Language {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "language")
-    private Collection<ArticleContent> articleContents;
+    @OneToOne(mappedBy = "language")
+    private ArticleContent articleContents;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
