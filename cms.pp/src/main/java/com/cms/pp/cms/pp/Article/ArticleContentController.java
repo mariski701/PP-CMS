@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/api/article/")
+@RequestMapping("/api/articles/")
 @RestController
 public class ArticleContentController {
     @Autowired
@@ -41,11 +41,15 @@ public class ArticleContentController {
                 articleContentDTO.getTags(),
                 articleContentDTO.getContent());
     }
-   // public int editArticle(int id, String title, String language, Collection<String> tags, String content)
 
-    @GetMapping("articles/{language}")
+    @GetMapping("{language}")
     public List<ArticleContent> findAllByLanguage(@PathVariable String language) {
         return articleContentService.findAllByLanguage(language);
+    }
+
+    @GetMapping("user/{id}")
+    public List<ArticleContent> findAllByUser(@PathVariable int id) {
+        return articleContentService.findAllByUser(id);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.user.User;
+import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ public class ArticleContentService {
     LanguageRepository languageRepository;
     @Autowired
     ArticleTagRepository articleTagRepository;
+    @Autowired
+    UserRepository userRepository;
 
 
 
@@ -40,7 +44,7 @@ public class ArticleContentService {
         else {
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
-            return HttpStatus.OK.value();
+            return 2001; //successfully
         }
     }
 
@@ -50,31 +54,28 @@ public class ArticleContentService {
             return HttpStatus.NOT_FOUND.value();
         else{
             articleContentRepository.deleteById(id);
-            return HttpStatus.OK.value();
+            return 2001;// successfully
         }
     }
 
     public int editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null) return HttpStatus.NOT_FOUND.value();
-        if(title.equals("") || language.equals("") || tags.isEmpty() || content.equals("")) {
-            return HttpStatus.NOT_ACCEPTABLE.value();
-        }
+        if (title.equals("")) return 3001; //title empty
+        if (language.equals("")) return 3002; //language empty
+        if (tags.isEmpty()) return 3003; //tags empty <= than 0 tags
+        if (content.equals("")) return 3004; //content empty
         else {
-            if (!articleContent.getTitle().equals(title))
-                articleContent.setTitle(title);
-            if (!articleContent.getLanguage().getName().equals(language))
-                articleContent.setLanguage(languageRepository.findByName(language));
+            articleContent.setTitle(title);
+            articleContent.setLanguage(languageRepository.findByName(language));
             Collection<ArticleTag> articleTags  = new ArrayList<>();
             for (Map<String, String> names : tags) {
                 articleTags.add(articleTagRepository.findByName(names.get("name")));
             }
-            if (!articleContent.getArticleTags().equals(articleTags))
-                articleContent.setArticleTags(articleTags);
-            if (!articleContent.getContent().equals(content))
-                articleContent.setContent(content);
+            articleContent.setArticleTags(articleTags);
+            articleContent.setContent(content);
             articleContentRepository.save(articleContent);
-            return HttpStatus.OK.value();
+            return 2001; // successfully
         }
     }
 
@@ -84,7 +85,15 @@ public class ArticleContentService {
         else {
             return articleContentRepository.findAllByLanguage(language);
         }
+    }
 
+    public List<ArticleContent> findAllByUser(int id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            return null;
+        else {
+            return articleContentRepository.findAllByUser(user);
+        }
     }
 }
 
