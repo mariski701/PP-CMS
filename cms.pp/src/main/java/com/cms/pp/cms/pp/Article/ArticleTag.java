@@ -13,7 +13,9 @@ import java.util.Collection;
 @Table(name = "tags")
 public class ArticleTag {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "MY_ARTICLETAG_SEQ", sequenceName = "MY_ARTICLETAG_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_ARTICLETAG_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private int id;
 
     private String name;

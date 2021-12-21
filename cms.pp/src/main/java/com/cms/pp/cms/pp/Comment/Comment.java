@@ -14,7 +14,9 @@ import javax.persistence.*;
 @Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "MY_COMMENT_SEQ", sequenceName = "MY_COMMENT_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_COMMENT_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private long id;
 
     @OneToOne

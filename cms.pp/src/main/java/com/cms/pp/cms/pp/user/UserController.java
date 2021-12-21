@@ -54,4 +54,9 @@ public class UserController {
         httpSession.invalidate();
         return "logged out";
     }
+
+    @GetMapping("find/{userName}")
+    public List<User> findByUserNameIgnoreCaseContaining(@PathVariable String userName) {
+        return userService.findByUserNameIgnoreCaseContaining(userName);
+    }
 }

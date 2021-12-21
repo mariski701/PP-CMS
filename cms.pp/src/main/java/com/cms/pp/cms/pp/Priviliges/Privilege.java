@@ -13,7 +13,9 @@ import java.util.Collection;
 public class Privilege {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "MY_PRIVILEGE_SEQ", sequenceName = "MY_PRIVILEGE_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_PRIVILEGE_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private Long id;
 
     private String name;

@@ -13,8 +13,9 @@ import java.util.Collection;
 @Table(name = "User")
 public class User {
     @Id
-    @GeneratedValue
-    @Column(unique = true, length = 128)
+    @SequenceGenerator(name = "MY_USER_SEQ", sequenceName = "MY_USER_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_USER_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private int id;
     @Column(name = "user_name", unique = true)
     private String userName;

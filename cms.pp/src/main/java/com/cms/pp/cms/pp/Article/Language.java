@@ -15,8 +15,9 @@ import java.util.Collection;
 @Table(name = "languages")
 public class Language {
     @Id
-    @GeneratedValue
-    @Column(unique = true, length = 128)
+    @SequenceGenerator(name = "MY_LANGUAGE_SEQ", sequenceName = "MY_LANGUAGE_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_LANGUAGE_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private int id;
 
     @Column(name = "language_name")

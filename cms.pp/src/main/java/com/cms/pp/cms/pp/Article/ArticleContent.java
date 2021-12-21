@@ -20,8 +20,9 @@ import java.util.Collection;
 @Table(name = "ArticleContent")
 public class ArticleContent {
     @Id
-    @GeneratedValue
-    @Column(unique = true, length = 128)
+    @SequenceGenerator(name = "MY_ARTICLECONTENT_SEQ", sequenceName = "MY_ARTICLECONTENT_SEQ", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_ARTICLECONTENT_SEQ" )
+    @Column(unique = true, length = 128, updatable = false, nullable = false)
     private int id;
 
     @Column(name = "content")
