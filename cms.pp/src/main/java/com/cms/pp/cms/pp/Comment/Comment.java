@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Data
 @Entity
@@ -26,7 +27,7 @@ public class Comment {
     private String content;
 
     @Column(name = "comment_date")
-    private java.sql.Date date;
+    private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -34,4 +35,7 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "article_content_id")
     private ArticleContent articleContent;
+
+    @Version
+    private Long version;
 }

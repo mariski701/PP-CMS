@@ -25,4 +25,7 @@ public class Privilege {
     @JsonIgnore
     @ManyToMany(mappedBy = "privileges")
     private Collection<Role> roles;
+
+    @Version
+    private Long version;
 }

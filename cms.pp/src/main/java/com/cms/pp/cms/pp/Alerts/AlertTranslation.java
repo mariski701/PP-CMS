@@ -26,4 +26,7 @@ public class AlertTranslation {
     @ManyToOne
     @JoinColumn(name ="alertCode_id")
     private AlertCode alertCode;
+
+    @Version
+    private Long version;
 }

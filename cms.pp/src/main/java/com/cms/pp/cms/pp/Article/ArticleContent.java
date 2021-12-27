@@ -59,4 +59,7 @@ public class ArticleContent {
 
     @OneToMany(mappedBy="articleContent")
     private Collection<Comment> comments;
+
+    @Version
+    private Long version;
 }

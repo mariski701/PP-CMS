@@ -30,4 +30,7 @@ public class ArticleTag {
     @ManyToOne
     @JoinColumn(name ="language_id")
     private Language language;
+
+    @Version
+    private Long version;
 }

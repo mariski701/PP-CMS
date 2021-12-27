@@ -5,6 +5,9 @@ import com.cms.pp.cms.pp.Article.ArticleContentRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +21,15 @@ public class CommentService {
     @Autowired
     ArticleContentRepository articleContentRepository;
 
-    Comment findCommentById(long id) {
+    public Comment findCommentById(long id) {
         return commentRepository.findById(id).orElse(null);
     }
 
-    List<Comment> findAll() {
+    public List<Comment> findAll() {
         return commentRepository.findAll();
     }
 
-    List<Comment> findByUsers(int id) {
+    public List<Comment> findByUsers(int id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {
             return null;
@@ -36,7 +39,7 @@ public class CommentService {
         }
     }
 
-    List<Comment> findByArticleContent(int id) {
+    public List<Comment> findByArticleContent(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null) {
             return null;
@@ -45,17 +48,34 @@ public class CommentService {
             return commentRepository.findByArticleContent(articleContent);
     }
 
-    Comment addComment(Comment comment, int id) {
-        Comment comment1 = comment;
-        ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null) {
-            return null;
+    public int addComment(CommentDTO commentDTO) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
         }
         else {
-            comment1.setArticleContent(articleContent);
-            return commentRepository.save(comment1);
+            username = principal.toString();
         }
-
+        if (username.equals("anonymousUser")) {
+            return 3005; //user not logged in
+        }
+        else
+        {
+            ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
+            if (commentDTO.getContent().equals("")) {
+                return 3004;//content empty
+            }
+            if (articleContent == null) {
+                return HttpStatus.NOT_FOUND.value(); //article not found
+            }
+            Comment comment = new Comment();
+            comment.setContent(commentDTO.getContent());
+            comment.setUser(userRepository.findByUserName(username));
+            comment.setArticleContent(articleContent);
+            commentRepository.save(comment);
+            return 2001; //success
+        }
     }
 
 

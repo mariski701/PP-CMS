@@ -77,8 +77,14 @@ public class ArticleContentService {
         if (articleContent == null) {
             return null;
         }
-        else
+        else {
+            Long views = articleContent.getViews();
+            views++;
+            articleContent.setViews(views);
+            articleContentRepository.save(articleContent);
             return articleContent;
+        }
+
     }
 
     public int changeArticleStatus(int id, String articleStatus) {

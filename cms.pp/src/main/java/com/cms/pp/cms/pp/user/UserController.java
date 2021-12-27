@@ -49,7 +49,6 @@ public class UserController {
 
     @PostMapping("login")
     public User login(@RequestBody Map<String, String> body ) {
-       // return myUserDetailsService.loadUserByUsername(body.get("userMail"));
         return userService.loginToService(body.get("userMail"), body.get("password"));
     }
 
@@ -83,5 +82,20 @@ public class UserController {
     @PutMapping("edit/role")
     public int editUserRole(@RequestBody Map<String, String> body) {
         return userService.editUserRole(body.get("roleName"), Integer.parseInt(body.get("userID")));
+    }
+
+    @GetMapping("cms/users")
+    public List<User> findCmsUsers() {
+        return userService.findCmsUsers();
+    }
+
+    @PutMapping("edit/changeMail")
+    public int changeUserMail(@RequestBody Map<String, String> body) {
+        return userService.changeUserMail(Integer.parseInt(body.get("userId")), body.get("userMail"));
+    }
+
+    @PutMapping("edit/changeNickname")
+    public int changeUserNickname(@RequestBody Map<String, String> body) {
+        return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
     }
 }

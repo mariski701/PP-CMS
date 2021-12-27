@@ -6,14 +6,11 @@ import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,17 +36,26 @@ public class UserService {
     }
 
     public User addCMSUser(CMSUserDTO cmsUserDTO) {
-        User user = new User();
-        user.setUserName(cmsUserDTO.getUserName());
-        user.setUserName(cmsUserDTO.getUserMail());
-        Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
-        List<Role> roles = new ArrayList<>();
-        roles.add(userRole);
-        user.setRoles(roles);
-        user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
-        user.setEnabled(true);
-        userRepository.save(user);
-        return user;
+        if (!cmsUserDTO.getRole().equals("ROLE_ADMIN") && !cmsUserDTO.getRole().equals("ROLE_MODERATOR") && !cmsUserDTO.getRole().equals("ROLE_EDITOR")) {
+            return null;
+        }
+        if (cmsUserDTO.getUserName().equals("") || cmsUserDTO.getUserMail().equals("") || cmsUserDTO.getRole().isEmpty() || cmsUserDTO.getUserPassword().equals("")) {
+            return null;
+        }
+        else {
+            User user = new User();
+            user.setUserName(cmsUserDTO.getUserName());
+            user.setUserMail(cmsUserDTO.getUserMail());
+            Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
+            List<Role> roles = new ArrayList<>();
+            roles.add(userRole);
+            user.setRoles(roles);
+            user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
+            user.setEnabled(true);
+            userRepository.save(user);
+            return user;
+        }
+
     }
 
     public String deleteUser(int id) {
@@ -196,6 +202,81 @@ public class UserService {
             user.setRoles(roleList);
             userRepository.save(user);
             return 2001; //success
+        }
+    }
+
+    public List<User> findCmsUsers() {
+        Role roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+        Role roleModerator = roleRepository.findByName("ROLE_MODERATOR");
+        Role roleEditor = roleRepository.findByName("ROLE_EDITOR");
+
+        List<User> adminUsers = userRepository.findUserByRoles(roleAdmin);
+        List<User> moderatorUsers = userRepository.findUserByRoles(roleModerator);
+        List<User> editorUsers = userRepository.findUserByRoles(roleEditor);
+
+        List<User> mergedList = new ArrayList<>();
+        for (User user : adminUsers) {
+            mergedList.add(user);
+        }
+        for (User user : moderatorUsers) {
+            mergedList.add(user);
+        }
+        for (User user : editorUsers) {
+            mergedList.add(user);
+        }
+
+        return mergedList;
+    }
+
+    public boolean checkIfUserWithProvidedMailExists(String mail) {
+        User user = userRepository.findByUserMail(mail);
+        if (user == null)
+            return false;
+        return true;
+    }
+
+    public boolean checkIfUserWithProvidedNameExists(String name) {
+        User user = userRepository.findByUserName(name);
+        if (user == null)
+            return false;
+        return true;
+    }
+
+    public int changeUserMail(int id, String newMail) {
+        User user = userRepository.findById(id).orElse(null);
+        if (newMail.equals("")) {return 3012;} // mail empty
+        if (user == null) {
+            return HttpStatus.NOT_FOUND.value();
+        }
+        else {
+            if (!checkIfUserWithProvidedMailExists(newMail)) {
+                user.setUserMail(newMail);
+                userRepository.save(user);
+                return 2001; //sukces
+            }
+            else
+                return 3011; //usermail already in database
+
+        }
+    }
+
+    public int changeUserName(int id, String newUserName) {
+        User user = userRepository.findById(id).orElse(null);
+        if (newUserName.equals("")) {
+            return 3006; //new nickname empty
+        }
+        if (user == null) {
+            return HttpStatus.NOT_FOUND.value();
+        }
+        else {
+            if (!checkIfUserWithProvidedNameExists(newUserName)) {
+                user.setUserName(newUserName);
+                userRepository.save(user);
+                return 2001; //success
+            }
+            else
+                return 3013; //username already in database
+
         }
     }
 

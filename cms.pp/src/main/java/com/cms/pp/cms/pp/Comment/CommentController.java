@@ -12,33 +12,33 @@ import java.util.List;
 public class CommentController {
 
     @Autowired
-    CommentService commentService;
+    private CommentService commentService;
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @GetMapping("find/{id}")
-    Comment findCommentById(@PathVariable long id) {
+    public Comment findCommentById(@PathVariable long id) {
         return commentService.findCommentById(id);
     }
 
     @GetMapping("findAll")
-    List<Comment> findAll() {
+    public List<Comment> findAll() {
         return commentService.findAll();
     }
 
     @GetMapping("find/user/{id}")
-    List<Comment> findByUserId(@PathVariable int id) {
+    public  List<Comment> findByUserId(@PathVariable int id) {
         return commentService.findByUsers(id);
     }
 
     @GetMapping("find/article/{id}")
-    List<Comment> findByArticleContentId(@PathVariable int id) {
+    public  List<Comment> findByArticleContentId(@PathVariable int id) {
         return commentService.findByArticleContent(id);
     }
 
-    @PostMapping("add/{id}")
-    Comment addComment(@RequestBody Comment comment, @PathVariable int id) {
-        return commentService.addComment(comment, id);
+    @PostMapping("add")
+    int addComment(@RequestBody CommentDTO commentDTO) {
+        return commentService.addComment(commentDTO);
     }
 
 }
