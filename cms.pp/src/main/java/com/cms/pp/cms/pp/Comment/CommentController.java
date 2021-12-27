@@ -21,7 +21,7 @@ public class CommentController {
         return commentService.findCommentById(id);
     }
 
-    @GetMapping("find")
+    @GetMapping("findAll")
     List<Comment> findAll() {
         return commentService.findAll();
     }

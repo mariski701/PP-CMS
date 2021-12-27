@@ -26,9 +26,13 @@ public class UserController {
     MyUserDetailsService myUserDetailsService;
 
     @PostMapping("register")
-    @ResponseStatus(HttpStatus.CREATED)
     public User addUser(@RequestBody User user) {
         return userService.addUser(user);
+    }
+
+    @PostMapping("cms/register")
+    public User addCMSUser(@RequestBody CMSUserDTO cmsUserDTO) {
+        return userService.addCMSUser(cmsUserDTO);
     }
 
     @DeleteMapping("delete/{id}")
@@ -58,5 +62,26 @@ public class UserController {
     @GetMapping("find/{userName}")
     public List<User> findByUserNameIgnoreCaseContaining(@PathVariable String userName) {
         return userService.findByUserNameIgnoreCaseContaining(userName);
+    }
+
+    @PutMapping("edit/username")
+    public int editUserName(@RequestBody Map<String, String> body) {
+        System.out.println(body.get("userName"));
+        return userService.editUserName(body.get("userName"));
+    }
+
+    @PutMapping("edit/password")
+    public int changePassword(@RequestBody Map<String, String> body) {
+        return userService.changePassword(body.get("oldPassword"), body.get("newPassword"));
+    }
+
+    @PutMapping("edit/mail")
+    public int editUserMail(@RequestBody Map<String, String> body) {
+        return userService.editUserMail(body.get("newMail"));
+    }
+
+    @PutMapping("edit/role")
+    public int editUserRole(@RequestBody Map<String, String> body) {
+        return userService.editUserRole(body.get("roleName"), Integer.parseInt(body.get("userID")));
     }
 }

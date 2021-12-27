@@ -34,4 +34,9 @@ public class ArticleTagController {
     public ArticleTag modifyTag(@RequestBody ArticleTag articleTag, @PathVariable int id) {
         return articleTagService.modifyTag(id, articleTag);
     }
+
+    @GetMapping("/api/tag/language/{lang}")
+    public List<ArticleTag> findByLanguage(@PathVariable  String lang) {
+        return articleTagService.findByLanguage(lang);
+    }
 }

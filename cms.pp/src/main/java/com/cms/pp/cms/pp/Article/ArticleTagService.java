@@ -9,6 +9,8 @@ import java.util.List;
 public class ArticleTagService {
     @Autowired
     ArticleTagRepository articleTagRepository;
+    @Autowired
+    LanguageRepository languageRepository;
 
     public List<ArticleTag> getArticleTags ()  {
         return articleTagRepository.findAll();
@@ -36,6 +38,14 @@ public class ArticleTagService {
         else {
             oldArticleTag.setName(articleTag.getName());
             return articleTagRepository.save(oldArticleTag);
+        }
+    }
+
+    public List<ArticleTag> findByLanguage(String lang) {
+        Language language = languageRepository.findByName(lang);
+        if (language == null) return null;
+        else {
+            return articleTagRepository.findByLanguage(language);
         }
     }
 }

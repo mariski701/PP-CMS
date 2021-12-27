@@ -4,8 +4,11 @@ import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +27,49 @@ public class ArticleContentService {
 
 
 
-    public ArticleContent addArticleContent(ArticleContent articleContent) {
-        return articleContentRepository.save(articleContent);
+    public int addArticleContent(ArticleContentDTO articleContentDTO) {
+        ArticleContent articleContent = new ArticleContent();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        }
+        else {
+            username = principal.toString();
+        }
+        if (username.equals("anonymousUser")) {
+            return 3005; //user not logged in
+        }
+        else {
+            if (articleContentDTO.getTitle().equals("")) {
+                return 3001; //title empty
+            }
+            if (articleContentDTO.getLanguage().equals("")) {
+                return 3002; //lang empty
+            }
+            if (articleContentDTO.getTags().isEmpty()) {
+                return 3003; //tags empty
+            }
+            if (articleContentDTO.getContent().equals("")) {
+                return 3004; //content empty
+            }
+
+            articleContent.setTitle(articleContentDTO.getTitle());
+            Collection<ArticleTag> articleTags  = new ArrayList<>();
+            for (Map<String, String> names : articleContentDTO.getTags()) {
+                articleTags.add(articleTagRepository.findByName(names.get("name")));
+            }
+            articleContent.setArticleTags(articleTags);
+            articleContent.setContent(articleContentDTO.getContent());
+            Language language = languageRepository.findByName(articleContentDTO.getLanguage());
+            articleContent.setLanguage(language);
+            articleContent.setPublished("UNPUBLISHED");
+            User user = userRepository.findByUserName(username);
+            articleContent.setUser(user);
+            articleContentRepository.save(articleContent);
+            return 2001; //success
+        }
+
     }
 
     public ArticleContent getArticleContent(int id) {

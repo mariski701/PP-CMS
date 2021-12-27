@@ -20,7 +20,7 @@ public class LanguageController {
         return languageService.removeLanguage(id);
     }
 
-    @GetMapping("/api/language")
+    @GetMapping("/api/languages")
     public List<Language> getAllLanguages() {
         return languageService.getAllLanguages();
     }

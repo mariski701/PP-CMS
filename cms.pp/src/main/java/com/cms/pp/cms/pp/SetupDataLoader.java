@@ -69,6 +69,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, removeCommentPrivilege, editCommentPrivilege));
         createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege));
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editCommentPrivilege));
+        createRoleIfNotFound("ROLE_USERWITHOUTCOMMENTS", Arrays.asList(readPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         Role moderatorRole = roleRepository.findByName("ROLE_MODERATOR");
@@ -78,7 +79,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setUserName("admin");
         user.setUserPassword(passwordEncoder.encode("admin"));
         user.setUserMail("admin@cms.pp.com");
-        user.setRoles(Arrays.asList(adminRole, moderatorRole, editorRole, userRole));
+        user.setRoles(Arrays.asList(adminRole));
         user.setEnabled(true);
         userRepository.save(user);
 

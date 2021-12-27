@@ -15,6 +15,11 @@ public class ArticleContentController {
     @Autowired
     private ArticleContentService articleContentService;
 
+    @PostMapping("add")
+    public int addArticle(@RequestBody ArticleContentDTO articleContentDTO) {
+        return articleContentService.addArticleContent(articleContentDTO);
+    }
+
     @GetMapping("get/{id}")
     public ArticleContent getArticleContent(@PathVariable int id) {
         return articleContentService.getArticleContent(id);
