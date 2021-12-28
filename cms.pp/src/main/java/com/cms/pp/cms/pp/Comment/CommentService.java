@@ -2,6 +2,8 @@ package com.cms.pp.cms.pp.Comment;
 
 import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.Article.ArticleContentRepository;
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class CommentService {
     UserRepository userRepository;
     @Autowired
     ArticleContentRepository articleContentRepository;
+    @Autowired
+    ConfigurationFlagsRepository configurationFlagsRepository;
 
     public Comment findCommentById(long id) {
         return commentRepository.findById(id).orElse(null);
@@ -49,33 +53,40 @@ public class CommentService {
     }
 
     public int addComment(CommentDTO commentDTO) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        }
-        else {
-            username = principal.toString();
-        }
-        if (username.equals("anonymousUser")) {
-            return 3005; //user not logged in
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        if (configurationFlags.isComments()) {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = "";
+            if (principal instanceof UserDetails) {
+                username = ((UserDetails)principal).getUsername();
+            }
+            else {
+                username = principal.toString();
+            }
+            if (username.equals("anonymousUser")) {
+                return 3005; //user not logged in
+            }
+            else
+            {
+                ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
+                if (commentDTO.getContent().equals("")) {
+                    return 3004;//content empty
+                }
+                if (articleContent == null) {
+                    return HttpStatus.NOT_FOUND.value(); //article not found
+                }
+                Comment comment = new Comment();
+                comment.setContent(commentDTO.getContent());
+                comment.setUser(userRepository.findByUserName(username));
+                comment.setArticleContent(articleContent);
+                commentRepository.save(comment);
+                return 2001; //success
+            }
         }
         else
-        {
-            ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
-            if (commentDTO.getContent().equals("")) {
-                return 3004;//content empty
-            }
-            if (articleContent == null) {
-                return HttpStatus.NOT_FOUND.value(); //article not found
-            }
-            Comment comment = new Comment();
-            comment.setContent(commentDTO.getContent());
-            comment.setUser(userRepository.findByUserName(username));
-            comment.setArticleContent(articleContent);
-            commentRepository.save(comment);
-            return 2001; //success
-        }
+            return 3015; //comments turned off
+
+
     }
 
 

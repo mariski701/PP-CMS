@@ -7,6 +7,8 @@ import com.cms.pp.cms.pp.Alerts.AlertTranslationRepository;
 import com.cms.pp.cms.pp.Article.*;
 import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.Comment.CommentRepository;
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.Priviliges.Privilege;
 import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
 import com.cms.pp.cms.pp.Role.Role;
@@ -49,12 +51,20 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private AlertCodeRepository alertCodeRepository;
     @Autowired
     private AlertTranslationRepository alertTranslationRepository;
+    @Autowired
+    private ConfigurationFlagsRepository configurationFlagsRepository;
 
     @Transactional
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup)
             return;
+
+        ConfigurationFlags configurationFlags = new ConfigurationFlags();
+        configurationFlags.setComments(true);
+        configurationFlags.setRegister(true);
+        configurationFlags.setLogin(true);
+        configurationFlagsRepository.save(configurationFlags);
 
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");

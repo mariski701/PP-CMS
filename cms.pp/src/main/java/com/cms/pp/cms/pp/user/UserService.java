@@ -1,6 +1,8 @@
 package com.cms.pp.cms.pp.user;
 
 
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
+import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.Role.Role;
 import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,14 +29,24 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private ConfigurationFlagsRepository configurationFlagsRepository;
+    @Autowired
+    HttpSession httpSession;
 
     public User addUser(User user) {
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        user.setRoles(Arrays.asList(userRole));
-        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
-        user.setEnabled(true);
-        userRepository.save(user);
-        return user;
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        if (configurationFlags.isRegister()) {
+            Role userRole = roleRepository.findByName("ROLE_USER");
+            user.setRoles(Arrays.asList(userRole));
+            user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+            user.setEnabled(true);
+            userRepository.save(user);
+            return user;
+        }
+        else
+            httpSession.invalidate();
+            return null;
     }
 
     public User addCMSUser(CMSUserDTO cmsUserDTO) {
@@ -76,20 +90,28 @@ public class UserService {
     }
 
     public User loginToService(String userMail, String password) {
-        User user = userRepository.findByUserMail(userMail);
-        if (user == null) {
-            return null;
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        if (configurationFlags.isLogin())
+        {
+            User user = userRepository.findByUserMail(userMail);
+            if (user == null) {
+                return null;
+            }
+            else {
+                if (passwordEncoder.matches(password, user.getUserPassword())) {
+                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                    String currentPrincipalName =  authentication.getName();
+                    return user;
+                }
+                else
+                    return null;
+            }
         }
         else {
-            if (passwordEncoder.matches(password, user.getUserPassword())) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                String currentPrincipalName =  authentication.getName();
-                return user;
-            }
-            else
-                return null;
-
+            httpSession.invalidate();
+            return null;
         }
+
     }
 
     public int changePassword(String oldPassword, String newPassword) {
