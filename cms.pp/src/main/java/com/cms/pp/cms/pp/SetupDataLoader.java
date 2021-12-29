@@ -66,7 +66,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         configurationFlags.setLogin(true);
         configurationFlagsRepository.save(configurationFlags);
 
-
         Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound("ADMIN_PANEL");
         Privilege changeConfigurationFlagsPrivilege = createPrivilegeIfNotFound("CONFIGURATION_FLAGS");
         Privilege removeTags = createPrivilegeIfNotFound("REMOVE_TAGS");
@@ -151,22 +150,33 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         commentRepository.save(comment);
 
 
+        AlertCode resourceNotFound = createAlertIfNotFound("Resource not found!", 404);
+        AlertCode successAlert = createAlertIfNotFound("Success!", 2001);
+        AlertCode titleEmpty = createAlertIfNotFound("Title field is empty", 3001);
+        AlertCode languageEmpty = createAlertIfNotFound("Language is not chosen", 3002);
+        AlertCode tagsEmpty = createAlertIfNotFound("Tags are not chosen", 3003);
+        AlertCode contentEmpty = createAlertIfNotFound("Content is empty", 3004);
+        AlertCode notLoggedIn = createAlertIfNotFound("You are not logged in", 3005);
+        AlertCode userNotProvided = createAlertIfNotFound("Username not provided", 3006);
+        AlertCode oldPasswordNotProvided = createAlertIfNotFound("Old password is not provided", 3007);
+        AlertCode newPasswordNotProvided = createAlertIfNotFound("New password is not provided", 3008);
+        AlertCode incorrectPassword = createAlertIfNotFound("Incorrect password", 3009);
+        AlertCode mailAlreadyExists = createAlertIfNotFound("Provided mail already exists", 3011);
+        AlertCode mailNotProvided = createAlertIfNotFound("Email address not provided", 3012);
+        AlertCode usernameAlreadyExists = createAlertIfNotFound("Provided username already exists", 3013);
 
-        AlertCode creatingArticleAlert = createAlertIfNotFound("Article was published.");
-        AlertCode creatingArticleFailAlert = createAlertIfNotFound("Article can not be published.");
-        alertCodeRepository.save(creatingArticleAlert);
-        alertCodeRepository.save(creatingArticleFailAlert);
+        alertCodeRepository.saveAll(Arrays.asList(usernameAlreadyExists, mailNotProvided, mailAlreadyExists, incorrectPassword, newPasswordNotProvided, oldPasswordNotProvided, userNotProvided, tagsEmpty, contentEmpty, titleEmpty, languageEmpty, successAlert, resourceNotFound, notLoggedIn));
 
         AlertTranslation alertTranslation = new AlertTranslation();
-        alertTranslation.setErrorTranslation("Artykuł został pomyślnie opublikowany.");
+        alertTranslation.setErrorTranslation("Sukces!");
         alertTranslation.setLanguage(polishLanguage);
-        alertTranslation.setAlertCode(creatingArticleAlert);
+        alertTranslation.setAlertCode(successAlert);
         alertTranslationRepository.save(alertTranslation);
 
         AlertTranslation alertTranslation2 = new AlertTranslation();
-        alertTranslation2.setErrorTranslation("Artykuł nie może zostać opublikowany.");
+        alertTranslation2.setErrorTranslation("Zasób nie może zostać odnaleziony");
         alertTranslation2.setLanguage(polishLanguage);
-        alertTranslation2.setAlertCode(creatingArticleFailAlert);
+        alertTranslation2.setAlertCode(resourceNotFound);
         alertTranslationRepository.save(alertTranslation2);
 
         alreadySetup = true;
@@ -220,11 +230,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    AlertCode createAlertIfNotFound(String name) {
+    AlertCode createAlertIfNotFound(String name, int code) {
         AlertCode alertCode = alertCodeRepository.findByAlertName(name);
         if (alertCode == null) {
             alertCode = new AlertCode();
             alertCode.setAlertName(name);
+            alertCode.setAlertCode(code);
             alertCodeRepository.save(alertCode);
         }
         return alertCode;

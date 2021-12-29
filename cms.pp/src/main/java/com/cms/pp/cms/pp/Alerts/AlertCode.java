@@ -17,6 +17,9 @@ public class AlertCode {
     @Column(unique = true, length = 128)
     private int id;
 
+    @Column(name = "alert_code")
+    private int alertCode;
+
     @Column(name = "alert_name")
     private String alertName;
 
