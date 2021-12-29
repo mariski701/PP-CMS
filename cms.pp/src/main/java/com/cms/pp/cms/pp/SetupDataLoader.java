@@ -66,19 +66,39 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         configurationFlags.setLogin(true);
         configurationFlagsRepository.save(configurationFlags);
 
+
+        Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound("ADMIN_PANEL");
+        Privilege changeConfigurationFlagsPrivilege = createPrivilegeIfNotFound("CONFIGURATION_FLAGS");
+        Privilege removeTags = createPrivilegeIfNotFound("REMOVE_TAGS");
+        Privilege addTagsCMS = createPrivilegeIfNotFound("ADD_TAGS_CMS");
+        Privilege addLanguagePrivilege = createPrivilegeIfNotFound("ADD_LANGUAGE");
+        Privilege removeLanguagePrivilege = createPrivilegeIfNotFound("REMOVE_LANGUAGE");
+        Privilege editLanguagePrivilege = createPrivilegeIfNotFound("EDIT_LANGUAGE");
+        Privilege editUserPrivilege  = createPrivilegeIfNotFound("EDIT_USER");
+        Privilege editCMSUserPrivilege = createPrivilegeIfNotFound("EDIT_CMS_USER");
+        Privilege removeUserPrivilege = createPrivilegeIfNotFound("REMOVE_USER");
+        Privilege removeCMSUserPrivilege = createPrivilegeIfNotFound("REMOVE_CMS_USER");
+        Privilege addTranslationPrivilege = createPrivilegeIfNotFound("ADD_TRANSLATION");
+        Privilege removeTranslationPrivilege = createPrivilegeIfNotFound("REMOVE_TRANSLATION");
+        Privilege editTranslationPrivilege = createPrivilegeIfNotFound("EDIT_TRANSLATION");
+        Privilege readCMSUsersPrivilege = createPrivilegeIfNotFound("READ_CMS_USERS");
+        Privilege createCMSUserPrivilege = createPrivilegeIfNotFound("CREATE_CMS_USER");
+        Privilege changeRolePrivilege = createPrivilegeIfNotFound("CHANGE_ROLE");
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+        Privilege writeArticlePrivilege = createPrivilegeIfNotFound("WRITE_ARTICLE");
         Privilege writeCommentPrivilege = createPrivilegeIfNotFound("WRITE_COMMENT");
         Privilege removeCommentPrivilege = createPrivilegeIfNotFound("REMOVE_COMMENT");
         Privilege editCommentPrivilege = createPrivilegeIfNotFound("EDIT_COMMENT");
+        Privilege editOwnCommentPrivilege = createPrivilegeIfNotFound("EDIT_OWN_COMMENT");
         Privilege editArticlesPrivilege = createPrivilegeIfNotFound("EDIT_ARTICLE");
-        Privilege adminPanelAccess = createPrivilegeIfNotFound("ADMIN_PANEL");
+        Privilege addRolePrivilege = createPrivilegeIfNotFound("ADD_ROLE");
+        Privilege editRole = createPrivilegeIfNotFound("EDIT_ROLE");
 
-        List<Privilege> adminPriviliges = Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccess, editCommentPrivilege);
+        List<Privilege> adminPriviliges = Arrays.asList(editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeCMSUserPrivilege, removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, createCMSUserPrivilege, removeTags, changeConfigurationFlagsPrivilege, changeRolePrivilege, addTagsCMS, readCMSUsersPrivilege, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPriviliges);
-        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, removeCommentPrivilege, editCommentPrivilege));
-        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(readPrivilege, writePrivilege, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege));
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editCommentPrivilege));
+        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, readCMSUsersPrivilege, changeConfigurationFlagsPrivilege, removeTags, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, addTagsCMS, removeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, adminPanelAccessPrivilege));
+        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(readPrivilege, removeTags, editOwnCommentPrivilege, writeArticlePrivilege, addTagsCMS, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege));
+        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, editOwnCommentPrivilege, writeCommentPrivilege, editCommentPrivilege));
         createRoleIfNotFound("ROLE_USERWITHOUTCOMMENTS", Arrays.asList(readPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");

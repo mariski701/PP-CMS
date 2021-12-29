@@ -25,8 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/getusers")
-                .hasRole("USER")
+                .antMatchers("/api/user/getusers").hasAuthority("READ_PRIVILEGE")
                 .and()
                 .formLogin();
     }
