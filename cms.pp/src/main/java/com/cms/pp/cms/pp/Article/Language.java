@@ -44,6 +44,7 @@ public class Language {
     @OneToMany(mappedBy = "language")
     private Collection<AlertTranslation> alertTranslations;
 
+    @JsonIgnore
     @Version
     private Long version;
 

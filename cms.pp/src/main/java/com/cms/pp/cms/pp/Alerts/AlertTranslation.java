@@ -2,6 +2,7 @@ package com.cms.pp.cms.pp.Alerts;
 
 
 import com.cms.pp.cms.pp.Article.Language;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ public class AlertTranslation {
     @JoinColumn(name ="alertCode_id")
     private AlertCode alertCode;
 
+    @JsonIgnore
     @Version
     private Long version;
 }

@@ -7,4 +7,6 @@ import java.util.List;
 public interface ArticleContentRepository extends JpaRepository<ArticleContent, Integer> {
     List<ArticleContent> findAllByLanguage(Language language);
     List<ArticleContent> findAllByUser(User user);
+    List<ArticleContent> findByTitleIgnoreCaseContaining(String title);
+    ArticleContent findByTitle(String title);
 }

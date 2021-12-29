@@ -60,6 +60,7 @@ public class ArticleContent {
     @OneToMany(mappedBy="articleContent")
     private Collection<Comment> comments;
 
+    @JsonIgnore
     @Version
     private Long version;
 }

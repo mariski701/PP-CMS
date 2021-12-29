@@ -3,6 +3,7 @@ package com.cms.pp.cms.pp.user;
 
 import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.Role.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -35,6 +36,7 @@ public class User {
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
+    @JsonIgnore
     @Version
     private Long version;
 

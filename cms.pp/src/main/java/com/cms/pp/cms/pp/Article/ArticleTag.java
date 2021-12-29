@@ -31,6 +31,7 @@ public class ArticleTag {
     @JoinColumn(name ="language_id")
     private Language language;
 
+    @JsonIgnore
     @Version
     private Long version;
 }

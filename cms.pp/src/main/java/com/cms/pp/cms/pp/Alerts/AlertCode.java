@@ -29,6 +29,7 @@ public class AlertCode {
     @OneToMany(mappedBy = "alertCode")
     private Collection<AlertTranslation> alertTranslation;
 
+    @JsonIgnore
     @Version
     private Long version;
 }

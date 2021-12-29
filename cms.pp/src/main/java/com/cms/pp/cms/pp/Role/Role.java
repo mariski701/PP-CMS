@@ -35,6 +35,7 @@ public class Role {
             name = "privilege_id", referencedColumnName = "id"))
     private Collection<Privilege> privileges;
 
+    @JsonIgnore
     @Version
     private Long version;
 }

@@ -36,6 +36,7 @@ public class Comment {
     @JoinColumn(name = "article_content_id")
     private ArticleContent articleContent;
 
+    @JsonIgnore
     @Version
     private Long version;
 }
