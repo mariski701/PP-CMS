@@ -48,7 +48,7 @@ public class UserController {
 
 
     @PostMapping("login")
-    public User login(@RequestBody Map<String, String> body ) {
+    public Object login(@RequestBody Map<String, String> body ) {
         return userService.loginToService(body.get("userMail"), body.get("password"));
     }
 

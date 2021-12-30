@@ -89,13 +89,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User loginToService(String userMail, String password) {
+    public Object loginToService(String userMail, String password) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isLogin())
         {
             User user = userRepository.findByUserMail(userMail);
             if (user == null) {
-                return null;
+                return "User not exists";
             }
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
@@ -104,12 +104,12 @@ public class UserService {
                     return user;
                 }
                 else
-                    return null;
+                    return "Wrong password";
             }
         }
         else {
             httpSession.invalidate();
-            return null;
+            return 403;
         }
 
     }
