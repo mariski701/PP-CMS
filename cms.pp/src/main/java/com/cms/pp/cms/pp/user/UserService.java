@@ -34,7 +34,7 @@ public class UserService {
     @Autowired
     HttpSession httpSession;
 
-    public User addUser(User user) {
+    public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isRegister()) {
             Role userRole = roleRepository.findByName("ROLE_USER");
@@ -46,15 +46,15 @@ public class UserService {
         }
         else
             httpSession.invalidate();
-            return null;
+            return "Register is currently off";
     }
 
-    public User addCMSUser(CMSUserDTO cmsUserDTO) {
+    public Object addCMSUser(CMSUserDTO cmsUserDTO) {
         if (!cmsUserDTO.getRole().equals("ROLE_ADMIN") && !cmsUserDTO.getRole().equals("ROLE_MODERATOR") && !cmsUserDTO.getRole().equals("ROLE_EDITOR")) {
-            return null;
+            return "Wrong role";
         }
         if (cmsUserDTO.getUserName().equals("") || cmsUserDTO.getUserMail().equals("") || cmsUserDTO.getRole().isEmpty() || cmsUserDTO.getUserPassword().equals("")) {
-            return null;
+            return "Lack of data";
         }
         else {
             User user = new User();

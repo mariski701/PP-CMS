@@ -26,12 +26,12 @@ public class UserController {
     MyUserDetailsService myUserDetailsService;
 
     @PostMapping("register")
-    public User addUser(@RequestBody User user) {
+    public Object addUser(@RequestBody User user) {
         return userService.addUser(user);
     }
 
     @PostMapping("cms/register")
-    public User addCMSUser(@RequestBody CMSUserDTO cmsUserDTO) {
+    public Object addCMSUser(@RequestBody CMSUserDTO cmsUserDTO) {
         return userService.addCMSUser(cmsUserDTO);
     }
 
