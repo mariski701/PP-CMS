@@ -2,6 +2,7 @@ package com.cms.pp.cms.pp.Article;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +56,31 @@ public class ArticleContentController {
     @GetMapping("user/{id}")
     public List<ArticleContent> findAllByUser(@PathVariable int id) {
         return articleContentService.findAllByUser(id);
+    }
+
+    @GetMapping("/top/{count}")
+    public Page<ArticleContent> findSomeArticlesByViews(@PathVariable int count) {
+        return articleContentService.findSomeArticlesByViews(count);
+    }
+
+    @GetMapping("all")
+    public List<ArticleContent> findAll() {
+        return articleContentService.findAll();
+    }
+
+    @GetMapping("contains/{title}")
+    public List<ArticleContent> findByTitleIgnoreCaseContaining(@PathVariable String title) {
+        return articleContentService.findByTitleIgnoreCaseContaining(title);
+    }
+
+    @GetMapping("findByTitle")
+    public ArticleContent findByTitle(@RequestBody Map<String, String> title){
+        return articleContentService.findByTitle(title.get("title"));
+    }
+
+    @GetMapping("find/{from}/{to}/{title}")
+    public List<ArticleContent> findSomeArticlesByLazyLoading(@PathVariable int from, @PathVariable int to, @PathVariable String title) {
+        return articleContentService.findSomeArticlesByLazyLoading(from, to, title);
     }
 
 }

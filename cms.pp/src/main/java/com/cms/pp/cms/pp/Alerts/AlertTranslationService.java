@@ -38,7 +38,7 @@ public class AlertTranslationService {
             alertTranslationDTOList.add(createDTOTranslation(alertTranslation.getAlertCode().getAlertCode(), alertTranslation.getErrorTranslation(), language, alertTranslation.getId()));
         }
 
-        return alertTranslationDTOList;/*alertTranslationRepository.findAlertTranslationByLanguage(lang);*/
+        return alertTranslationDTOList;
     }
 
     public int addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {

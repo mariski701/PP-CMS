@@ -3,12 +3,15 @@ package com.cms.pp.cms.pp.Article;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -129,6 +132,10 @@ public class ArticleContentService {
         }
     }
 
+    public List<ArticleContent> findAll() {
+        return articleContentRepository.findAll();
+    }
+
     public List<ArticleContent> findAllByLanguage(String lang) {
         Language language = languageRepository.findByName(lang);
         if (lang == null) return null;
@@ -145,30 +152,22 @@ public class ArticleContentService {
             return articleContentRepository.findAllByUser(user);
         }
     }
-}
 
-/*
-{
-    "articleContents":  [
-        {
-            "content" : "jakis tekst po polsku",
-            "title" : "jakis tytuł polski",
-            "languages" : {
-                "id" : 14
-            }
-        },
-        {
-            "content" : "some english stuff",
-            "title" : "english is power",
-            "languages" : {
-                "id" : 13
-            }
-        }
-    ],
-    "articleTags" : [
-        {
-            "id" : 15
-        }
-    ]
+    public Page<ArticleContent> findSomeArticlesByViews(int count) {
+        return articleContentRepository.findAll(PageRequest.of(0,count, Sort.by("views").descending()));
+    }
+
+    public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {
+        return articleContentRepository.findByTitleIgnoreCaseContaining(title);
+    }
+
+    public ArticleContent findByTitle(String title){
+        return articleContentRepository.findByTitle(title);
+    }
+
+    public List<ArticleContent> findSomeArticlesByLazyLoading(int page, int size, String title) {
+        Pageable pageableWithElements = PageRequest.of(page, size);
+        return articleContentRepository.findByTitleIgnoreCaseContaining(title,  pageableWithElements);
+
+    }
 }
- */

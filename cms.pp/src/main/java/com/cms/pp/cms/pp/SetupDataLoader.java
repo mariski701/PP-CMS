@@ -122,16 +122,18 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         ArticleContent articleContentPolish = new ArticleContent();
         articleContentPolish.setContent("Test artykułu po polsku.");
-        articleContentPolish.setTitle("Tytuł");
+        articleContentPolish.setTitle("tytuł");
         articleContentPolish.setPublished("PUBLISHED");
         articleContentPolish.setUser(user);
         articleContentPolish.setDate(date);
+        articleContentPolish.setViews(255);
         ArticleContent articleContentEnglish = new ArticleContent();
         articleContentEnglish.setContent("Test of article in English.");
         articleContentEnglish.setTitle("title");
         articleContentEnglish.setPublished("UNPUBLISHED");
         articleContentEnglish.setUser(user);
         articleContentEnglish.setDate(date);
+        articleContentEnglish.setViews(200);
 
         articleContentPolish.setLanguage(polishLanguage);
         articleContentEnglish.setLanguage(englishLanguage);
