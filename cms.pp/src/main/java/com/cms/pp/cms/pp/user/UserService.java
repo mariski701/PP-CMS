@@ -6,6 +6,8 @@ import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.Role.Role;
 import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -148,6 +150,12 @@ public class UserService {
 
     public List<User> findByUserNameIgnoreCaseContaining(String userName) {
         return userRepository.findByUserNameIgnoreCaseContaining(userName);
+    }
+
+    public List<User> findSomeUsersByLazyLoadingAndUserName(int page, int size, String username) {
+        Pageable pageableWithElements = PageRequest.of(page, size);
+        return userRepository.findByUserNameIgnoreCaseContaining(username, pageableWithElements);
+
     }
 
     public int editUserMail(String newUserMail) {

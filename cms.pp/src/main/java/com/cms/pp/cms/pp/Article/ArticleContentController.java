@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -78,9 +79,19 @@ public class ArticleContentController {
         return articleContentService.findByTitle(title.get("title"));
     }
 
-    @GetMapping("find/{from}/{to}/{title}")
-    public List<ArticleContent> findSomeArticlesByLazyLoading(@PathVariable int from, @PathVariable int to, @PathVariable String title) {
-        return articleContentService.findSomeArticlesByLazyLoading(from, to, title);
+    @GetMapping("find/{page}/{size}/{title}")
+    public List<ArticleContentDTO> findSomeArticlesByLazyLoading(@PathVariable int page, @PathVariable int size, @PathVariable String title) {
+        List<ArticleContent> articleContentList = articleContentService.findSomeArticlesByLazyLoading(page, size, title);
+        List<ArticleContentDTO> articleContentDTOList = new ArrayList<>();
+
+        for (int i = 0; i < articleContentList.size(); i++) {
+            articleContentDTOList.add(new ArticleContentDTO());
+            articleContentDTOList.get(i).setId(articleContentList.get(i).getId());
+            articleContentDTOList.get(i).setTitle(articleContentList.get(i).getTitle());
+            articleContentDTOList.get(i).setLanguage(articleContentList.get(i).getLanguage().getName());
+        }
+        return articleContentDTOList;
     }
+
 
 }

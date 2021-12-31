@@ -11,4 +11,5 @@ public class CMSUserDTO {
     private String userPassword;
     private String role;
     private String userMail;
+
 }

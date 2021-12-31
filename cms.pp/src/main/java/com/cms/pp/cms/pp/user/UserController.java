@@ -11,6 +11,7 @@ import org.springframework.web.context.annotation.SessionScope;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,16 @@ public class UserController {
     @GetMapping("find/{userName}")
     public List<User> findByUserNameIgnoreCaseContaining(@PathVariable String userName) {
         return userService.findByUserNameIgnoreCaseContaining(userName);
+    }
+
+    @GetMapping("find/{page}/{size}/{username}")
+    public List<UserDTO> findSomeUsersByLazyLoadingAndUserName(@PathVariable int page, @PathVariable int size, @PathVariable String username) {
+        List<User> users = userService.findSomeUsersByLazyLoadingAndUserName(page, size, username);
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (User user : users) {
+            userDTOList.add(new UserDTO(user.getId(), user.getUserName(), user.getUserMail()));
+        }
+        return userDTOList;
     }
 
     @PutMapping("edit/username")
