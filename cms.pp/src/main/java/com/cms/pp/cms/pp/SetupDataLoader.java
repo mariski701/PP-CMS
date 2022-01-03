@@ -93,17 +93,19 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Privilege addRolePrivilege = createPrivilegeIfNotFound("ADD_ROLE");
         Privilege editRole = createPrivilegeIfNotFound("EDIT_ROLE");
 
-        List<Privilege> adminPriviliges = Arrays.asList(editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeCMSUserPrivilege, removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, createCMSUserPrivilege, removeTags, changeConfigurationFlagsPrivilege, changeRolePrivilege, addTagsCMS, readCMSUsersPrivilege, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
-        createRoleIfNotFound("ROLE_ADMIN", adminPriviliges);
+        List<Privilege> adminPrivileges = Arrays.asList(editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeCMSUserPrivilege, removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, createCMSUserPrivilege, removeTags, changeConfigurationFlagsPrivilege, changeRolePrivilege, addTagsCMS, readCMSUsersPrivilege, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
+        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
         createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, readCMSUsersPrivilege, changeConfigurationFlagsPrivilege, removeTags, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, addTagsCMS, removeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, adminPanelAccessPrivilege));
         createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(readPrivilege, removeTags, editOwnCommentPrivilege, writeArticlePrivilege, addTagsCMS, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege));
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, editOwnCommentPrivilege, writeCommentPrivilege, editCommentPrivilege));
         createRoleIfNotFound("ROLE_USERWITHOUTCOMMENTS", Arrays.asList(readPrivilege));
+        createRoleIfNotFound("ROLE_GUEST", Arrays.asList(readPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         Role moderatorRole = roleRepository.findByName("ROLE_MODERATOR");
         Role editorRole = roleRepository.findByName("ROLE_EDITOR");
         Role userRole = roleRepository.findByName("ROLE_USER");
+
         User user = new User();
         user.setUserName("admin");
         user.setUserPassword(passwordEncoder.encode("admin"));
@@ -111,6 +113,14 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setRoles(Arrays.asList(adminRole));
         user.setEnabled(true);
         userRepository.save(user);
+
+        User user1 = new User();
+        user1.setUserName("user");
+        user1.setUserPassword(passwordEncoder.encode("user"));
+        user1.setUserMail("user@user.pl");
+        user1.setRoles(Arrays.asList(adminRole));
+        user1.setEnabled(true);
+        userRepository.save(user1);
 
         Language englishLanguage = createLanguageIfNotFound("english");
         Language polishLanguage = createLanguageIfNotFound("polish");
@@ -168,6 +178,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         AlertCode usernameAlreadyExists = createAlertIfNotFound("Provided username already exists", "message.3013");
         AlertCode tagAlreadyExists = createAlertIfNotFound("Tag already exists!", "message.3014");
         AlertCode langaugeDoesntExists = createAlertIfNotFound("Provided language doesn't exists", "message.3015");
+
 
         alertCodeRepository.saveAll(Arrays.asList(usernameAlreadyExists, mailNotProvided, mailAlreadyExists, incorrectPassword, newPasswordNotProvided, oldPasswordNotProvided, userNotProvided, tagsEmpty, contentEmpty, titleEmpty, languageEmpty, successAlert, resourceNotFound, notLoggedIn, tagAlreadyExists, langaugeDoesntExists));
 

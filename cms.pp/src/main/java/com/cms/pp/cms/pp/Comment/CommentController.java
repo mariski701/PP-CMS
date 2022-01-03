@@ -47,4 +47,9 @@ public class CommentController {
         return commentService.editCommentInCMS(id, body.get("content"));
     }
 
+    @PutMapping("edit") //long commentId, String commentContent
+    public String editCommentByUser(@RequestBody Map<String, String> body) {
+        return commentService.editCommentByUser(Long.parseLong(body.get("commentId")), body.get("content"));
+    }
+
 }

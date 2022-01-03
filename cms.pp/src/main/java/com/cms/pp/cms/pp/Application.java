@@ -6,6 +6,8 @@ import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -24,6 +26,8 @@ public class Application {
 	}
 
 
+
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() { //no cors
 		return new WebMvcConfigurerAdapter() {
@@ -38,7 +42,7 @@ public class Application {
 	@Bean
 	public RoleHierarchy roleHierarchy() {
 		RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-		String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR \n ROLE_EDITOR > ROLE_USER";
+		String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR > ROLE_EDITOR > ROLE_USER";
 		roleHierarchy.setHierarchy(hierarchy);
 		return roleHierarchy;
 	}

@@ -35,6 +35,8 @@ public class UserService {
     private ConfigurationFlagsRepository configurationFlagsRepository;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
 
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
@@ -103,6 +105,7 @@ public class UserService {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
+                    System.out.println(currentPrincipalName);
                     return user;
                 }
                 else

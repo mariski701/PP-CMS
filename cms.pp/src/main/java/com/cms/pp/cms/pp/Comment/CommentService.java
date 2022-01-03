@@ -87,7 +87,7 @@ public class CommentService {
             return "message.3015"; //comments turned off
     }
 
-    public String editCommentByUser(CommentDTO commentDTO) { //todo
+    public String editCommentByUser(long commentId, String commentContent) { //todo
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         if (principal instanceof UserDetails) {
@@ -97,12 +97,23 @@ public class CommentService {
             username = principal.toString();
         }
         if (username.equals("anonymousUser")) {
-            return "message.3005"; //user not logged in
+            return "message.3005";
         }
         else {
-           // Comment comment = commentRepository.findById(commentDTO.getCommentId()).orElse(null);
+            User user = userRepository.findByUserName(username);
+            Comment comment = commentRepository.findById(commentId).orElse(null);
+            if (comment == null) {
+                return "message.404";
+            }
+            if (!(user.getId() == comment.getId())) {
+                return "message.403";
+            }
+            if (commentContent.equals(""))
+                return "message.3004";
+            comment.setContent(commentContent);
+            commentRepository.save(comment);
+            return "message.2001";
         }
-        return "";
     }
 
     public String editCommentInCMS(Long id, String content) {
