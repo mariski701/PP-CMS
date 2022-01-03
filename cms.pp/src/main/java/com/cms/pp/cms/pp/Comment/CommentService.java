@@ -52,7 +52,7 @@ public class CommentService {
             return commentRepository.findByArticleContent(articleContent);
     }
 
-    public int addComment(CommentDTO commentDTO) {
+    public String addComment(CommentDTO commentDTO) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isComments()) {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -64,30 +64,61 @@ public class CommentService {
                 username = principal.toString();
             }
             if (username.equals("anonymousUser")) {
-                return 3005; //user not logged in
+                return "message.3005"; //user not logged in
             }
             else
             {
                 ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
                 if (commentDTO.getContent().equals("")) {
-                    return 3004;//content empty
+                    return "message.3004";//content empty
                 }
                 if (articleContent == null) {
-                    return HttpStatus.NOT_FOUND.value(); //article not found
+                    return "message.404"; //article not found
                 }
                 Comment comment = new Comment();
                 comment.setContent(commentDTO.getContent());
                 comment.setUser(userRepository.findByUserName(username));
                 comment.setArticleContent(articleContent);
                 commentRepository.save(comment);
-                return 2001; //success
+                return "message.2001"; //success
             }
         }
         else
-            return 3015; //comments turned off
-
-
+            return "message.3015"; //comments turned off
     }
 
+    public String editCommentByUser(CommentDTO commentDTO) { //todo
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        }
+        else {
+            username = principal.toString();
+        }
+        if (username.equals("anonymousUser")) {
+            return "message.3005"; //user not logged in
+        }
+        else {
+           // Comment comment = commentRepository.findById(commentDTO.getCommentId()).orElse(null);
+        }
+        return "";
+    }
+
+    public String editCommentInCMS(Long id, String content) {
+        Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment == null) {
+            return "message.404";
+        }
+        if (id.equals(null)) {
+            return "message.404";
+        }
+        if (content.equals("")) {
+            return "message.3004";
+        }
+        comment.setContent(content);
+        commentRepository.save(comment);
+        return "message.2001";
+    }
 
 }

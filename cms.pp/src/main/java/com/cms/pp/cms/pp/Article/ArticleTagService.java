@@ -19,8 +19,24 @@ public class ArticleTagService {
         return articleTagRepository.findById(id).orElse(null);
     }
 
-    public ArticleTag addTag(ArticleTag articleTag) {
-        return articleTagRepository.save(articleTag);
+    public String addTag(String language, String name) {
+        Language lang = languageRepository.findByName(language);
+        if (lang == null) {
+            return "message.3015";
+        }
+        ArticleTag checkIfTagExists = articleTagRepository.findByName(name);
+        if (checkIfTagExists == null) {
+            ArticleTag articleTag = new ArticleTag();
+            articleTag.setLanguage(lang);
+
+            articleTag.setName(name);
+            articleTagRepository.save(articleTag);
+            return "message.2001";
+        }
+        else {
+            return "message.3014";
+        }
+
     }
 
     public String removeTag(int id) {

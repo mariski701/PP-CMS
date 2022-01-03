@@ -28,7 +28,7 @@ public class RoleController {
     }
 
     @PostMapping("create")
-    public int createRole(@RequestBody RoleDTO roleDTO) {
+    public String createRole(@RequestBody RoleDTO roleDTO) {
         List<String> privilegeName = new ArrayList<>();
         List<Privilege> privileges = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class RoleController {
     }
 
     @PutMapping("edit/{id}")
-    public int editRole(@PathVariable Long id, @RequestBody List<Map<String, String>> body) {
+    public String editRole(@PathVariable Long id, @RequestBody List<Map<String, String>> body) {
         List<String> privilegeName = new ArrayList<>();
         List<Privilege> privileges = new ArrayList<>();
         for (int i = 0; i < body.size(); i++) {
@@ -59,7 +59,7 @@ public class RoleController {
     }
 
     @DeleteMapping("remove/{id}")
-    public int removeRole(@PathVariable Long id) {
+    public String removeRole(@PathVariable Long id) {
         return roleService.removeRole(id);
     }
 }

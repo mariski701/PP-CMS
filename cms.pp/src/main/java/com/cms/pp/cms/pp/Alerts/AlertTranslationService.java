@@ -17,22 +17,27 @@ public class AlertTranslationService {
     @Autowired
     private AlertCodeRepository alertCodeRepository;
 
-    public static AlertTranslationDTO createDTOTranslation(int alertCode, String alertName, String langauge, int id) {
+    public static AlertTranslationDTO createDTOTranslation(String alertCode, String alertName, String language, int id) {
         AlertTranslationDTO alertTranslationDTO = new AlertTranslationDTO();
         alertTranslationDTO.setId(id);
         alertTranslationDTO.setAlertName(alertName);
         alertTranslationDTO.setAlertCode(alertCode);
-        alertTranslationDTO.setLanguage(langauge);
+        alertTranslationDTO.setLanguage(language);
         return alertTranslationDTO;
     }
 
-    public List<?> findByLanguage(String language) {
+    public List<AlertTranslationDTO> findByLanguage(String language) {
+        List<AlertTranslationDTO> alertTranslationDTOList = new ArrayList<>();
         if (language.equals("english"))
         {
-            return alertCodeRepository.findAll();
+            List<AlertCode> alertCodeList  = alertCodeRepository.findAll();
+            for (AlertCode alertCode : alertCodeList) {
+                alertTranslationDTOList.add(createDTOTranslation(alertCode.getAlertCode(), alertCode.getAlertName(), "english", alertCode.getId() ));
+            }
+            return alertTranslationDTOList;
         }
         Language lang = languageRepository.findByName(language);
-        List<AlertTranslationDTO> alertTranslationDTOList = new ArrayList<>();
+
         List<AlertTranslation> alertTranslationList = alertTranslationRepository.findAlertTranslationByLanguage(lang);
         for (AlertTranslation alertTranslation : alertTranslationList) {
             alertTranslationDTOList.add(createDTOTranslation(alertTranslation.getAlertCode().getAlertCode(), alertTranslation.getErrorTranslation(), language, alertTranslation.getId()));
@@ -41,13 +46,13 @@ public class AlertTranslationService {
         return alertTranslationDTOList;
     }
 
-    public int addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
+    public String addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
         AlertTranslation alertTranslation = new AlertTranslation();
         alertTranslation.setLanguage(languageRepository.findByName(alertTranslationDTO.getLanguage()));
         alertTranslation.setAlertCode(alertCodeRepository.findByAlertCode(alertTranslationDTO.getAlertCode()));
         alertTranslation.setErrorTranslation(alertTranslationDTO.getAlertName());
         alertTranslationRepository.save(alertTranslation);
-        return 2001;
+        return "message.2001";
     }
 
 }

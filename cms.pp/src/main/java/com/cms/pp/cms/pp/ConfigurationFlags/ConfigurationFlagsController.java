@@ -15,17 +15,17 @@ public class ConfigurationFlagsController {
     }
 
     @PutMapping("comments/{commentsAvailable}")
-    public int changeCommentConfiguration(@PathVariable boolean commentsAvailable) {
+    public String changeCommentConfiguration(@PathVariable boolean commentsAvailable) {
         return configurationFlagsService.changeCommentConfiguration(commentsAvailable);
     }
 
     @PutMapping("register/{registerAvailable}")
-    public int changeRegisterConfiguration(@PathVariable boolean registerAvailable) {
+    public String changeRegisterConfiguration(@PathVariable boolean registerAvailable) {
         return configurationFlagsService.changeRegisterConfiguration(registerAvailable);
     }
 
     @PutMapping("login/{loginAvailable}")
-    public int changeLoginConfiguration(@PathVariable boolean loginAvailable) {
+    public String changeLoginConfiguration(@PathVariable boolean loginAvailable) {
         return configurationFlagsService.changeLoginConfiguration(loginAvailable);
     }
 }

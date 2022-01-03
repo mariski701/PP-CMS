@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ArticleTagController {
@@ -21,8 +22,8 @@ public class ArticleTagController {
     }
 
     @PostMapping("/api/tag/add")
-    public ArticleTag addTag (@RequestBody ArticleTag articleTag) {
-        return articleTagService.addTag(articleTag);
+    public String addTag (@RequestBody Map<String, String> body) {
+        return articleTagService.addTag(body.get("language"), body.get("name"));
     }
 
     @DeleteMapping("/api/tag/remove/{id}")

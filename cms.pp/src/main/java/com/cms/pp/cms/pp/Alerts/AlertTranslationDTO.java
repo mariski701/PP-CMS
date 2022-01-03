@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class AlertTranslationDTO {
-    private String alertName;
-    private int alertCode;
-    private String language;
     private int id;
+    private String alertCode;
+    private String alertName;
+    private String language;
 }

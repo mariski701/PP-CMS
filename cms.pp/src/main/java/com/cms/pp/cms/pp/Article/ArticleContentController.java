@@ -18,7 +18,7 @@ public class ArticleContentController {
     private ArticleContentService articleContentService;
 
     @PostMapping("add")
-    public int addArticle(@RequestBody ArticleContentDTO articleContentDTO) {
+    public String addArticle(@RequestBody ArticleContentDTO articleContentDTO) {
         return articleContentService.addArticleContent(articleContentDTO);
     }
 
@@ -28,18 +28,17 @@ public class ArticleContentController {
     }
 
     @PutMapping("publish")
-    public int changeArticleStatus(@RequestBody Map<String, String> body) {
+    public String changeArticleStatus(@RequestBody Map<String, String> body) {
         return articleContentService.changeArticleStatus(Integer.parseInt(body.get("id")), body.get("status"));
     }
 
     @DeleteMapping("delete/{id}")
-    public int removeArticle(@PathVariable int id) {
+    public String removeArticle(@PathVariable int id) {
         return articleContentService.removeArticle(id);
     }
 
     @PutMapping("edit")
-    public int editArticle(@RequestBody ArticleContentDTO articleContentDTO)
-    {
+    public String editArticle(@RequestBody ArticleContentDTO articleContentDTO) {
         if(articleContentDTO.getId().equals(null))
             articleContentDTO.setId(0);
         return articleContentService.editArticle(articleContentDTO.getId(),

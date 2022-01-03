@@ -116,7 +116,7 @@ public class UserService {
 
     }
 
-    public int changePassword(String oldPassword, String newPassword) {
+    public String changePassword(String oldPassword, String newPassword) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         if (principal instanceof UserDetails) {
@@ -126,13 +126,13 @@ public class UserService {
             username = principal.toString();
         }
         if (oldPassword.equals("")) {
-            return 3007; //old password empty
+            return "message.3007"; //old password empty
         }
         if (newPassword.equals("")) {
-            return 3008; //new password empty
+            return "message.3008"; //new password empty
         }
         if (username.equals("anonymousUser")) {
-            return 3005; //user not logged in
+            return "message.3005"; //user not logged in
         }
         else
         {
@@ -140,10 +140,10 @@ public class UserService {
             if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
                 String newPasswordEncoded = passwordEncoder.encode(newPassword);
                 user.setUserPassword(newPasswordEncoded);
-                return 2001;
+                return "message.2001";
             }
             else{
-                return 3009; //wrong old password
+                return "message.3009"; //wrong old password
             }
         }
     }
@@ -158,7 +158,7 @@ public class UserService {
 
     }
 
-    public int editUserMail(String newUserMail) {
+    public String editUserMail(String newUserMail) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         if (principal instanceof UserDetails) {
@@ -168,11 +168,11 @@ public class UserService {
             username = principal.toString();
         }
         if (newUserMail.equals("")) {
-            return 3012; //new mail empty
+            return "message.3012"; //new mail empty
         }
 
         if (username.equals("anonymousUser")) {
-            return 3005; //user not logged in
+            return "message.3005"; //user not logged in
         }
         else {
             User checkUser = userRepository.findByUserMail(newUserMail);
@@ -181,15 +181,15 @@ public class UserService {
                 User user = userRepository.findByUserName(username);
                 user.setUserMail(newUserMail);
                 userRepository.save(user);
-                return 2001; //success
+                return "message.2001"; //success
             }
             else {
-                return 3011; //usermail already used
+                return "message.3011"; //usermail already used
             }
         }
     }
 
-    public int editUserName(String newUsername) {
+    public String editUserName(String newUsername) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         if (principal instanceof UserDetails) {
@@ -199,11 +199,11 @@ public class UserService {
             username = principal.toString();
         }
         if (newUsername.equals("")) {
-            return 3006; //new username empty
+            return "message.3006"; //new username empty
         }
 
         if (username.equals("anonymousUser")) {
-            return 3005; //user not logged in
+            return "message.3005"; //user not logged in
         }
         else {
             User checkUser = userRepository.findByUserName(newUsername);
@@ -212,26 +212,26 @@ public class UserService {
                 User user = userRepository.findByUserName(username);
                 user.setUserName(newUsername);
                 userRepository.save(user);
-                return 2001; //success
+                return "message.2001"; //success
             }
             else {
-                return 3010; //username already used
+                return "message.3010"; //username already used
             }
         }
     }
 
-    public int editUserRole(String roleName, int id) {
+    public String editUserRole(String roleName, int id) {
         User user = userRepository.findById(id).orElse(null);
         Role role = roleRepository.findByName(roleName);
         if (role == null || user == null) {
-            return HttpStatus.NOT_FOUND.value(); //not found 404
+            return "message.404"; //not found 404
         }
         else {
             List<Role> roleList = new ArrayList<>();
             roleList.add(role);
             user.setRoles(roleList);
             userRepository.save(user);
-            return 2001; //success
+            return "message.2001"; //success
         }
     }
 
@@ -272,40 +272,40 @@ public class UserService {
         return true;
     }
 
-    public int changeUserMail(int id, String newMail) {
+    public String changeUserMail(int id, String newMail) {
         User user = userRepository.findById(id).orElse(null);
-        if (newMail.equals("")) {return 3012;} // mail empty
+        if (newMail.equals("")) {return "message.3012";} // mail empty
         if (user == null) {
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         }
         else {
             if (!checkIfUserWithProvidedMailExists(newMail)) {
                 user.setUserMail(newMail);
                 userRepository.save(user);
-                return 2001; //sukces
+                return "message.2001"; //sukces
             }
             else
-                return 3011; //usermail already in database
+                return "message.3011"; //usermail already in database
 
         }
     }
 
-    public int changeUserName(int id, String newUserName) {
+    public String changeUserName(int id, String newUserName) {
         User user = userRepository.findById(id).orElse(null);
         if (newUserName.equals("")) {
-            return 3006; //new nickname empty
+            return "message.3006"; //new nickname empty
         }
         if (user == null) {
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         }
         else {
             if (!checkIfUserWithProvidedNameExists(newUserName)) {
                 user.setUserName(newUserName);
                 userRepository.save(user);
-                return 2001; //success
+                return "message.2001"; //success
             }
             else
-                return 3013; //username already in database
+                return "message.3013"; //username already in database
 
         }
     }

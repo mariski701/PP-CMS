@@ -152,33 +152,35 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         commentRepository.save(comment);
 
 
-        AlertCode resourceNotFound = createAlertIfNotFound("Resource not found!", 404);
-        AlertCode successAlert = createAlertIfNotFound("Success!", 2001);
-        AlertCode titleEmpty = createAlertIfNotFound("Title field is empty", 3001);
-        AlertCode languageEmpty = createAlertIfNotFound("Language is not chosen", 3002);
-        AlertCode tagsEmpty = createAlertIfNotFound("Tags are not chosen", 3003);
-        AlertCode contentEmpty = createAlertIfNotFound("Content is empty", 3004);
-        AlertCode notLoggedIn = createAlertIfNotFound("You are not logged in", 3005);
-        AlertCode userNotProvided = createAlertIfNotFound("Username not provided", 3006);
-        AlertCode oldPasswordNotProvided = createAlertIfNotFound("Old password is not provided", 3007);
-        AlertCode newPasswordNotProvided = createAlertIfNotFound("New password is not provided", 3008);
-        AlertCode incorrectPassword = createAlertIfNotFound("Incorrect password", 3009);
-        AlertCode mailAlreadyExists = createAlertIfNotFound("Provided mail already exists", 3011);
-        AlertCode mailNotProvided = createAlertIfNotFound("Email address not provided", 3012);
-        AlertCode usernameAlreadyExists = createAlertIfNotFound("Provided username already exists", 3013);
+        AlertCode resourceNotFound = createAlertIfNotFound("Resource not found!", "message.404");
+        AlertCode successAlert = createAlertIfNotFound("Success!", "message.2001");
+        AlertCode titleEmpty = createAlertIfNotFound("Title field is empty", "message.3001");
+        AlertCode languageEmpty = createAlertIfNotFound("Language is not chosen", "message.3002");
+        AlertCode tagsEmpty = createAlertIfNotFound("Tags are not chosen", "message.3003");
+        AlertCode contentEmpty = createAlertIfNotFound("Content is empty", "message.3004");
+        AlertCode notLoggedIn = createAlertIfNotFound("You are not logged in", "message.3005");
+        AlertCode userNotProvided = createAlertIfNotFound("Username not provided", "message.3006");
+        AlertCode oldPasswordNotProvided = createAlertIfNotFound("Old password is not provided", "message.3007");
+        AlertCode newPasswordNotProvided = createAlertIfNotFound("New password is not provided", "message.3008");
+        AlertCode incorrectPassword = createAlertIfNotFound("Incorrect password", "message.3009");
+        AlertCode mailAlreadyExists = createAlertIfNotFound("Provided mail already exists", "message.3011");
+        AlertCode mailNotProvided = createAlertIfNotFound("Email address not provided", "message.3012");
+        AlertCode usernameAlreadyExists = createAlertIfNotFound("Provided username already exists", "message.3013");
+        AlertCode tagAlreadyExists = createAlertIfNotFound("Tag already exists!", "message.3014");
+        AlertCode langaugeDoesntExists = createAlertIfNotFound("Provided language doesn't exists", "message.3015");
 
-        alertCodeRepository.saveAll(Arrays.asList(usernameAlreadyExists, mailNotProvided, mailAlreadyExists, incorrectPassword, newPasswordNotProvided, oldPasswordNotProvided, userNotProvided, tagsEmpty, contentEmpty, titleEmpty, languageEmpty, successAlert, resourceNotFound, notLoggedIn));
+        alertCodeRepository.saveAll(Arrays.asList(usernameAlreadyExists, mailNotProvided, mailAlreadyExists, incorrectPassword, newPasswordNotProvided, oldPasswordNotProvided, userNotProvided, tagsEmpty, contentEmpty, titleEmpty, languageEmpty, successAlert, resourceNotFound, notLoggedIn, tagAlreadyExists, langaugeDoesntExists));
 
         AlertTranslation alertTranslation = new AlertTranslation();
-        alertTranslation.setErrorTranslation("Sukces!");
+        alertTranslation.setErrorTranslation("Zasób nie może zostać odnaleziony");
         alertTranslation.setLanguage(polishLanguage);
-        alertTranslation.setAlertCode(successAlert);
+        alertTranslation.setAlertCode(resourceNotFound);
         alertTranslationRepository.save(alertTranslation);
 
         AlertTranslation alertTranslation2 = new AlertTranslation();
-        alertTranslation2.setErrorTranslation("Zasób nie może zostać odnaleziony");
+        alertTranslation2.setErrorTranslation("Sukces!");
         alertTranslation2.setLanguage(polishLanguage);
-        alertTranslation2.setAlertCode(resourceNotFound);
+        alertTranslation2.setAlertCode(successAlert);
         alertTranslationRepository.save(alertTranslation2);
 
         alreadySetup = true;
@@ -232,7 +234,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    AlertCode createAlertIfNotFound(String name, int code) {
+    AlertCode createAlertIfNotFound(String name, String code) {
         AlertCode alertCode = alertCodeRepository.findByAlertName(name);
         if (alertCode == null) {
             alertCode = new AlertCode();

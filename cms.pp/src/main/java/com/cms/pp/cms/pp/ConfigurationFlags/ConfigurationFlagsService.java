@@ -13,24 +13,24 @@ public class ConfigurationFlagsService {
         return configurationFlagsRepository.findById(1).orElse(null);
     }
 
-    public int changeCommentConfiguration(boolean commentsAvailable) {
+    public String changeCommentConfiguration(boolean commentsAvailable) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setComments(commentsAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        return 2001; //success
+        return "message.2001"; //success
     }
 
-    public int changeRegisterConfiguration(boolean registerAvailable) {
+    public String changeRegisterConfiguration(boolean registerAvailable) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setRegister(registerAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        return 2001; //success
+        return "message.2001"; //success
     }
 
-    public int changeLoginConfiguration(boolean loginAvailable) {
+    public String changeLoginConfiguration(boolean loginAvailable) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setLogin(loginAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        return 2001; //success
+        return "message.2001"; //success
     }
 }

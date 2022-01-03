@@ -75,23 +75,23 @@ public class UserController {
     }
 
     @PutMapping("edit/username")
-    public int editUserName(@RequestBody Map<String, String> body) {
+    public String editUserName(@RequestBody Map<String, String> body) {
         System.out.println(body.get("userName"));
         return userService.editUserName(body.get("userName"));
     }
 
     @PutMapping("edit/password")
-    public int changePassword(@RequestBody Map<String, String> body) {
+    public String changePassword(@RequestBody Map<String, String> body) {
         return userService.changePassword(body.get("oldPassword"), body.get("newPassword"));
     }
 
     @PutMapping("edit/mail")
-    public int editUserMail(@RequestBody Map<String, String> body) {
+    public String editUserMail(@RequestBody Map<String, String> body) {
         return userService.editUserMail(body.get("newMail"));
     }
 
     @PutMapping("edit/role")
-    public int editUserRole(@RequestBody Map<String, String> body) {
+    public String editUserRole(@RequestBody Map<String, String> body) {
         return userService.editUserRole(body.get("roleName"), Integer.parseInt(body.get("userID")));
     }
 
@@ -101,12 +101,12 @@ public class UserController {
     }
 
     @PutMapping("edit/changeMail")
-    public int changeUserMail(@RequestBody Map<String, String> body) {
+    public String changeUserMail(@RequestBody Map<String, String> body) {
         return userService.changeUserMail(Integer.parseInt(body.get("userId")), body.get("userMail"));
     }
 
     @PutMapping("edit/changeNickname")
-    public int changeUserNickname(@RequestBody Map<String, String> body) {
+    public String changeUserNickname(@RequestBody Map<String, String> body) {
         return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
     }
 }

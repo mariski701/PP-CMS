@@ -25,4 +25,9 @@ public class LanguageController {
         return languageService.getAllLanguages();
     }
 
+    @GetMapping("/api/language/{name}")
+    public Language getLanguage(@PathVariable String name) {
+        return languageService.getLanguage(name);
+    }
+
 }

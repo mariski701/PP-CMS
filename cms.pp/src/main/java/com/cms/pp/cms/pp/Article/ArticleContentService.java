@@ -30,7 +30,7 @@ public class ArticleContentService {
 
 
 
-    public int addArticleContent(ArticleContentDTO articleContentDTO) {
+    public String addArticleContent(ArticleContentDTO articleContentDTO) {
         ArticleContent articleContent = new ArticleContent();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
@@ -41,20 +41,20 @@ public class ArticleContentService {
             username = principal.toString();
         }
         if (username.equals("anonymousUser")) {
-            return 3005; //user not logged in
+            return "message.3005"; //user not logged in
         }
         else {
             if (articleContentDTO.getTitle().equals("")) {
-                return 3001; //title empty
+                return "message.3001"; //title empty
             }
             if (articleContentDTO.getLanguage().equals("")) {
-                return 3002; //lang empty
+                return "message.3002"; //lang empty
             }
             if (articleContentDTO.getTags().isEmpty()) {
-                return 3003; //tags empty
+                return "message.3003"; //tags empty
             }
             if (articleContentDTO.getContent().equals("")) {
-                return 3004; //content empty
+                return "message.3004"; //content empty
             }
 
             articleContent.setTitle(articleContentDTO.getTitle());
@@ -70,7 +70,7 @@ public class ArticleContentService {
             User user = userRepository.findByUserName(username);
             articleContent.setUser(user);
             articleContentRepository.save(articleContent);
-            return 2001; //success
+            return "message.2001"; //success
         }
 
     }
@@ -90,46 +90,44 @@ public class ArticleContentService {
 
     }
 
-    public int changeArticleStatus(int id, String articleStatus) {
+    public String changeArticleStatus(int id, String articleStatus) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null)
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         else {
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
-            return 2001; //successfully
+            return "message.2001"; //successfully
         }
     }
 
-    public int removeArticle(int id) {
+    public String removeArticle(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null)
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         else{
             articleContentRepository.deleteById(id);
-            return 2001;// successfully
+            return "message.2001";// successfully
         }
     }
 
-    public int editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
+    public String editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null) return HttpStatus.NOT_FOUND.value();
-        if (title.equals("")) return 3001; //title empty
-        if (language.equals("")) return 3002; //language empty
-        if (tags.isEmpty()) return 3003; //tags empty <= than 0 tags
-        if (content.equals("")) return 3004; //content empty
-        else {
-            articleContent.setTitle(title);
-            articleContent.setLanguage(languageRepository.findByName(language));
-            Collection<ArticleTag> articleTags  = new ArrayList<>();
-            for (Map<String, String> names : tags) {
-                articleTags.add(articleTagRepository.findByName(names.get("name")));
-            }
-            articleContent.setArticleTags(articleTags);
-            articleContent.setContent(content);
-            articleContentRepository.save(articleContent);
-            return 2001; // successfully
+        if (articleContent == null) return "message.404";
+        if (title.equals("")) return "message.3001"; //title empty
+        if (language.equals("")) return "message.3002"; //language empty
+        if (tags.isEmpty()) return "message.3003"; //tags empty <= than 0 tags
+        if (content.equals("")) return "message.3004"; //content empty
+        articleContent.setTitle(title);
+        articleContent.setLanguage(languageRepository.findByName(language));
+        Collection<ArticleTag> articleTags  = new ArrayList<>();
+        for (Map<String, String> names : tags) {
+            articleTags.add(articleTagRepository.findByName(names.get("name")));
         }
+        articleContent.setArticleTags(articleTags);
+        articleContent.setContent(content);
+        articleContentRepository.save(articleContent);
+        return "message.2001"; // successfully
     }
 
     public List<ArticleContent> findAll() {

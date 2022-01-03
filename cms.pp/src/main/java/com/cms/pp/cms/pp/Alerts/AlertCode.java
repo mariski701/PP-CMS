@@ -18,7 +18,7 @@ public class AlertCode {
     private int id;
 
     @Column(name = "alert_code")
-    private int alertCode;
+    private String alertCode;
 
     @Column(name = "alert_name")
     private String alertName;

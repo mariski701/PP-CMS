@@ -20,30 +20,30 @@ public class RoleService {
         return roleRepository.findById(id).orElse(null);
     }
 
-    public int createRole(String name, List<Privilege> privileges) {
+    public String createRole(String name, List<Privilege> privileges) {
         Role role = new Role();
         role.setName(name);
         role.setPrivileges(privileges);
         roleRepository.save(role);
-        return 2001;
+        return "message.2001";
     }
 
-    public int editRole(Long id, List<Privilege> privileges) {
+    public String editRole(Long id, List<Privilege> privileges) {
         Role role = roleRepository.findById(id).orElse(null);
         if (role == null) {
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         }
         role.setPrivileges(privileges);
         roleRepository.save(role);
-        return 2001;
+        return "message.2001";
     }
 
-    public int removeRole(Long id) {
+    public String removeRole(Long id) {
         Role role = roleRepository.findById(id).orElse(null);
         if (role == null) {
-            return HttpStatus.NOT_FOUND.value();
+            return "message.404";
         }
         roleRepository.deleteById(id);
-        return 2001;
+        return "message.2001";
     }
 }

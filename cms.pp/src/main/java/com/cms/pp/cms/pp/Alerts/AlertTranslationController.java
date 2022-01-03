@@ -17,7 +17,7 @@ public class AlertTranslationController {
     }
 
     @PostMapping("add")
-    public int addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
+    public String addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
         return alertTranslationService.addAlertTranslation(alertTranslationDTO);
     }
 }

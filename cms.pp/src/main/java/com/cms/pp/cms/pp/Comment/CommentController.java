@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/api/comments/")
 @RestController
@@ -37,8 +38,13 @@ public class CommentController {
     }
 
     @PostMapping("add")
-    int addComment(@RequestBody CommentDTO commentDTO) {
+    public String addComment(@RequestBody CommentDTO commentDTO) {
         return commentService.addComment(commentDTO);
+    }
+
+    @PutMapping("/cms/edit/{id}")
+    public String editCommentInCMS(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return commentService.editCommentInCMS(id, body.get("content"));
     }
 
 }
