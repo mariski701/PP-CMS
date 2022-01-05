@@ -57,6 +57,11 @@ public class ArticleContentService {
                 return "message.3004"; //content empty
             }
 
+            /*
+
+            output alert,
+             */
+
             articleContent.setTitle(articleContentDTO.getTitle());
             Collection<ArticleTag> articleTags  = new ArrayList<>();
             for (Map<String, String> names : articleContentDTO.getTags()) {
@@ -101,7 +106,7 @@ public class ArticleContentService {
         }
     }
 
-    public String removeArticle(int id) {
+    public Object removeArticle(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null)
             return "message.404";

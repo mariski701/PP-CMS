@@ -33,7 +33,7 @@ public class ArticleContentController {
     }
 
     @DeleteMapping("delete/{id}")
-    public String removeArticle(@PathVariable int id) {
+    public Object removeArticle(@PathVariable int id) {
         return articleContentService.removeArticle(id);
     }
 
