@@ -9,6 +9,8 @@ import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -148,10 +150,11 @@ public class UserService {
             }
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
+
                     myUserDetailsService.loadUserByUsername(userMail);
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
-                    System.out.println(currentPrincipalName);
+                    System.out.println(currentPrincipalName + " logged to the service");
                     return user;
                 }
                 else {

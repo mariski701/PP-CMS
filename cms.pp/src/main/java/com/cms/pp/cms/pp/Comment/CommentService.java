@@ -85,6 +85,10 @@ public class CommentService {
                     errorProvidedDataHandler.setError("3016");//article not found
                     return errorProvidedDataHandler;
                 }
+                if(!articleContent.isCommentsAllowed()) {
+                    errorProvidedDataHandler.setError("3031"); //comments are turned off in this article
+                    return errorProvidedDataHandler;
+                }
                 Comment comment = new Comment();
                 comment.setContent(commentDTO.getContent());
                 comment.setUser(userRepository.findByUserName(username));

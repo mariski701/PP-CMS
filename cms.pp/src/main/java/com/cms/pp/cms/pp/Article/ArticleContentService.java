@@ -199,6 +199,18 @@ public class ArticleContentService {
     public List<ArticleContent> findSomeArticlesByLazyLoading(int page, int size, String title) {
         Pageable pageableWithElements = PageRequest.of(page, size);
         return articleContentRepository.findByTitleIgnoreCaseContaining(title,  pageableWithElements);
+    }
 
+    public Object allowCommentsInArticle(int id, boolean allowComments) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
+        if (articleContent == null) {
+            errorProvidedDataHandler.setError("3030");
+            return errorProvidedDataHandler;
+        }
+        articleContent.setCommentsAllowed(allowComments);
+        articleContentRepository.save(articleContent);
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler;
     }
 }

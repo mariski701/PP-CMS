@@ -92,5 +92,9 @@ public class ArticleContentController {
         return articleContentDTOList;
     }
 
+    @PutMapping("{id}/allowcomments/{allowComments}")
+    public Object allowCommentsInArticle(@PathVariable int id, @PathVariable boolean allowComments) {
+        return articleContentService.allowCommentsInArticle(id, allowComments);
+    }
 
 }

@@ -37,6 +37,9 @@ public class ArticleContent {
     @Column(name = "views")
     private long views = 0;
 
+    @Column(name = "comments_allowed")
+    private boolean commentsAllowed;
+
     @OneToOne
     private User user;
 
