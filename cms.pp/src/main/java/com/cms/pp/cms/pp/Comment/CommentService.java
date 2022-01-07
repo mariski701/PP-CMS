@@ -4,10 +4,10 @@ import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.Article.ArticleContentRepository;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -38,9 +38,16 @@ public class CommentService {
         if (user == null) {
             return null;
         }
-        else {
-            return commentRepository.findByUser(user);
+        return commentRepository.findByUser(user);
+
+    }
+
+    public List<Comment> findByUserName(String userName) {
+        User user = userRepository.findByUserName(userName);
+        if (user == null) {
+            return null;
         }
+        return commentRepository.findByUser(userName);
     }
 
     public List<Comment> findByArticleContent(int id) {
@@ -48,12 +55,12 @@ public class CommentService {
         if (articleContent == null) {
             return null;
         }
-        else
-            return commentRepository.findByArticleContent(articleContent);
+        return commentRepository.findByArticleContent(articleContent);
     }
 
-    public String addComment(CommentDTO commentDTO) {
+    public Object addComment(CommentDTO commentDTO) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (configurationFlags.isComments()) {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = "";
@@ -64,32 +71,41 @@ public class CommentService {
                 username = principal.toString();
             }
             if (username.equals("anonymousUser")) {
-                return "message.3005"; //user not logged in
+                errorProvidedDataHandler.setError("3005");//user not logged in
+                return errorProvidedDataHandler;
             }
             else
             {
                 ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
                 if (commentDTO.getContent().equals("")) {
-                    return "message.3004";//content empty
+                    errorProvidedDataHandler.setError("3004");//content empty
+                    return errorProvidedDataHandler;
                 }
                 if (articleContent == null) {
-                    return "message.404"; //article not found
+                    errorProvidedDataHandler.setError("3016");//article not found
+                    return errorProvidedDataHandler;
                 }
                 Comment comment = new Comment();
                 comment.setContent(commentDTO.getContent());
                 comment.setUser(userRepository.findByUserName(username));
                 comment.setArticleContent(articleContent);
+                errorProvidedDataHandler.setError("2001");//success
                 commentRepository.save(comment);
-                return "message.2001"; //success
+                return errorProvidedDataHandler;
             }
         }
         else
-            return "message.3015"; //comments turned off
+        {
+            errorProvidedDataHandler.setError("4008");//comments turned off
+            return errorProvidedDataHandler;
+        }
+
     }
 
-    public String editCommentByUser(long commentId, String commentContent) { //todo
+    public Object editCommentByUser(long commentId, String commentContent) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
         }
@@ -97,39 +113,46 @@ public class CommentService {
             username = principal.toString();
         }
         if (username.equals("anonymousUser")) {
-            return "message.3005";
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler;
         }
         else {
             User user = userRepository.findByUserName(username);
             Comment comment = commentRepository.findById(commentId).orElse(null);
             if (comment == null) {
-                return "message.404";
+                errorProvidedDataHandler.setError("3019"); //comment not found
+                return errorProvidedDataHandler;
             }
-            if (!(user.getId() == comment.getId())) {
-                return "message.403";
+            if (!(user.getId() == comment.getUser().getId())) {
+                errorProvidedDataHandler.setError("4003");
+                return errorProvidedDataHandler;
             }
-            if (commentContent.equals(""))
-                return "message.3004";
+            if (commentContent.equals("")) {
+                errorProvidedDataHandler.setError("3004");
+                return errorProvidedDataHandler;
+            }
             comment.setContent(commentContent);
+            errorProvidedDataHandler.setError("2001");
             commentRepository.save(comment);
-            return "message.2001";
+            return errorProvidedDataHandler;
         }
     }
 
-    public String editCommentInCMS(Long id, String content) {
+    public Object editCommentInCMS(Long id, String content) {
         Comment comment = commentRepository.findById(id).orElse(null);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (comment == null) {
-            return "message.404";
-        }
-        if (id.equals(null)) {
-            return "message.404";
+            errorProvidedDataHandler.setError("3019"); //comment not found
+            return errorProvidedDataHandler;
         }
         if (content.equals("")) {
-            return "message.3004";
+            errorProvidedDataHandler.setError("3004"); //content empty
+            return errorProvidedDataHandler;
         }
         comment.setContent(content);
+        errorProvidedDataHandler.setError("2001");
         commentRepository.save(comment);
-        return "message.2001";
+        return errorProvidedDataHandler;
     }
 
 }

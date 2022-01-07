@@ -22,17 +22,17 @@ public class ArticleTagController {
     }
 
     @PostMapping("/api/tag/add")
-    public String addTag (@RequestBody Map<String, String> body) {
+    public Object addTag (@RequestBody Map<String, String> body) {
         return articleTagService.addTag(body.get("language"), body.get("name"));
     }
 
     @DeleteMapping("/api/tag/remove/{id}")
-    public String removeTag(@PathVariable int id) {
+    public Object removeTag(@PathVariable int id) {
         return articleTagService.removeTag(id);
     }
 
     @PutMapping("/api/tag/modify/{id}")
-    public ArticleTag modifyTag(@RequestBody ArticleTag articleTag, @PathVariable int id) {
+    public Object modifyTag(@RequestBody ArticleTag articleTag, @PathVariable int id) {
         return articleTagService.modifyTag(id, articleTag);
     }
 

@@ -1,8 +1,8 @@
 package com.cms.pp.cms.pp.Role;
 
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.Priviliges.Privilege;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,30 +20,48 @@ public class RoleService {
         return roleRepository.findById(id).orElse(null);
     }
 
-    public String createRole(String name, List<Privilege> privileges) {
+    public Object createRole(String name, List<Privilege> privileges) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         Role role = new Role();
+
+        if (name.equals("")) {
+            errorProvidedDataHandler.setError("3021");
+            return errorProvidedDataHandler;
+        }
+        if (privileges.isEmpty()) {
+            errorProvidedDataHandler.setError("3022");
+            return errorProvidedDataHandler;
+        }
+
         role.setName(name);
         role.setPrivileges(privileges);
+        errorProvidedDataHandler.setError("2001");
         roleRepository.save(role);
-        return "message.2001";
+        return errorProvidedDataHandler;
     }
 
-    public String editRole(Long id, List<Privilege> privileges) {
+    public Object editRole(Long id, List<Privilege> privileges) {
         Role role = roleRepository.findById(id).orElse(null);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (role == null) {
-            return "message.404";
+            errorProvidedDataHandler.setError("3020");
+            return errorProvidedDataHandler;
         }
         role.setPrivileges(privileges);
+        errorProvidedDataHandler.setError("2001");
         roleRepository.save(role);
-        return "message.2001";
+        return errorProvidedDataHandler;
     }
 
-    public String removeRole(Long id) {
+    public Object removeRole(Long id) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         Role role = roleRepository.findById(id).orElse(null);
         if (role == null) {
-            return "message.404";
+            errorProvidedDataHandler.setError("3020");
+            return errorProvidedDataHandler;
         }
         roleRepository.deleteById(id);
-        return "message.2001";
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler;
     }
 }

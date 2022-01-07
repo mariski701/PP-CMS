@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,15 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ArticleContentService {
@@ -30,10 +27,11 @@ public class ArticleContentService {
 
 
 
-    public String addArticleContent(ArticleContentDTO articleContentDTO) {
+    public Object addArticleContent(ArticleContentDTO articleContentDTO) {
         ArticleContent articleContent = new ArticleContent();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
         }
@@ -41,20 +39,25 @@ public class ArticleContentService {
             username = principal.toString();
         }
         if (username.equals("anonymousUser")) {
-            return "message.3005"; //user not logged in
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler; //user not logged in
         }
         else {
             if (articleContentDTO.getTitle().equals("")) {
-                return "message.3001"; //title empty
+                errorProvidedDataHandler.setError("3001");
+                return errorProvidedDataHandler; //title empty
             }
             if (articleContentDTO.getLanguage().equals("")) {
-                return "message.3002"; //lang empty
+                errorProvidedDataHandler.setError("3002");
+                return errorProvidedDataHandler; //lang empty
             }
             if (articleContentDTO.getTags().isEmpty()) {
-                return "message.3003"; //tags empty
+                errorProvidedDataHandler.setError("3003");
+                return errorProvidedDataHandler; //tags empty
             }
             if (articleContentDTO.getContent().equals("")) {
-                return "message.3004"; //content empty
+                errorProvidedDataHandler.setError("3004");
+                return errorProvidedDataHandler; //content empty
             }
 
             /*
@@ -75,7 +78,8 @@ public class ArticleContentService {
             User user = userRepository.findByUserName(username);
             articleContent.setUser(user);
             articleContentRepository.save(articleContent);
-            return "message.2001"; //success
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler; //success
         }
 
     }
@@ -95,34 +99,56 @@ public class ArticleContentService {
 
     }
 
-    public String changeArticleStatus(int id, String articleStatus) {
+    public Object changeArticleStatus(int id, String articleStatus) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null)
-            return "message.404";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (articleContent == null) {
+            errorProvidedDataHandler.setError("3016"); //article not found.
+            return errorProvidedDataHandler;
+        }
         else {
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
-            return "message.2001"; //successfully
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler; //success
         }
     }
 
     public Object removeArticle(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null)
-            return "message.404";
-        else{
-            articleContentRepository.deleteById(id);
-            return "message.2001";// successfully
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (articleContent == null) {
+            errorProvidedDataHandler.setError("3016"); //article not found.
+            return errorProvidedDataHandler;
         }
+        articleContentRepository.deleteById(id);
+        errorProvidedDataHandler.setError("2001");//success
+        return errorProvidedDataHandler;
+
     }
 
-    public String editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
+    public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null) return "message.404";
-        if (title.equals("")) return "message.3001"; //title empty
-        if (language.equals("")) return "message.3002"; //language empty
-        if (tags.isEmpty()) return "message.3003"; //tags empty <= than 0 tags
-        if (content.equals("")) return "message.3004"; //content empty
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (articleContent == null) {
+            return "message.404";
+        }
+        if (title.equals("")) {
+            errorProvidedDataHandler.setError("3001");
+            return errorProvidedDataHandler; //title empty
+        }
+        if (language.equals("")) {
+            errorProvidedDataHandler.setError("3002");
+            return errorProvidedDataHandler; //language empty
+        }
+        if (tags.isEmpty()) {
+            errorProvidedDataHandler.setError("3003");
+            return errorProvidedDataHandler; //tags empty <= than 0 tags
+        }
+        if (content.equals("")) {
+            errorProvidedDataHandler.setError("3004");
+            return errorProvidedDataHandler; //content empty
+        }
         articleContent.setTitle(title);
         articleContent.setLanguage(languageRepository.findByName(language));
         Collection<ArticleTag> articleTags  = new ArrayList<>();
@@ -132,7 +158,8 @@ public class ArticleContentService {
         articleContent.setArticleTags(articleTags);
         articleContent.setContent(content);
         articleContentRepository.save(articleContent);
-        return "message.2001"; // successfully
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler; // successfully
     }
 
     public List<ArticleContent> findAll() {
@@ -141,10 +168,11 @@ public class ArticleContentService {
 
     public List<ArticleContent> findAllByLanguage(String lang) {
         Language language = languageRepository.findByName(lang);
-        if (lang == null) return null;
-        else {
-            return articleContentRepository.findAllByLanguage(language);
+        if (lang == null) {
+            return null;
         }
+        return articleContentRepository.findAllByLanguage(language);
+
     }
 
     public List<ArticleContent> findAllByUser(int id) {

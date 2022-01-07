@@ -2,9 +2,11 @@ package com.cms.pp.cms.pp.Alerts;
 
 import com.cms.pp.cms.pp.Article.Language;
 import com.cms.pp.cms.pp.Article.LanguageRepository;
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +48,15 @@ public class AlertTranslationService {
         return alertTranslationDTOList;
     }
 
-    public String addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
+    public Object addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        errorProvidedDataHandler.setError("2001");
         AlertTranslation alertTranslation = new AlertTranslation();
         alertTranslation.setLanguage(languageRepository.findByName(alertTranslationDTO.getLanguage()));
         alertTranslation.setAlertCode(alertCodeRepository.findByAlertCode(alertTranslationDTO.getAlertCode()));
         alertTranslation.setErrorTranslation(alertTranslationDTO.getAlertName());
         alertTranslationRepository.save(alertTranslation);
-        return "message.2001";
+        return errorProvidedDataHandler;
     }
 
 }

@@ -32,23 +32,26 @@ public class CommentController {
         return commentService.findByUsers(id);
     }
 
+    @GetMapping("find/{username}")
+    public List<Comment> findByUserName(@PathVariable String username) { return commentService.findByUserName(username); }
+
     @GetMapping("find/article/{id}")
     public  List<Comment> findByArticleContentId(@PathVariable int id) {
         return commentService.findByArticleContent(id);
     }
 
     @PostMapping("add")
-    public String addComment(@RequestBody CommentDTO commentDTO) {
+    public Object addComment(@RequestBody CommentDTO commentDTO) {
         return commentService.addComment(commentDTO);
     }
 
     @PutMapping("/cms/edit/{id}")
-    public String editCommentInCMS(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public Object editCommentInCMS(@PathVariable Long id, @RequestBody Map<String, String> body) {
         return commentService.editCommentInCMS(id, body.get("content"));
     }
 
     @PutMapping("edit") //long commentId, String commentContent
-    public String editCommentByUser(@RequestBody Map<String, String> body) {
+    public Object editCommentByUser(@RequestBody Map<String, String> body) {
         return commentService.editCommentByUser(Long.parseLong(body.get("commentId")), body.get("content"));
     }
 

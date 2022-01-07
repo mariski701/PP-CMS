@@ -3,6 +3,7 @@ package com.cms.pp.cms.pp.user;
 
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.Role.Role;
 import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,9 +40,48 @@ public class UserService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
 
+
+
+    public boolean checkIfUserWithProvidedMailExists(String mail) {
+        User user = userRepository.findByUserMail(mail);
+        if (user != null)
+            return true;
+        return false;
+    }
+
+    public boolean checkIfUserWithProvidedNameExists(String name) {
+        User user = userRepository.findByUserName(name);
+        if (user != null)
+            return true;
+        return false;
+    }
+
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (configurationFlags.isRegister()) {
+
+            if (user.getUserName().equals("")) {
+                errorProvidedDataHandler.setError("3023");
+                return errorProvidedDataHandler; //username not provided
+            }
+            if (user.getUserPassword().equals(""))
+            {
+                errorProvidedDataHandler.setError("3024"); //password empty
+                return errorProvidedDataHandler;
+            }
+            if (user.getUserMail().equals("")) {
+                errorProvidedDataHandler.setError("3025"); //usermail empty
+                return errorProvidedDataHandler;
+            }
+            if (checkIfUserWithProvidedNameExists(user.getUserName())) {
+                errorProvidedDataHandler.setError("3013"); //user already exists
+                return errorProvidedDataHandler;
+            }
+            if (checkIfUserWithProvidedMailExists(user.getUserMail())) {
+                errorProvidedDataHandler.setError("3011"); //usermail already used
+                return errorProvidedDataHandler;
+            }
             Role userRole = roleRepository.findByName("ROLE_USER");
             user.setRoles(Arrays.asList(userRole));
             user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
@@ -48,9 +89,11 @@ public class UserService {
             userRepository.save(user);
             return user;
         }
-        else
+        else {
+            errorProvidedDataHandler.setError("4009");
             httpSession.invalidate();
-            return "Register is currently off";
+            return errorProvidedDataHandler;
+        }
     }
 
     public Object addCMSUser(CMSUserDTO cmsUserDTO) {
@@ -95,32 +138,39 @@ public class UserService {
 
     public Object loginToService(String userMail, String password) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (configurationFlags.isLogin())
         {
             User user = userRepository.findByUserMail(userMail);
             if (user == null) {
-                return "User not exists";
+                errorProvidedDataHandler.setError("3028");
+                return errorProvidedDataHandler;
             }
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
+                    myUserDetailsService.loadUserByUsername(userMail);
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
                     System.out.println(currentPrincipalName);
                     return user;
                 }
-                else
-                    return "Wrong password";
+                else {
+                    errorProvidedDataHandler.setError("3029");
+                    return errorProvidedDataHandler;
+                }
             }
         }
         else {
+            errorProvidedDataHandler.setError("4009");
             httpSession.invalidate();
-            return 403;
+            return errorProvidedDataHandler;
         }
 
     }
 
-    public String changePassword(String oldPassword, String newPassword) {
+    public Object changePassword(String oldPassword, String newPassword) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         String username = "";
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
@@ -129,13 +179,16 @@ public class UserService {
             username = principal.toString();
         }
         if (oldPassword.equals("")) {
-            return "message.3007"; //old password empty
+            errorProvidedDataHandler.setError("3007"); //old password empty
+            return errorProvidedDataHandler;
         }
         if (newPassword.equals("")) {
-            return "message.3008"; //new password empty
+            errorProvidedDataHandler.setError("3008");//new password empty
+            return errorProvidedDataHandler;
         }
         if (username.equals("anonymousUser")) {
-            return "message.3005"; //user not logged in
+            errorProvidedDataHandler.setError("3005");//user not logged in
+            return errorProvidedDataHandler;
         }
         else
         {
@@ -143,10 +196,12 @@ public class UserService {
             if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
                 String newPasswordEncoded = passwordEncoder.encode(newPassword);
                 user.setUserPassword(newPasswordEncoded);
-                return "message.2001";
+                errorProvidedDataHandler.setError("2001"); //success
+                return errorProvidedDataHandler;
             }
             else{
-                return "message.3009"; //wrong old password
+                errorProvidedDataHandler.setError("3009"); //wrong old password
+                return errorProvidedDataHandler;
             }
         }
     }
@@ -161,9 +216,10 @@ public class UserService {
 
     }
 
-    public String editUserMail(String newUserMail) {
+    public Object editUserMail(String newUserMail) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
         }
@@ -171,11 +227,13 @@ public class UserService {
             username = principal.toString();
         }
         if (newUserMail.equals("")) {
-            return "message.3012"; //new mail empty
+            errorProvidedDataHandler.setError("3012");
+            return errorProvidedDataHandler; //new mail empty
         }
 
         if (username.equals("anonymousUser")) {
-            return "message.3005"; //user not logged in
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler; //user not logged in
         }
         else {
             User checkUser = userRepository.findByUserMail(newUserMail);
@@ -183,18 +241,21 @@ public class UserService {
             {
                 User user = userRepository.findByUserName(username);
                 user.setUserMail(newUserMail);
+                errorProvidedDataHandler.setError("2001");
                 userRepository.save(user);
-                return "message.2001"; //success
+                return errorProvidedDataHandler; //success
             }
             else {
-                return "message.3011"; //usermail already used
+                errorProvidedDataHandler.setError("3011");
+                return errorProvidedDataHandler; //usermail already used
             }
         }
     }
 
-    public String editUserName(String newUsername) {
+    public Object editUserName(String newUsername) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
         }
@@ -202,11 +263,13 @@ public class UserService {
             username = principal.toString();
         }
         if (newUsername.equals("")) {
-            return "message.3006"; //new username empty
+            errorProvidedDataHandler.setError("3006");
+            return errorProvidedDataHandler; //new username empty
         }
 
         if (username.equals("anonymousUser")) {
-            return "message.3005"; //user not logged in
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler; //user not logged in
         }
         else {
             User checkUser = userRepository.findByUserName(newUsername);
@@ -214,28 +277,37 @@ public class UserService {
             {
                 User user = userRepository.findByUserName(username);
                 user.setUserName(newUsername);
+                errorProvidedDataHandler.setError("2001");
                 userRepository.save(user);
-                return "message.2001"; //success
+                return errorProvidedDataHandler; //success
             }
             else {
-                return "message.3010"; //username already used
+                errorProvidedDataHandler.setError("3010");
+                return errorProvidedDataHandler; //username already used
             }
         }
     }
 
-    public String editUserRole(String roleName, int id) {
+    public Object editUserRole(String roleName, int id) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         User user = userRepository.findById(id).orElse(null);
         Role role = roleRepository.findByName(roleName);
-        if (role == null || user == null) {
-            return "message.404"; //not found 404
+        if (user == null) {
+            errorProvidedDataHandler.setError("3028");
+            return errorProvidedDataHandler; //user not found
         }
-        else {
-            List<Role> roleList = new ArrayList<>();
-            roleList.add(role);
-            user.setRoles(roleList);
-            userRepository.save(user);
-            return "message.2001"; //success
+        if (role == null) {
+            errorProvidedDataHandler.setError("3020");
+            return errorProvidedDataHandler; //role not found
         }
+
+        List<Role> roleList = new ArrayList<>();
+        roleList.add(role);
+        user.setRoles(roleList);
+        errorProvidedDataHandler.setError("2001");
+        userRepository.save(user);
+        return errorProvidedDataHandler; //success
+
     }
 
     public List<User> findCmsUsers() {
@@ -261,54 +333,57 @@ public class UserService {
         return mergedList;
     }
 
-    public boolean checkIfUserWithProvidedMailExists(String mail) {
-        User user = userRepository.findByUserMail(mail);
-        if (user == null)
-            return false;
-        return true;
-    }
 
-    public boolean checkIfUserWithProvidedNameExists(String name) {
-        User user = userRepository.findByUserName(name);
-        if (user == null)
-            return false;
-        return true;
-    }
 
-    public String changeUserMail(int id, String newMail) {
+    public Object changeUserMail(int id, String newMail) {
         User user = userRepository.findById(id).orElse(null);
-        if (newMail.equals("")) {return "message.3012";} // mail empty
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (newMail.equals("")) {
+            errorProvidedDataHandler.setError("3012");
+            return errorProvidedDataHandler;
+        } // mail empty
         if (user == null) {
-            return "message.404";
+            errorProvidedDataHandler.setError("3028");
+            return errorProvidedDataHandler;
         }
         else {
             if (!checkIfUserWithProvidedMailExists(newMail)) {
                 user.setUserMail(newMail);
+                errorProvidedDataHandler.setError("2001");
                 userRepository.save(user);
-                return "message.2001"; //sukces
+                return errorProvidedDataHandler; //sukces
             }
-            else
-                return "message.3011"; //usermail already in database
+            else {
+                errorProvidedDataHandler.setError("3011");
+                return errorProvidedDataHandler; //usermail already in database
+            }
 
         }
     }
 
-    public String changeUserName(int id, String newUserName) {
+    public Object changeUserName(int id, String newUserName) {
         User user = userRepository.findById(id).orElse(null);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (newUserName.equals("")) {
-            return "message.3006"; //new nickname empty
+            errorProvidedDataHandler.setError("3006");
+            return errorProvidedDataHandler; //new nickname empty
         }
         if (user == null) {
-            return "message.404";
+            errorProvidedDataHandler.setError("3028");
+            return errorProvidedDataHandler;
         }
         else {
             if (!checkIfUserWithProvidedNameExists(newUserName)) {
                 user.setUserName(newUserName);
                 userRepository.save(user);
-                return "message.2001"; //success
+                errorProvidedDataHandler.setError("2001");
+                return errorProvidedDataHandler; //success
             }
             else
-                return "message.3013"; //username already in database
+            {
+                errorProvidedDataHandler.setError("3013");
+                return errorProvidedDataHandler; //username already in database
+            }
 
         }
     }

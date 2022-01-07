@@ -16,7 +16,7 @@ public class LanguageController {
     }
 
     @DeleteMapping("/api/language/remove/{id}")
-    public String removeLanguage(@PathVariable int id) {
+    public Object removeLanguage(@PathVariable int id) {
         return languageService.removeLanguage(id);
     }
 
@@ -28,6 +28,11 @@ public class LanguageController {
     @GetMapping("/api/language/{name}")
     public Language getLanguage(@PathVariable String name) {
         return languageService.getLanguage(name);
+    }
+
+    @PutMapping("/api/language/edit")
+    public Object editLanguage(@RequestBody Language language) {
+        return languageService.editLanguage(language);
     }
 
 }

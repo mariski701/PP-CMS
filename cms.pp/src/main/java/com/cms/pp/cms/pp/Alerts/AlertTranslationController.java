@@ -12,12 +12,12 @@ public class AlertTranslationController {
     private AlertTranslationService alertTranslationService;
 
     @GetMapping("{language}")
-    public List<?> findByLanguage(@PathVariable String language) {
+    public List<AlertTranslationDTO> findByLanguage(@PathVariable String language) {
         return alertTranslationService.findByLanguage(language);
     }
 
     @PostMapping("add")
-    public String addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
+    public Object addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
         return alertTranslationService.addAlertTranslation(alertTranslationDTO);
     }
 }

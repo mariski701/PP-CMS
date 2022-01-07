@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,12 @@ public class ArticleTagService {
         return articleTagRepository.findById(id).orElse(null);
     }
 
-    public String addTag(String language, String name) {
+    public Object addTag(String language, String name) {
         Language lang = languageRepository.findByName(language);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (lang == null) {
-            return "message.3015";
+            errorProvidedDataHandler.setError("3015");
+            return errorProvidedDataHandler;
         }
         ArticleTag checkIfTagExists = articleTagRepository.findByName(name);
         if (checkIfTagExists == null) {
@@ -30,31 +33,42 @@ public class ArticleTagService {
             articleTag.setLanguage(lang);
 
             articleTag.setName(name);
+            errorProvidedDataHandler.setError("2001");
             articleTagRepository.save(articleTag);
-            return "message.2001";
+            return errorProvidedDataHandler;
         }
         else {
-            return "message.3014";
+            errorProvidedDataHandler.setError("3014");
+            return errorProvidedDataHandler;
         }
 
     }
 
-    public String removeTag(int id) {
+    public Object removeTag(int id) {
         ArticleTag articleTag = articleTagRepository.findById(id).orElse(null);
-        if (articleTag == null) return "Error";
-        else {
-            articleTagRepository.delete(articleTag);
-            return "Tag of ID: " + articleTag.getId() +" and name "+articleTag.getName()+" is deleted";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (articleTag == null) {
+            errorProvidedDataHandler.setError("3016");
+            return errorProvidedDataHandler;
         }
+        articleTagRepository.delete(articleTag);
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler;
+
     }
 
-    public ArticleTag modifyTag(int id, ArticleTag articleTag) {
+    public Object modifyTag(int id, ArticleTag articleTag) {
         ArticleTag oldArticleTag = articleTagRepository.findById(id).orElse(null);
-        if (oldArticleTag == null) return null;
-        else {
-            oldArticleTag.setName(articleTag.getName());
-            return articleTagRepository.save(oldArticleTag);
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (oldArticleTag == null) {
+            errorProvidedDataHandler.setError("3016");
+            return errorProvidedDataHandler;
         }
+        oldArticleTag.setName(articleTag.getName());
+        errorProvidedDataHandler.setError("2001");
+        articleTagRepository.save(oldArticleTag);
+        return errorProvidedDataHandler;
+
     }
 
     public List<ArticleTag> findByLanguage(String lang) {
