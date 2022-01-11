@@ -34,6 +34,7 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUserMail(mail);
         if (user == null) {
             return new org.springframework.security.core.userdetails.User(" ", " ",true, true, true, true, getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_GUEST"))));
+
         }
         return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getUserPassword(), user.isEnabled(), true, true, true, getAuthorities(user.getRoles()));
     }

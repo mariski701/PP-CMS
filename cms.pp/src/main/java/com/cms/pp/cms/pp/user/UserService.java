@@ -89,7 +89,8 @@ public class UserService {
             user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
             user.setEnabled(true);
             userRepository.save(user);
-            return user;
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler;
         }
         else {
             errorProvidedDataHandler.setError("4009");
