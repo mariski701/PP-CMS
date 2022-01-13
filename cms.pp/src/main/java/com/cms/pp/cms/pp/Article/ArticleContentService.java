@@ -59,11 +59,10 @@ public class ArticleContentService {
                 errorProvidedDataHandler.setError("3004");
                 return errorProvidedDataHandler; //content empty
             }
-
-            /*
-
-            output alert,
-             */
+            if (articleContentDTO.getImage().equals("")) {
+                errorProvidedDataHandler.setError("3032");
+                return errorProvidedDataHandler; //image empty
+            }
 
             articleContent.setTitle(articleContentDTO.getTitle());
             Collection<ArticleTag> articleTags  = new ArrayList<>();
@@ -75,6 +74,7 @@ public class ArticleContentService {
             Language language = languageRepository.findByName(articleContentDTO.getLanguage());
             articleContent.setLanguage(language);
             articleContent.setPublished("UNPUBLISHED");
+            articleContent.setImage(articleContentDTO.getImage());
             User user = userRepository.findByUserName(username);
             articleContent.setUser(user);
             articleContentRepository.save(articleContent);
@@ -127,7 +127,7 @@ public class ArticleContentService {
 
     }
 
-    public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content) {
+    public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content, String image) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (articleContent == null) {
@@ -149,6 +149,10 @@ public class ArticleContentService {
             errorProvidedDataHandler.setError("3004");
             return errorProvidedDataHandler; //content empty
         }
+        if (image.equals("")) {
+            errorProvidedDataHandler.setError("3032");
+            return errorProvidedDataHandler;
+        }
         articleContent.setTitle(title);
         articleContent.setLanguage(languageRepository.findByName(language));
         Collection<ArticleTag> articleTags  = new ArrayList<>();
@@ -157,6 +161,7 @@ public class ArticleContentService {
         }
         articleContent.setArticleTags(articleTags);
         articleContent.setContent(content);
+        articleContent.setImage(image);
         articleContentRepository.save(articleContent);
         errorProvidedDataHandler.setError("2001");
         return errorProvidedDataHandler; // successfully

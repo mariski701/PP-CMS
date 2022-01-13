@@ -31,6 +31,9 @@ public class ArticleContent {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "article_published")
     private String published;
 

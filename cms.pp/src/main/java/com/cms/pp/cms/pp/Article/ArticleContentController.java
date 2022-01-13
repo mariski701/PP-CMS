@@ -45,7 +45,8 @@ public class ArticleContentController {
                 articleContentDTO.getTitle(),
                 articleContentDTO.getLanguage(),
                 articleContentDTO.getTags(),
-                articleContentDTO.getContent());
+                articleContentDTO.getContent(),
+                articleContentDTO.getImage());
     }
 
     @GetMapping("{language}")

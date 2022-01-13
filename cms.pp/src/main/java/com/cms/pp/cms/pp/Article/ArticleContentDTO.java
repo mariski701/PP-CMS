@@ -12,5 +12,6 @@ public class ArticleContentDTO {
     private String language;
     private Collection<Map<String, String>> tags;
     private String content;
+    private String image;
 
 }
