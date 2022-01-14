@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @DeleteMapping("delete/{id}")
-    public String deleteUser(@PathVariable int id) {
+    public Object deleteUser(@PathVariable int id) {
         return userService.deleteUser(id);
     }
 
@@ -57,6 +57,11 @@ public class UserController {
     public String logout() {
         httpSession.invalidate();
         return "logged out";
+    }
+
+    @GetMapping("findbyid/{id}")
+    public User findById(@PathVariable int id) {
+        return userService.findById(id);
     }
 
     @GetMapping("find/{userName}")

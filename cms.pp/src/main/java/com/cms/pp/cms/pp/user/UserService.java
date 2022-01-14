@@ -1,6 +1,10 @@
 package com.cms.pp.cms.pp.user;
 
 
+import com.cms.pp.cms.pp.Article.ArticleContent;
+import com.cms.pp.cms.pp.Article.ArticleContentRepository;
+import com.cms.pp.cms.pp.Comment.Comment;
+import com.cms.pp.cms.pp.Comment.CommentRepository;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
@@ -38,9 +42,13 @@ public class UserService {
     @Autowired
     private ConfigurationFlagsRepository configurationFlagsRepository;
     @Autowired
-    HttpSession httpSession;
+    private CommentRepository commentRepository;
     @Autowired
-    MyUserDetailsService myUserDetailsService;
+    private ArticleContentRepository articleContentRepository;
+    @Autowired
+    private HttpSession httpSession;
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
 
 
 
@@ -56,6 +64,10 @@ public class UserService {
         if (user != null)
             return true;
         return false;
+    }
+
+    public User findById(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public Object addUser(User user) {
@@ -122,14 +134,29 @@ public class UserService {
 
     }
 
-    public String deleteUser(int id) {
+    public Object deleteUser(int id) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {
-            return "";
+            errorProvidedDataHandler.setError("3028");
+            return errorProvidedDataHandler;
         }
         else {
+            List<Comment> comments = commentRepository.findByUser(user);
+            List<ArticleContent> articleContents = articleContentRepository.findAllByUser(user);
+
+            for (ArticleContent articleContent : articleContents) {
+                articleContent.setUser(null);
+            }
+
+            for (Comment comment : comments) {
+                comment.setUser(null);
+            }
+            articleContentRepository.saveAll(articleContents);
+            commentRepository.saveAll(comments);
             userRepository.deleteById(id);
-            return "Deleted.";
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler;
         }
 
     }

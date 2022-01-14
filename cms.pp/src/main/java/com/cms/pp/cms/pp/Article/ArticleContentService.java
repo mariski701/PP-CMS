@@ -1,6 +1,12 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.Comment.Comment;
+import com.cms.pp.cms.pp.Comment.CommentRepository;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
+import com.cms.pp.cms.pp.Priviliges.Privilege;
+import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
+import com.cms.pp.cms.pp.Role.Role;
+import com.cms.pp.cms.pp.Role.RoleRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,12 @@ public class ArticleContentService {
     ArticleTagRepository articleTagRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    CommentRepository commentRepository;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    PrivilegeRepository privilegeRepository;
 
 
 
@@ -121,6 +134,12 @@ public class ArticleContentService {
             errorProvidedDataHandler.setError("3016"); //article not found.
             return errorProvidedDataHandler;
         }
+        List<Comment> comments = commentRepository.findByArticleContent(articleContent);
+
+        for (Comment comment : comments) {
+            commentRepository.delete(comment);
+        }
+
         articleContentRepository.deleteById(id);
         errorProvidedDataHandler.setError("2001");//success
         return errorProvidedDataHandler;
@@ -128,43 +147,118 @@ public class ArticleContentService {
     }
 
     public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content, String image) {
-        ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (articleContent == null) {
-            return "message.404";
+        Boolean canEditArticle = false;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
         }
-        if (title.equals("")) {
-            errorProvidedDataHandler.setError("3001");
-            return errorProvidedDataHandler; //title empty
+        else {
+            username = principal.toString();
         }
-        if (language.equals("")) {
-            errorProvidedDataHandler.setError("3002");
-            return errorProvidedDataHandler; //language empty
+        if (username.equals("anonymousUser")) {
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler; //user not logged in
         }
-        if (tags.isEmpty()) {
-            errorProvidedDataHandler.setError("3003");
-            return errorProvidedDataHandler; //tags empty <= than 0 tags
+
+        ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
+
+        User editedArticleOfUser = userRepository.findById(articleContent.getUser().getId()).orElse(null);
+        Role editedArticleUserRole = editedArticleOfUser.getRoles().stream().findAny().orElse(null);
+        Collection<Privilege> editedArticleUserPrivileges = roleRepository.findByName(editedArticleUserRole.getName()).getPrivileges();
+
+
+        User principalUser = userRepository.findByUserName(username);
+        Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
+        Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
+
+        //editing admins article
+        if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_ADMINS_ARTICLE"))) {
+            if (editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_ADMINS_ARTICLE")) ||
+                    editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_MODERATORS_ARTICLE")) ||
+                    editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_EDITORS_ARTICLE"))) {
+                canEditArticle = true;
+                //System.out.println("ADMIN MOZE EDYTOWAC");
+            }
+
         }
-        if (content.equals("")) {
-            errorProvidedDataHandler.setError("3004");
-            return errorProvidedDataHandler; //content empty
+
+        //moderator
+        if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_MODERATORS_ARTICLE")) &&
+                principalPrivileges.contains(privilegeRepository.findByName("EDIT_EDITORS_ARTICLE")) &&
+                !(principalPrivileges.contains(privilegeRepository.findByName("EDIT_ADMINS_ARTICLE")))) {
+            if ((editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_MODERATORS_ARTICLE")) ||
+                    editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_EDITORS_ARTICLE"))) &&
+                    !editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_ADMINS_ARTICLE"))) {
+                canEditArticle = true;
+                System.out.println("MOD MOZE EDYTOWAC");
+
+            }
+            else
+                canEditArticle = false;
         }
-        if (image.equals("")) {
-            errorProvidedDataHandler.setError("3032");
+
+        //editing editors article
+        if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_EDITORS_ARTICLE")) &&
+                !(principalPrivileges.contains(privilegeRepository.findByName("EDIT_MODERATORS_ARTICLE"))) &&
+                !(principalPrivileges.contains(privilegeRepository.findByName("EDIT_ADMINS_ARTICLE")))) {
+            if (editedArticleUserPrivileges.contains(privilegeRepository.findByName("EDIT_EDITORS_ARTICLE"))) {
+                int editedArticleUserId = articleContent.getUser().getId();
+                int principalId = principalUser.getId();
+                if (editedArticleUserId == principalId) {
+                    //System.out.println("Twój artykuł");
+                    canEditArticle = true;
+                }
+                else {
+                    //System.out.println("NIE twój artykuł");
+                    canEditArticle = false;
+                }
+            }
+        }
+        if (canEditArticle) {
+            if (articleContent == null) {
+                errorProvidedDataHandler.setError("3030");
+                return errorProvidedDataHandler; //article not found
+            }
+            if (title.equals("")) {
+                errorProvidedDataHandler.setError("3001");
+                return errorProvidedDataHandler; //title empty
+            }
+            if (language.equals("")) {
+                errorProvidedDataHandler.setError("3002");
+                return errorProvidedDataHandler; //language empty
+            }
+            if (tags.isEmpty()) {
+                errorProvidedDataHandler.setError("3003");
+                return errorProvidedDataHandler; //tags empty <= than 0 tags
+            }
+            if (content.equals("")) {
+                errorProvidedDataHandler.setError("3004");
+                return errorProvidedDataHandler; //content empty
+            }
+            if (image.equals("")) {
+                errorProvidedDataHandler.setError("3032");
+                return errorProvidedDataHandler;
+            }
+            articleContent.setTitle(title);
+            articleContent.setLanguage(languageRepository.findByName(language));
+            Collection<ArticleTag> articleTags  = new ArrayList<>();
+            for (Map<String, String> names : tags) {
+                articleTags.add(articleTagRepository.findByName(names.get("name")));
+            }
+            articleContent.setArticleTags(articleTags);
+            articleContent.setContent(content);
+            articleContent.setImage(image);
+            articleContentRepository.save(articleContent);
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler; // successfully
+        }
+        else
+        {
+            errorProvidedDataHandler.setError("3033");
             return errorProvidedDataHandler;
         }
-        articleContent.setTitle(title);
-        articleContent.setLanguage(languageRepository.findByName(language));
-        Collection<ArticleTag> articleTags  = new ArrayList<>();
-        for (Map<String, String> names : tags) {
-            articleTags.add(articleTagRepository.findByName(names.get("name")));
-        }
-        articleContent.setArticleTags(articleTags);
-        articleContent.setContent(content);
-        articleContent.setImage(image);
-        articleContentRepository.save(articleContent);
-        errorProvidedDataHandler.setError("2001");
-        return errorProvidedDataHandler; // successfully
     }
 
     public List<ArticleContent> findAll() {
