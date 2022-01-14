@@ -71,41 +71,45 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         englishLanguage.setLanguageCode("en_EN");
         polishLanguage.setLanguageCode("pl_PL");
 
+
         Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound("ADMIN_PANEL");
-        Privilege changeConfigurationFlagsPrivilege = createPrivilegeIfNotFound("CONFIGURATION_FLAGS");
-        Privilege removeTags = createPrivilegeIfNotFound("REMOVE_TAGS");
-        Privilege addTagsCMS = createPrivilegeIfNotFound("ADD_TAGS_CMS");
-        Privilege addLanguagePrivilege = createPrivilegeIfNotFound("ADD_LANGUAGE");
-        Privilege removeLanguagePrivilege = createPrivilegeIfNotFound("REMOVE_LANGUAGE");
-        Privilege editLanguagePrivilege = createPrivilegeIfNotFound("EDIT_LANGUAGE");
-        Privilege editUserPrivilege  = createPrivilegeIfNotFound("EDIT_USER");
-        Privilege editCMSUserPrivilege = createPrivilegeIfNotFound("EDIT_CMS_USER");
-        Privilege removeUserPrivilege = createPrivilegeIfNotFound("REMOVE_USER");
-        Privilege removeCMSUserPrivilege = createPrivilegeIfNotFound("REMOVE_CMS_USER");
-        Privilege addTranslationPrivilege = createPrivilegeIfNotFound("ADD_TRANSLATION");
-        Privilege removeTranslationPrivilege = createPrivilegeIfNotFound("REMOVE_TRANSLATION");
-        Privilege editTranslationPrivilege = createPrivilegeIfNotFound("EDIT_TRANSLATION");
-        Privilege readCMSUsersPrivilege = createPrivilegeIfNotFound("READ_CMS_USERS");
-        Privilege createCMSUserPrivilege = createPrivilegeIfNotFound("CREATE_CMS_USER");
-        Privilege changeRolePrivilege = createPrivilegeIfNotFound("CHANGE_ROLE");
-        Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writeArticlePrivilege = createPrivilegeIfNotFound("WRITE_ARTICLE");
-        Privilege writeCommentPrivilege = createPrivilegeIfNotFound("WRITE_COMMENT");
+        Privilege removeTags = createPrivilegeIfNotFound("REMOVE_TAGS"); //
+        Privilege addTagsCMS = createPrivilegeIfNotFound("ADD_TAGS_CMS"); //
+        Privilege addLanguagePrivilege = createPrivilegeIfNotFound("ADD_LANGUAGE"); //
+        Privilege removeLanguagePrivilege = createPrivilegeIfNotFound("REMOVE_LANGUAGE"); //
+        Privilege editLanguagePrivilege = createPrivilegeIfNotFound("EDIT_LANGUAGE"); //
+        Privilege editUserPrivilege  = createPrivilegeIfNotFound("EDIT_USER"); //
+        Privilege editCMSUserPrivilege = createPrivilegeIfNotFound("EDIT_CMS_USER"); //
+        Privilege removeUserPrivilege = createPrivilegeIfNotFound("REMOVE_USER"); //
+        Privilege addTranslationPrivilege = createPrivilegeIfNotFound("ADD_TRANSLATION"); //
+        Privilege removeTranslationPrivilege = createPrivilegeIfNotFound("REMOVE_TRANSLATION"); //
+        Privilege editTranslationPrivilege = createPrivilegeIfNotFound("EDIT_TRANSLATION"); //
+        Privilege readCMSUsersPrivilege = createPrivilegeIfNotFound("READ_CMS_USERS"); //
+        Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE"); //
+        Privilege writeCommentPrivilege = createPrivilegeIfNotFound("WRITE_COMMENT"); //
         Privilege removeCommentPrivilege = createPrivilegeIfNotFound("REMOVE_COMMENT");
-        Privilege editCommentPrivilege = createPrivilegeIfNotFound("EDIT_COMMENT");
-        Privilege editOwnCommentPrivilege = createPrivilegeIfNotFound("EDIT_OWN_COMMENT");
-        Privilege editArticlesPrivilege = createPrivilegeIfNotFound("EDIT_ARTICLE");
+        Privilege editCommentPrivilege = createPrivilegeIfNotFound("EDIT_COMMENT"); //
+        Privilege editOwnCommentPrivilege = createPrivilegeIfNotFound("EDIT_OWN_COMMENT"); //
+        Privilege editArticlesPrivilege = createPrivilegeIfNotFound("EDIT_ARTICLE"); //
         Privilege editAdminsArticlePrivilege = createPrivilegeIfNotFound("EDIT_ADMINS_ARTICLE"); //
         Privilege editModeratorsArticlePrivilege = createPrivilegeIfNotFound("EDIT_MODERATORS_ARTICLE"); //
         Privilege editEditorsArticlePrivilege = createPrivilegeIfNotFound("EDIT_EDITORS_ARTICLE"); //
-        Privilege addRolePrivilege = createPrivilegeIfNotFound("ADD_ROLE");
-        Privilege editRole = createPrivilegeIfNotFound("EDIT_ROLE");
+        Privilege addRolePrivilege = createPrivilegeIfNotFound("ADD_ROLE"); //
+        Privilege editRole = createPrivilegeIfNotFound("EDIT_ROLE"); //
+        Privilege editUserRole = createPrivilegeIfNotFound("EDIT_USER_ROLE"); //
+        Privilege addCmsUser = createPrivilegeIfNotFound("ADD_CMS_USER"); //
+        Privilege addArticlePrivilege = createPrivilegeIfNotFound("ADD_ARTICLE"); //
+        Privilege removeArticlePrivilege = createPrivilegeIfNotFound("REMOVE_ARTICLE"); //
+        Privilege editTagPrivilege = createPrivilegeIfNotFound("EDIT_TAG"); //
+        Privilege manageConfigFlagsPrivilege = createPrivilegeIfNotFound("MANAGE_CONFIG_FLAGS"); //
+        Privilege removeRolePrivilege = createPrivilegeIfNotFound("REMOVE_ROLE"); //
+        Privilege publishArticlePrivilege = createPrivilegeIfNotFound("PUBLISH_ARTICLE"); //
 
-        List<Privilege> adminPrivileges = Arrays.asList(editEditorsArticlePrivilege, editModeratorsArticlePrivilege, editAdminsArticlePrivilege, editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeCMSUserPrivilege, removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, createCMSUserPrivilege, removeTags, changeConfigurationFlagsPrivilege, changeRolePrivilege, addTagsCMS, readCMSUsersPrivilege, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
+        List<Privilege> adminPrivileges = Arrays.asList(publishArticlePrivilege, removeRolePrivilege, manageConfigFlagsPrivilege, editTagPrivilege, addArticlePrivilege, removeArticlePrivilege, addCmsUser, editEditorsArticlePrivilege, editModeratorsArticlePrivilege, editAdminsArticlePrivilege, editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege,  removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege,  removeTags,  addTagsCMS, readCMSUsersPrivilege, readPrivilege,  writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(editModeratorsArticlePrivilege, editEditorsArticlePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege, removeUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege, readCMSUsersPrivilege, changeConfigurationFlagsPrivilege, removeTags, readPrivilege, writeArticlePrivilege, writeCommentPrivilege, addTagsCMS, removeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, adminPanelAccessPrivilege));
-        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(editEditorsArticlePrivilege, readPrivilege, removeTags, editOwnCommentPrivilege, writeArticlePrivilege, addTagsCMS, writeCommentPrivilege, editCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege));
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, editOwnCommentPrivilege, writeCommentPrivilege, editCommentPrivilege));
+        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(adminPanelAccessPrivilege, readPrivilege, removeUserPrivilege, editCMSUserPrivilege, readCMSUsersPrivilege, addArticlePrivilege, removeArticlePrivilege, publishArticlePrivilege, editModeratorsArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, addTagsCMS, removeTags, editTagPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, manageConfigFlagsPrivilege, editUserPrivilege));
+        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(adminPanelAccessPrivilege, readPrivilege, addArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, addTagsCMS, writeCommentPrivilege, editOwnCommentPrivilege));
+        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editUserPrivilege));
         createRoleIfNotFound("ROLE_USERWITHOUTCOMMENTS", Arrays.asList(readPrivilege));
         createRoleIfNotFound("ROLE_GUEST", Arrays.asList(readPrivilege));
 

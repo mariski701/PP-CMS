@@ -312,4 +312,13 @@ public class ArticleContentService {
         errorProvidedDataHandler.setError("2001");
         return errorProvidedDataHandler;
     }
+
+    public ArticleContent getArticleContentByCommentId(Long id) {
+        Comment comment = commentRepository.findById(id).orElse(null);
+
+        if (comment == null)
+            return null;
+
+        return articleContentRepository.findArticleContentByComments(comment);
+    }
 }

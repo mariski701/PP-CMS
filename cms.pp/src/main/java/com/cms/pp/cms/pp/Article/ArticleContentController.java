@@ -98,4 +98,9 @@ public class ArticleContentController {
         return articleContentService.allowCommentsInArticle(id, allowComments);
     }
 
+    @GetMapping("findbycomment/{id}")
+    public ArticleContent getArticleContentByCommentId(@PathVariable Long id) {
+        return articleContentService.getArticleContentByCommentId(id);
+    }
+
 }

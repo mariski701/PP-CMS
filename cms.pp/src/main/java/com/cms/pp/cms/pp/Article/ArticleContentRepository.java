@@ -1,4 +1,5 @@
 package com.cms.pp.cms.pp.Article;
+import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ public interface ArticleContentRepository extends JpaRepository<ArticleContent, 
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title);
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
     ArticleContent findByTitle(String title);
+    ArticleContent findArticleContentByComments(Comment comment);
 }
