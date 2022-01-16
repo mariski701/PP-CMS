@@ -13,9 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 
 
 @Configuration
@@ -27,13 +25,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
                 .authorizeRequests().antMatchers("/console/**").permitAll().and();
         httpSecurity.csrf().disable();
-        //httpSecurity.cors();
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(1).sessionRegistry(sessionRegistry()).and().sessionFixation();
-        httpSecurity.httpBasic()
-                .and()
+        httpSecurity.httpBasic().and().addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class);
+                /*.and()
                 .authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/delete/{id}").hasAuthority("REMOVE_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeMail").hasAuthority("EDIT_CMS_USER").and()
@@ -64,18 +61,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/mail").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/password").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
+                .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
                 .formLogin();
-        //httpSecurity.authorizeRequests().antMatchers("/").authenticated().and().httpBasic().and().csrf().disable();
-
-
+*/
     }
 
-    @Bean
+    /*@Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
-    }
+    }*/
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
