@@ -58,6 +58,7 @@ public class CommentService {
         return commentRepository.findByArticleContent(articleContent);
     }
 
+
     public Object addComment(CommentDTO commentDTO) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
