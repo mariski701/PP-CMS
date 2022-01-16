@@ -29,8 +29,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(1).sessionRegistry(sessionRegistry()).and().sessionFixation();
-        httpSecurity.httpBasic().and().addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class);
-                /*.and()
+        httpSecurity.httpBasic()
+                .and()
                 .authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/delete/{id}").hasAuthority("REMOVE_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeMail").hasAuthority("EDIT_CMS_USER").and()
@@ -63,7 +63,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
                 .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
                 .formLogin();
-*/
     }
 
     /*@Bean
