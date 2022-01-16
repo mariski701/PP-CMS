@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1).sessionRegistry(sessionRegistry()).and().sessionFixation();
         httpSecurity.httpBasic()
                 .and()
-                .authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
+                /*.authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/delete/{id}").hasAuthority("REMOVE_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeMail").hasAuthority("EDIT_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeNickname").hasAuthority("EDIT_CMS_USER").and()
@@ -61,7 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/mail").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/password").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
-                .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)*/
                 .formLogin();
     }
 
