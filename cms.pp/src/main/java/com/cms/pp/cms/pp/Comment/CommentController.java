@@ -8,8 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/api/comments/")
 @RestController
+@CrossOrigin(
+        origins = {"http://localhost:4200"},
+        allowCredentials = "true",
+        maxAge = 3600,
+        allowedHeaders = "*",
+        methods = {
+                RequestMethod.GET,RequestMethod.POST,
+                RequestMethod.DELETE, RequestMethod.PUT,
+                RequestMethod.PATCH, RequestMethod.OPTIONS,
+                RequestMethod.HEAD, RequestMethod.TRACE
+        }
+)
+@RequestMapping("/api/comments/")
 public class CommentController {
 
     @Autowired

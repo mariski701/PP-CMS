@@ -7,7 +7,20 @@ import java.util.List;
 import java.util.Map;
 
 
+
 @RestController
+@CrossOrigin(
+        origins = {"http://localhost:4200"},
+        allowCredentials = "true",
+        maxAge = 3600,
+        allowedHeaders = "*",
+        methods = {
+                RequestMethod.GET,RequestMethod.POST,
+                RequestMethod.DELETE, RequestMethod.PUT,
+                RequestMethod.PATCH, RequestMethod.OPTIONS,
+                RequestMethod.HEAD, RequestMethod.TRACE
+        }
+)
 public class ArticleTagController {
     @Autowired
     ArticleTagService articleTagService;

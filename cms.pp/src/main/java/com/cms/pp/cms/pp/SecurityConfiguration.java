@@ -1,17 +1,22 @@
 package com.cms.pp.cms.pp;
 
 
+import com.cms.pp.cms.pp.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 
@@ -20,18 +25,20 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
                 .authorizeRequests().antMatchers("/console/**").permitAll().and();
         httpSecurity.csrf().disable();
+        httpSecurity.cors();
         httpSecurity.headers().frameOptions().disable();
         httpSecurity.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(1).sessionRegistry(sessionRegistry()).and().sessionFixation();
         httpSecurity.httpBasic()
                 .and()
-                /*.authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
+                .authorizeRequests().antMatchers("/api/user/cms/register").hasAuthority("ADD_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/delete/{id}").hasAuthority("REMOVE_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeMail").hasAuthority("EDIT_CMS_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/changeNickname").hasAuthority("EDIT_CMS_USER").and()
@@ -61,9 +68,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/mail").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/password").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
-                .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)*/
+                .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
                 .formLogin();
     }
+
 
     /*@Bean
     protected CorsConfigurationSource corsConfigurationSource() {
