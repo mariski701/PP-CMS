@@ -27,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -317,7 +318,7 @@ public class UserService {
                         .getAuthentication()
                         .getAuthorities();
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, user.getUserPassword(), nowAuthorities);
+                        new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 return errorProvidedDataHandler; //success
             }
