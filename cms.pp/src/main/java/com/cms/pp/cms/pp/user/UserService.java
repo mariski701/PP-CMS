@@ -17,7 +17,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -310,10 +313,16 @@ public class UserService {
                 user.setUserName(newUsername);
                 errorProvidedDataHandler.setError("2001");
                 userRepository.save(user);
+                Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getAuthorities();
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(username, user.getUserPassword(), nowAuthorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 return errorProvidedDataHandler; //success
             }
             else {
-                errorProvidedDataHandler.setError("3010");
+                errorProvidedDataHandler.setError("3013");
                 return errorProvidedDataHandler; //username already used
             }
         }
