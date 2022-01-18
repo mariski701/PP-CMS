@@ -1,8 +1,6 @@
 package com.cms.pp.cms.pp.Article;
 
-import com.cms.pp.cms.pp.Alerts.AlertCode;
 import com.cms.pp.cms.pp.Alerts.AlertTranslation;
-import com.cms.pp.cms.pp.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

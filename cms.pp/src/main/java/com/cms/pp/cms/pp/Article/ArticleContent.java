@@ -4,8 +4,6 @@ import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 

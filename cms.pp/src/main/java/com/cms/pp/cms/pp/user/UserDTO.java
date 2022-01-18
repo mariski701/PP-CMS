@@ -1,6 +1,5 @@
 package com.cms.pp.cms.pp.user;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

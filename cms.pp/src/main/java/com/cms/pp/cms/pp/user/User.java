@@ -1,8 +1,6 @@
 package com.cms.pp.cms.pp.user;
 
 
-import com.cms.pp.cms.pp.Article.ArticleContent;
-import com.cms.pp.cms.pp.Article.Language;
 import com.cms.pp.cms.pp.Role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
