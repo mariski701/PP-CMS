@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.user;
 
+import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,9 +62,11 @@ public class UserController {
     }
 
     @PostMapping("logout")
-    public String logout() {
+    public Object logout() {
+        ErrorProvidedDataHandler errorProvidedDataHandler  = new ErrorProvidedDataHandler();
+        errorProvidedDataHandler.setError("2001");
         httpSession.invalidate();
-        return "logged out";
+        return errorProvidedDataHandler;
     }
 
     @GetMapping("findbyid/{id}")
