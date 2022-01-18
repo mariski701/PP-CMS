@@ -15,4 +15,5 @@ public interface ArticleContentRepository extends JpaRepository<ArticleContent, 
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
     ArticleContent findByTitle(String title);
     ArticleContent findArticleContentByComments(Comment comment);
+    List<ArticleContent> findByArticleTags(ArticleTag articleTag);
 }

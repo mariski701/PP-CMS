@@ -320,4 +320,13 @@ public class ArticleContentService {
 
         return articleContentRepository.findArticleContentByComments(comment);
     }
+
+    public List<ArticleContent> findByTag(String tagName) {
+        ArticleTag articleTag = articleTagRepository.findByName(tagName);
+        if (articleTag == null)
+        {
+            return null;
+        }
+        return articleContentRepository.findByArticleTags(articleTag);
+    }
 }

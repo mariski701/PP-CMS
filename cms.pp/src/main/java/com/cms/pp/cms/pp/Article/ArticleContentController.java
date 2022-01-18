@@ -112,4 +112,9 @@ public class ArticleContentController {
         return articleContentService.getArticleContentByCommentId(id);
     }
 
+    @GetMapping("findbytag/{tagName}")
+    public List<ArticleContent> findByTagName(@PathVariable String tagName) {
+        return articleContentService.findByTag(tagName);
+    }
+
 }
