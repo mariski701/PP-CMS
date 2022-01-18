@@ -201,7 +201,7 @@ public class CommentService {
         System.out.println(principalPrivileges);
 
         if (comment == null) {
-            errorProvidedDataHandler.setError("3035"); //comment not found
+            errorProvidedDataHandler.setError("3019"); //comment not found
             return errorProvidedDataHandler;
         }
 
