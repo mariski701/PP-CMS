@@ -231,6 +231,13 @@ public class UserService {
             if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
                 String newPasswordEncoded = passwordEncoder.encode(newPassword);
                 user.setUserPassword(newPasswordEncoded);
+                userRepository.save(user);
+                Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getAuthorities();
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 errorProvidedDataHandler.setError("2001"); //success
                 return errorProvidedDataHandler;
             }
