@@ -63,6 +63,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
                 .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
                 .formLogin();
+
+        httpSecurity.httpBasic().authenticationEntryPoint(new NoPopupBasicAuthenticationEntryPoint());
     }
 
 
