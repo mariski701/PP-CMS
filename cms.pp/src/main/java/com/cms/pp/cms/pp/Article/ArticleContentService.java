@@ -118,12 +118,19 @@ public class ArticleContentService {
             errorProvidedDataHandler.setError("3016"); //article not found.
             return errorProvidedDataHandler;
         }
-        else {
+
+        if (articleStatus.equals("PUBLISHED") || articleStatus.equals("UNPUBLISHED")) {
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
             errorProvidedDataHandler.setError("2001");
             return errorProvidedDataHandler; //success
         }
+        else
+        {
+            errorProvidedDataHandler.setError("3034");
+            return errorProvidedDataHandler;
+        }
+
     }
 
     public Object removeArticle(int id) {
