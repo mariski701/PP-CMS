@@ -12,6 +12,7 @@ import com.cms.pp.cms.pp.Role.RoleRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class CommentService {
         if (user == null) {
             return null;
         }
-        return commentRepository.findByUser(user);
+        return commentRepository.findByUser(user, Sort.by("id").descending());
 
     }
 
@@ -56,7 +57,7 @@ public class CommentService {
         if (user == null) {
             return null;
         }
-        return commentRepository.findByUser(userName);
+        return commentRepository.findByUser(userName, Sort.by("id").descending());
     }
 
     public List<Comment> findByArticleContent(int id) {
@@ -64,7 +65,7 @@ public class CommentService {
         if (articleContent == null) {
             return null;
         }
-        return commentRepository.findByArticleContent(articleContent);
+        return commentRepository.findByArticleContent(articleContent, Sort.by("id").descending());
     }
 
 

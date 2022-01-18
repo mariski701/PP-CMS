@@ -276,7 +276,7 @@ public class ArticleContentService {
         if (lang == null) {
             return null;
         }
-        return articleContentRepository.findAllByLanguage(language);
+        return articleContentRepository.findAllByLanguage(language, Sort.by("id").descending());
 
     }
 
@@ -285,7 +285,7 @@ public class ArticleContentService {
         if (user == null)
             return null;
         else {
-            return articleContentRepository.findAllByUser(user);
+            return articleContentRepository.findAllByUser(user, Sort.by("id").descending());
         }
     }
 
@@ -294,7 +294,7 @@ public class ArticleContentService {
     }
 
     public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {
-        return articleContentRepository.findByTitleIgnoreCaseContaining(title);
+        return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
     }
 
     public ArticleContent findByTitle(String title){
@@ -334,6 +334,6 @@ public class ArticleContentService {
         {
             return null;
         }
-        return articleContentRepository.findByArticleTags(articleTag);
+        return articleContentRepository.findByArticleTags(articleTag, Sort.by("id").descending());
     }
 }
