@@ -5,6 +5,10 @@ import com.cms.pp.cms.pp.Article.ArticleContentRepository;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
+import com.cms.pp.cms.pp.Priviliges.Privilege;
+import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
+import com.cms.pp.cms.pp.Role.Role;
+import com.cms.pp.cms.pp.Role.RoleRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -24,6 +29,10 @@ public class CommentService {
     ArticleContentRepository articleContentRepository;
     @Autowired
     ConfigurationFlagsRepository configurationFlagsRepository;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    PrivilegeRepository privilegeRepository;
 
     public Comment findCommentById(long id) {
         return commentRepository.findById(id).orElse(null);
@@ -158,6 +167,55 @@ public class CommentService {
         errorProvidedDataHandler.setError("2001");
         commentRepository.save(comment);
         return errorProvidedDataHandler;
+    }
+
+    public Object removeOwnComment(long id) {
+        boolean canEdit = false;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        }
+        else {
+            username = principal.toString();
+        }
+        if (username.equals("anonymousUser")) {
+            errorProvidedDataHandler.setError("3005");
+            return errorProvidedDataHandler;
+        }
+        User principalUser = userRepository.findByUserName(username);
+        Comment comment = commentRepository.findById(id).orElse(null);
+        Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
+        Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
+        User userComment = comment.getUser();
+        if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_COMMENT")))
+        {
+            canEdit = true;
+        }
+
+        if (principalUser.getId() == userComment.getId())
+        {
+            canEdit = true;
+        }
+        System.out.println(principalPrivileges);
+
+        if (comment == null) {
+            errorProvidedDataHandler.setError("3035"); //comment not found
+            return errorProvidedDataHandler;
+        }
+
+        if (canEdit)
+        {
+            commentRepository.delete(comment);
+            errorProvidedDataHandler.setError("2001");
+            return errorProvidedDataHandler;
+        }
+        else {
+            errorProvidedDataHandler.setError("3036");
+            return errorProvidedDataHandler;
+        }
+
     }
 
 }

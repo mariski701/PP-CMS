@@ -67,4 +67,9 @@ public class CommentController {
         return commentService.editCommentByUser(Long.parseLong(body.get("commentId")), body.get("content"));
     }
 
+    @DeleteMapping("remove/{id}")
+    public Object removeOwnComment(@PathVariable long id) {
+        return commentService.removeOwnComment(id);
+    }
+
 }
