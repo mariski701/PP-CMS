@@ -83,6 +83,7 @@ public class ArticleContentController {
 
     @PostMapping(value = {"{language}/contains","{language}/contains/{title}"})
     public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(@PathVariable String language, @PathVariable Map<String, String> title, @RequestBody List<Map<String, String>> tagNames) {
+        //System.out.println(language);
         String tit = title.get("title");
         if (tit != null && !(tagNames.isEmpty()))
         {
