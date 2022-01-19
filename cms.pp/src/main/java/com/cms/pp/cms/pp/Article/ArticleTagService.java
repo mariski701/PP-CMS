@@ -64,6 +64,12 @@ public class ArticleTagService {
             errorProvidedDataHandler.setError("3016");
             return errorProvidedDataHandler;
         }
+        ArticleTag articleTagTemp = articleTagRepository.findByName(articleTag.getName());
+        if (articleTagTemp != null)
+        {
+            errorProvidedDataHandler.setError("3014");
+            return errorProvidedDataHandler;
+        }
         oldArticleTag.setName(articleTag.getName());
         errorProvidedDataHandler.setError("2001");
         articleTagRepository.save(oldArticleTag);
