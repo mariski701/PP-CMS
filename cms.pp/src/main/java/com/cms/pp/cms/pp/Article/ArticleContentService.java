@@ -9,6 +9,7 @@ import com.cms.pp.cms.pp.Role.Role;
 import com.cms.pp.cms.pp.Role.RoleRepository;
 import com.cms.pp.cms.pp.user.User;
 import com.cms.pp.cms.pp.user.UserRepository;
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -296,14 +297,78 @@ public class ArticleContentService {
             return null;
         Pageable pageableWithElements = PageRequest.of(0, count, Sort.by("views").descending());
         articleContentRepository.findAllByLanguage(language, pageableWithElements);
-
-        /////
         return articleContentRepository.findAllByLanguage(language, pageableWithElements);
-        //articleContentRepository.findAll(PageRequest.of(0,count, Sort.by("views").descending()));
     }
 
     public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {
         return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
+    }
+
+    public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(String title, List<Map<String, String>> tagNames) {
+        if (title.equals("") && tagNames !=null) {
+            List<ArticleTag> articleTagList = new ArrayList<>();
+
+            for (int i = 0; i < tagNames.size(); i++) {
+                articleTagList.add(articleTagRepository.findByName(tagNames.get(i).get("name")));
+            }
+
+            List<List<ArticleContent>> articleContentList = new ArrayList<>();
+            for (ArticleTag articleTag : articleTagList) {
+                articleContentList.add(articleContentRepository.findByArticleTags(articleTag, Sort.by("id").descending()));
+            }
+
+            List<ArticleContent> temp = new ArrayList<>();
+
+            for (int j = 0; j < articleContentList.size(); j++)
+            {
+                for (int i = 0; i < articleContentList.get(j).size(); i++)
+                {
+                    temp.add(articleContentList.get(j).get(i));
+                }
+            }
+
+            for (int i = 0; i < temp.size(); i++) {
+                System.out.println(temp.get(i).getId());
+            }
+            return temp;
+        }
+
+        if (tagNames == null) {
+            return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
+        }
+
+        if (!title.equals("") && tagNames != null) {
+            List<ArticleTag> articleTagList = new ArrayList<>();
+
+            for (int i = 0; i < tagNames.size(); i++) {
+                articleTagList.add(articleTagRepository.findByName(tagNames.get(i).get("name")));
+            }
+
+            List<List<ArticleContent>> articleContentList = new ArrayList<>();
+            for (ArticleTag articleTag : articleTagList) {
+                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndArticleTags(title, articleTag, Sort.by("title").ascending()));
+            }
+
+            List<ArticleContent> temp = new ArrayList<>();
+
+            for (int j = 0; j < articleContentList.size(); j++)
+            {
+                for (int i = 0; i < articleContentList.get(j).size(); i++)
+                {
+                    temp.add(articleContentList.get(j).get(i));
+                }
+            }
+
+            for (int i = 0; i < temp.size(); i++) {
+                System.out.println(temp.get(i).getId());
+            }
+            return temp;
+
+        }
+
+        return null;
+
+
     }
 
     public ArticleContent findByTitle(String title){

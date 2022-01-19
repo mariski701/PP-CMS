@@ -17,9 +17,11 @@ public interface ArticleContentRepository extends JpaRepository<ArticleContent, 
     List<ArticleContent> findAllByUser(User user, Sort sort);
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title);
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title, Sort sort);
+    List<ArticleContent> findByTitleIgnoreCaseContainingAndArticleTags(String title, ArticleTag articleTag, Sort sort);
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
     ArticleContent findByTitle(String title);
     ArticleContent findArticleContentByComments(Comment comment);
     List<ArticleContent> findByArticleTags(ArticleTag articleTag);
+    List<ArticleContent> findDistinctByArticleTags(ArticleTag articleTag, Sort sort);
     List<ArticleContent> findByArticleTags(ArticleTag articleTag, Sort sort);
 }

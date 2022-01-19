@@ -1,15 +1,30 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.Alerts.AlertTranslation;
+import com.cms.pp.cms.pp.Alerts.AlertTranslationRepository;
+import com.cms.pp.cms.pp.Comment.Comment;
+import com.cms.pp.cms.pp.Comment.CommentRepository;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class LanguageService {
     @Autowired
     private LanguageRepository languageRepository;
+    @Autowired
+    private ArticleContentRepository articleContentRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private AlertTranslationRepository alertTranslationRepository;
+    @Autowired
+    private ArticleTagRepository articleTagRepository;
+
+
 
     public Object addLanguage(Language language) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -39,11 +54,30 @@ public class LanguageService {
             errorProvidedDataHandler.setError("3018");
             return errorProvidedDataHandler;
         }
-        else {
-            languageRepository.deleteById(id);
-            errorProvidedDataHandler.setError("2001");
+        if (id<=1) {
+            errorProvidedDataHandler.setError("3040"); // you cant remove main website language
             return errorProvidedDataHandler;
         }
+        List<ArticleContent> articleContentList = articleContentRepository.findAllByLanguage(language);
+        List<ArticleTag> articleTagList = articleTagRepository.findByLanguage(language);
+        List<AlertTranslation> alertTranslationList = alertTranslationRepository.findAlertTranslationByLanguage(language);
+        List<List<Comment>> commentList = new ArrayList<>();
+
+        for (ArticleContent articleContent : articleContentList) {
+            commentList.add(commentRepository.findByArticleContent(articleContent));
+        }
+
+        for (List<Comment> commentList1 : commentList) {
+            commentRepository.deleteAll(commentList1);
+        }
+        articleContentRepository.deleteAll(articleContentList);
+        articleTagRepository.deleteAll(articleTagList);
+        alertTranslationRepository.deleteAll(alertTranslationList);
+
+        languageRepository.deleteById(id);
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler;
+
     }
 
     public List<Language> getAllLanguages() {

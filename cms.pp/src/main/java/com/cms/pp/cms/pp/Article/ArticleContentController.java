@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin(
@@ -78,10 +76,30 @@ public class ArticleContentController {
         return articleContentService.findAll();
     }
 
-    @GetMapping("contains/{title}")
+    /*@GetMapping("contains/{title}")
     public List<ArticleContent> findByTitleIgnoreCaseContaining(@PathVariable String title) {
         return articleContentService.findByTitleIgnoreCaseContaining(title);
+    }*/
+
+    @GetMapping(value = {"contains","contains/{title}"})
+    public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(@PathVariable Map<String, String> title, @RequestBody List<Map<String, String>> tagNames) {
+        String tit = title.get("title");
+        if (tit != null && !(tagNames.isEmpty()))
+        {
+            System.out.println("ze stringiem i z tagami");
+            return articleContentService.findByTitleIgnoreCaseContainingOrByTags(tit, tagNames);
+        }
+        else if (tit != null && tagNames.isEmpty()) {
+            System.out.println("z tytułem ale bez tagów");
+            return articleContentService.findByTitleIgnoreCaseContainingOrByTags(tit, null);
+        }
+        else if (tit == null && !(tagNames.get(0).isEmpty())) {
+            System.out.println("z tagami bez tytulu");
+            return articleContentService.findByTitleIgnoreCaseContainingOrByTags("", tagNames);
+        }
+        return null;
     }
+
 
     @GetMapping("findByTitle")
     public ArticleContent findByTitle(@RequestBody Map<String, String> title){
