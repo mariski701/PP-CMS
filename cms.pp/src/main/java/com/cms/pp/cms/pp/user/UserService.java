@@ -14,6 +14,7 @@ import com.cms.pp.cms.pp.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -249,7 +250,7 @@ public class UserService {
     }
 
     public List<User> findSomeUsersByLazyLoadingAndUserName(int page, int size, String username) {
-        Pageable pageableWithElements = PageRequest.of(page, size);
+        Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("id").descending());
         return userRepository.findByUserNameIgnoreCaseContaining(username, pageableWithElements);
 
     }

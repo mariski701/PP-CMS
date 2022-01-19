@@ -302,7 +302,7 @@ public class ArticleContentService {
     }
 
     public List<ArticleContent> findSomeArticlesByLazyLoading(int page, int size, String title) {
-        Pageable pageableWithElements = PageRequest.of(page, size);
+        Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("id").descending());
         return articleContentRepository.findByTitleIgnoreCaseContaining(title,  pageableWithElements);
     }
 
