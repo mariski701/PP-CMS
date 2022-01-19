@@ -99,6 +99,39 @@ public class ArticleContentController {
         }
         return null;
     }
+    /*
+
+
+    jeżeli nie ma tytułu to wyświetli artykuły z wybranych tagów
+    localhost:8080/api/articles/contains/
+    notacja JSONa:
+    [
+        {
+            "name" : "ogólny"
+        },
+        {
+            "name" : "kulinaria"
+        }
+    ]
+
+
+    Jeżeli jest tytuł LIKE i są tagi to:
+    localhost:8080/api/articles/contains/{coś}
+    notacja JSONa:
+    [
+        {
+            "name" : "ogólny"
+        },
+        {
+            "name" : "kulinaria"
+        }
+    ]
+
+    Jeżeli nie ma tagów a jest tytuł to:
+    localhost:8080/api/articles/contains/{coś}
+    notacja JSONa:
+    []
+     */
 
 
     @GetMapping("findByTitle")

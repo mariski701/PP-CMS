@@ -142,11 +142,7 @@ public class ArticleContentService {
             return errorProvidedDataHandler;
         }
         List<Comment> comments = commentRepository.findByArticleContent(articleContent);
-
-        for (Comment comment : comments) {
-            commentRepository.delete(comment);
-        }
-
+        commentRepository.deleteAll(comments);
         articleContentRepository.deleteById(id);
         errorProvidedDataHandler.setError("2001");//success
         return errorProvidedDataHandler;
@@ -363,12 +359,8 @@ public class ArticleContentService {
                 System.out.println(temp.get(i).getId());
             }
             return temp;
-
         }
-
         return null;
-
-
     }
 
     public ArticleContent findByTitle(String title){
