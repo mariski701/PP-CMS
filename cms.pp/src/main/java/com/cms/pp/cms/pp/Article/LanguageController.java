@@ -23,7 +23,7 @@ public class LanguageController {
     LanguageService languageService;
 
     @PostMapping("/api/language/add")
-    public Language addLanguage(@RequestBody Language language) {
+    public Object addLanguage(@RequestBody Language language) {
         return languageService.addLanguage(language);
     }
 

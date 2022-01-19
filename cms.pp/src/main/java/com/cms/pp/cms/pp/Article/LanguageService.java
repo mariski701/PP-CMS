@@ -11,8 +11,24 @@ public class LanguageService {
     @Autowired
     private LanguageRepository languageRepository;
 
-    public Language addLanguage(Language language) {
-        return  languageRepository.save(language);
+    public Object addLanguage(Language language) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        Language langTemp = languageRepository.findByName(language.getName());
+        if (language.getName().equals(""))
+        {
+            errorProvidedDataHandler.setError("3037"); //lang name empty
+            return errorProvidedDataHandler;
+        }
+        if (langTemp != null) {
+            errorProvidedDataHandler.setError("3039"); //lang already exists in db
+            return errorProvidedDataHandler;
+        }
+        if (language.getLanguageCode().equals("")) {
+            errorProvidedDataHandler.setError("3038");//langcode empty
+        }
+        languageRepository.save(language);
+        errorProvidedDataHandler.setError("2001"); //success
+        return errorProvidedDataHandler;
     }
 
     public Object removeLanguage(int id) {
