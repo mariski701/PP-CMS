@@ -124,4 +124,9 @@ public class UserController {
     public Object changeUserNickname(@RequestBody Map<String, String> body) {
         return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
     }
+
+    @GetMapping("find/topCommenter")
+    public User findTheBestCommenter() {
+        return userService.findTheBestCommenter();
+    }
 }

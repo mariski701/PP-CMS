@@ -5,6 +5,7 @@ import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.Article.ArticleContentRepository;
 import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.Comment.CommentRepository;
+import com.cms.pp.cms.pp.Comment.CommentsCountModel;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
 import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
@@ -429,6 +430,15 @@ public class UserService {
             }
 
         }
+    }
+
+    public User findTheBestCommenter() {
+        List<CommentsCountModel> commentsCountModels = commentRepository.countTotalCommentsByUser();
+        User user = userRepository.findById(commentsCountModels.get(0).getCommentId()).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        return user;
     }
 
 
