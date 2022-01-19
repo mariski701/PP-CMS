@@ -81,7 +81,7 @@ public class ArticleContentController {
         return articleContentService.findByTitleIgnoreCaseContaining(title);
     }*/
 
-    @GetMapping(value = {"contains","contains/{title}"})
+    @PostMapping(value = {"contains","contains/{title}"})
     public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(@PathVariable Map<String, String> title, @RequestBody List<Map<String, String>> tagNames) {
         String tit = title.get("title");
         if (tit != null && !(tagNames.isEmpty()))
