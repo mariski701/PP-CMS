@@ -12,6 +12,7 @@ import java.util.List;
 public interface ArticleContentRepository extends JpaRepository<ArticleContent, Integer> {
     List<ArticleContent> findAllByLanguage(Language language);
     List<ArticleContent> findAllByLanguage(Language language, Sort sort);
+    List<ArticleContent> findAllByLanguage(Language language, Pageable page);
     List<ArticleContent> findAllByUser(User user);
     List<ArticleContent> findAllByUser(User user, Sort sort);
     List<ArticleContent> findByTitleIgnoreCaseContaining(String title);

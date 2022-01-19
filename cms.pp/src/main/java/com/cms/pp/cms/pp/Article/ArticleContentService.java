@@ -289,8 +289,17 @@ public class ArticleContentService {
         }
     }
 
-    public Page<ArticleContent> findSomeArticlesByViews(int count) {
-        return articleContentRepository.findAll(PageRequest.of(0,count, Sort.by("views").descending()));
+    public List<ArticleContent> findSomeArticlesByViews(int count, String lang) {
+        /////
+        Language language = languageRepository.findByName(lang);
+        if (language == null)
+            return null;
+        Pageable pageableWithElements = PageRequest.of(0, count, Sort.by("views").descending());
+        articleContentRepository.findAllByLanguage(language, pageableWithElements);
+
+        /////
+        return articleContentRepository.findAllByLanguage(language, pageableWithElements);
+        //articleContentRepository.findAll(PageRequest.of(0,count, Sort.by("views").descending()));
     }
 
     public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {

@@ -20,6 +20,6 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     List<Comment> findByUser(String userName, Sort sort);
 
     @Query("SELECT new com.cms.pp.cms.pp.Comment.CommentsCountModel(c.user.id, COUNT(c.user.id))"
-    + "FROM Comment AS c GROUP BY c.user.id ORDER BY c.user.id desc ")
+    + "FROM Comment AS c GROUP BY c.user.id ORDER BY c.user.id desc")
     List<CommentsCountModel> countTotalCommentsByUser();
 }

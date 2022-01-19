@@ -68,9 +68,9 @@ public class ArticleContentController {
         return articleContentService.findAllByUser(id);
     }
 
-    @GetMapping("/top/{count}")
-    public Page<ArticleContent> findSomeArticlesByViews(@PathVariable int count) {
-        return articleContentService.findSomeArticlesByViews(count);
+    @GetMapping("/top/{language}/{count}")
+    public List<ArticleContent> findSomeArticlesByViews(@PathVariable int count, @PathVariable String language) {
+        return articleContentService.findSomeArticlesByViews(count, language);
     }
 
     @GetMapping("all")
