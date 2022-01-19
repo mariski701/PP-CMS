@@ -246,11 +246,11 @@ public class UserService {
     }
 
     public List<User> findByUserNameIgnoreCaseContaining(String userName) {
-        return userRepository.findByUserNameIgnoreCaseContaining(userName);
+        return userRepository.findByUserNameIgnoreCaseContaining(userName, Sort.by("userName").ascending());
     }
 
     public List<User> findSomeUsersByLazyLoadingAndUserName(int page, int size, String username) {
-        Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("userName").ascending());
         return userRepository.findByUserNameIgnoreCaseContaining(username, pageableWithElements);
 
     }
