@@ -2,6 +2,7 @@ package com.cms.pp.cms.pp.Comment;
 
 import com.cms.pp.cms.pp.Article.ArticleContent;
 import com.cms.pp.cms.pp.user.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,6 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     List<Comment> findByUser(String userName, Sort sort);
 
     @Query("SELECT new com.cms.pp.cms.pp.Comment.CommentsCountModel(c.user.id, COUNT(c.user.id))"
-    + "FROM Comment AS c GROUP BY c.user.id ORDER BY c.user.id desc")
-    List<CommentsCountModel> countTotalCommentsByUser();
+    + "FROM Comment AS c GROUP BY c.user.id ORDER BY COUNT(c.user.id) desc")
+    List<CommentsCountModel> countTotalCommentsByUser(Pageable pageable);
 }

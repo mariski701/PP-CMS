@@ -125,8 +125,8 @@ public class UserController {
         return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
     }
 
-    @GetMapping("find/topCommenter")
-    public User findTheBestCommenter() {
-        return userService.findTheBestCommenter();
+    @GetMapping("find/topCommenter/{size}")
+    public List<CustomTopCommentersClass> findTheBestCommenter(@PathVariable int size) {
+        return userService.findTheBestCommenter(size);
     }
 }

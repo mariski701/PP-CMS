@@ -433,13 +433,22 @@ public class UserService {
         }
     }
 
-    public User findTheBestCommenter() {
-        List<CommentsCountModel> commentsCountModels = commentRepository.countTotalCommentsByUser();
-        User user = userRepository.findById(commentsCountModels.get(0).getCommentId()).orElse(null);
-        if (user == null) {
+    public List<CustomTopCommentersClass> findTheBestCommenter(int size) {
+        Pageable pageableWithElements = PageRequest.of(0, size);
+        List<CommentsCountModel> commentsCountModels = commentRepository.countTotalCommentsByUser(pageableWithElements);
+
+        List<CustomTopCommentersClass> customTopCommentersClassList = new ArrayList<>();
+
+        for (CommentsCountModel commentsCountModel : commentsCountModels) {
+            customTopCommentersClassList.add(new CustomTopCommentersClass(
+                    userRepository.findById(commentsCountModel.getCommentId()).orElse(null).getUserName(), commentsCountModel.getTotal()
+            ));
+        }
+
+        if (customTopCommentersClassList.isEmpty()) {
             return null;
         }
-        return user;
+        return customTopCommentersClassList;
     }
 
 
