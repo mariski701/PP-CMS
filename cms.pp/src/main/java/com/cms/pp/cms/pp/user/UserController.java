@@ -49,7 +49,7 @@ public class UserController {
         return userService.deleteUser(id);
     }
 
-    @RolesAllowed({"ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_EDITOR"})
+    //@RolesAllowed({"ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_EDITOR"})
     @GetMapping("getusers")
     public List<User> getUsers() {
         return userService.getUsers();
