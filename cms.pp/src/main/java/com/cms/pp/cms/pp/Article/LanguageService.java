@@ -25,6 +25,7 @@ public class LanguageService {
         }
         if (language.getLanguageCode().equals("")) {
             errorProvidedDataHandler.setError("3038");//langcode empty
+            return errorProvidedDataHandler;
         }
         languageRepository.save(language);
         errorProvidedDataHandler.setError("2001"); //success
@@ -62,7 +63,20 @@ public class LanguageService {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (language == null)
         {
-            errorProvidedDataHandler.setError("3018");
+            errorProvidedDataHandler.setError("3018"); //nie ma takiego języka
+            return errorProvidedDataHandler;
+        }
+        if (language.getName().equals(""))
+        {
+            errorProvidedDataHandler.setError("3037"); //lang name empty
+            return errorProvidedDataHandler;
+        }
+        if (language.getLanguageCode().equals("")) {
+            errorProvidedDataHandler.setError("3038");//langcode empty
+            return errorProvidedDataHandler;
+        }
+        if (language.getName().equals(languageRepository.findByName(language.getName()))) {
+            errorProvidedDataHandler.setError("3039"); //provided name is already used by other language in database
             return errorProvidedDataHandler;
         }
         language.setName(lang.getName());
