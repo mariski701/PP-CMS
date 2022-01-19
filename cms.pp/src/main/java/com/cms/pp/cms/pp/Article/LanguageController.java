@@ -47,4 +47,9 @@ public class LanguageController {
         return languageService.editLanguage(language);
     }
 
+    @GetMapping("/api/language/id/{id}")
+    public Language getLanguageById(@PathVariable int id) {
+        return languageService.getLanguageById(id);
+    }
+
 }

@@ -53,6 +53,10 @@ public class LanguageService {
         return languageRepository.findByName(name);
     }
 
+    public Language getLanguageById(int id) {
+        return languageRepository.findById(id).orElse(null);
+    }
+
     public Object editLanguage(Language lang) {
         Language language = languageRepository.findById(lang.getId()).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
