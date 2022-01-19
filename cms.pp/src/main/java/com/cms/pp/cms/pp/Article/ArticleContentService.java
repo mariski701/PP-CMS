@@ -300,7 +300,11 @@ public class ArticleContentService {
         return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
     }
 
-    public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(String title, List<Map<String, String>> tagNames) {
+    public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(String language, String title, List<Map<String, String>> tagNames) {
+        Language lang = languageRepository.findByName("language");
+        if (lang == null) {
+            return null;
+        }
         if (title.equals("") && tagNames !=null) {
             List<ArticleTag> articleTagList = new ArrayList<>();
 
@@ -310,7 +314,7 @@ public class ArticleContentService {
 
             List<List<ArticleContent>> articleContentList = new ArrayList<>();
             for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByArticleTags(articleTag, Sort.by("id").descending()));
+                articleContentList.add(articleContentRepository.findByArticleTagsAndLanguage(lang, articleTag, Sort.by("id").descending()));
             }
 
             List<ArticleContent> temp = new ArrayList<>();
@@ -330,7 +334,7 @@ public class ArticleContentService {
         }
 
         if (tagNames == null) {
-            return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
+            return articleContentRepository.findByTitleIgnoreCaseContainingAndLanguage(lang, title, Sort.by("id").descending());
         }
 
         if (!title.equals("") && tagNames != null) {
@@ -342,7 +346,7 @@ public class ArticleContentService {
 
             List<List<ArticleContent>> articleContentList = new ArrayList<>();
             for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndArticleTags(title, articleTag, Sort.by("title").ascending()));
+                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndArticleTagsAndLanguage(lang, title, articleTag, Sort.by("title").ascending()));
             }
 
             List<ArticleContent> temp = new ArrayList<>();
