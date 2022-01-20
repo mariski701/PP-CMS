@@ -26,7 +26,7 @@ import java.util.*;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    boolean alreadySetup = true;
+    boolean alreadySetup = false;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -264,6 +264,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         AlertCode buttonYes = createAlertIfNotFound("Yes", "button.yes");
         AlertCode headerArticles = createAlertIfNotFound("Articles", "header.articles");
         AlertCode headerChangeEmail = createAlertIfNotFound("Change mail", "header.change-email");
+
+        AlertCode headerChangePassword = createAlertIfNotFound("Change password", "header.change-password");
+
         AlertCode headerChangeUsername = createAlertIfNotFound("Change username", "header.change-username");
         AlertCode headerLeaveComment = createAlertIfNotFound("Leave comment", "header.leave-comment");
         AlertCode headerPopular = createAlertIfNotFound("Popular", "header.popular");
@@ -315,7 +318,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
 
         alertCodeRepository.saveAll(Arrays.asList(buttonAddComment, buttonCancel, buttonChange, buttonDelete, buttonEdit, buttonEditComment, buttonLogin, buttonNo, buttonProceed,
-                buttonReadArticle, buttonRegister, buttonSearch, buttonSelect, buttonSettings, buttonYes, headerArticles, headerChangeEmail, headerChangeUsername, headerLeaveComment,
+                buttonReadArticle, buttonRegister, buttonSearch, buttonSelect, buttonSettings, buttonYes, headerArticles, headerChangeEmail, headerChangePassword, headerChangeUsername, headerLeaveComment,
                 headerPopular, headerTags, headerUserComments, headerUsers, homePageActiveUsers, homePageInspiringArticles, homePageInterestingComments, homePageMostPopularArticles,
                 homePageTopUsers, labelArticleName, labelComments, labelCommentsCount, labelEmail, labelEmailConfirm, labelNewEmail, labelNewPassword, labelNewPasswordConfirm,
                 labelOldPassword, labelPassword, labelPasswordConfirm, labelUsername, messageEmailInUse, messageEmailChangeSuccess, messagePasswordChangeSuccess, messageUnidentifiedError,
@@ -342,6 +345,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         AlertTranslation buttonYesTranslation = createAlertTranslationIfNotFound(buttonYes, polishLanguage, "Tak");
         AlertTranslation headerArticlesTranslation = createAlertTranslationIfNotFound(headerArticles, polishLanguage, "Artykuły");
         AlertTranslation headerChangeEmailTranslation = createAlertTranslationIfNotFound(headerChangeEmail, polishLanguage, "Zmiana adresu email");
+        AlertTranslation headerChangePasswordTranslation = createAlertTranslationIfNotFound(headerChangePassword, polishLanguage, "Zmiana hasła");
         AlertTranslation headerChangeUsernameTranslation = createAlertTranslationIfNotFound(headerChangeUsername, polishLanguage, "Zmiana nazwy użytkownika");
         AlertTranslation headerLeaveCommentTranslation = createAlertTranslationIfNotFound(headerLeaveComment, polishLanguage, "Zostaw komentarz");
         AlertTranslation headerPopularTranslation = createAlertTranslationIfNotFound(headerPopular, polishLanguage, "Popularne");
@@ -392,7 +396,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         alertTranslationRepository.saveAll(Arrays.asList(buttonAddCommentTranslation, buttonCancelTranslation, buttonChangeTranslation, buttonDeleteTranslation, buttonEditTranslation, buttonEditCommentTranslation,
                 buttonLoginTranslation, buttonNoTranslation, buttonProceedTranslation, buttonReadArticleTranslation, buttonRegisterTranslation, buttonSearchTranslation, buttonSelectTranslation, buttonSettingsTranslation,
-                buttonYesTranslation, headerArticlesTranslation, headerChangeEmailTranslation, headerChangeUsernameTranslation, headerLeaveCommentTranslation, headerPopularTranslation, headerTagsTranslation,
+                buttonYesTranslation, headerArticlesTranslation, headerChangeEmailTranslation, headerChangePasswordTranslation, headerChangeUsernameTranslation, headerLeaveCommentTranslation, headerPopularTranslation, headerTagsTranslation,
                 headerUserCommentsTranslation, headerUsersTranslation, homePageActiveUsersTranslation, homePageInspiringArticlesTranslation, homePageInterestingCommentsTranslation, homePageMostPopularArticlesTranslation,
                 homePageTopUsersTranslation, labelArticleNameTranslation, labelCommentsTranslation, labelCommentsCountTranslation, labelEmailTranslation, labelEmailConfirmTranslation, labelNewEmailTranslation,
                 labelNewPasswordTranslation, labelNewPasswordConfirmTranslation, labelOldPasswordTranslation, labelPasswordTranslation, labelPasswordConfirmTranslation, labelUsernameTranslation, messageEmailInUseTranslation,
