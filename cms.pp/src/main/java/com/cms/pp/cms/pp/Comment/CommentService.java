@@ -118,6 +118,7 @@ public class CommentService {
     }
 
     public Object editCommentByUser(long commentId, String commentContent) {
+        boolean canEdit = false;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -132,24 +133,42 @@ public class CommentService {
             return errorProvidedDataHandler;
         }
         else {
-            User user = userRepository.findByUserName(username);
+            User principalUser = userRepository.findByUserName(username);
             Comment comment = commentRepository.findById(commentId).orElse(null);
             if (comment == null) {
                 errorProvidedDataHandler.setError("3019"); //comment not found
                 return errorProvidedDataHandler;
             }
-            if (!(user.getId() == comment.getUser().getId())) {
+            Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
+            Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
+            if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_COMMENT")))
+            {
+                canEdit = true;
+            }
+            if (principalUser.getId() != comment.getUser().getId()) {
                 errorProvidedDataHandler.setError("4003");
                 return errorProvidedDataHandler;
+            }
+            else
+            {
+                canEdit = true;
             }
             if (commentContent.equals("")) {
                 errorProvidedDataHandler.setError("3004");
                 return errorProvidedDataHandler;
             }
-            comment.setContent(commentContent);
-            errorProvidedDataHandler.setError("2001");
-            commentRepository.save(comment);
-            return errorProvidedDataHandler;
+            if (canEdit)
+            {
+                comment.setContent(commentContent);
+                errorProvidedDataHandler.setError("2001");
+                commentRepository.save(comment);
+                return errorProvidedDataHandler;
+            }
+            else {
+                errorProvidedDataHandler.setError("4003");
+                return errorProvidedDataHandler;
+            }
+
         }
     }
 

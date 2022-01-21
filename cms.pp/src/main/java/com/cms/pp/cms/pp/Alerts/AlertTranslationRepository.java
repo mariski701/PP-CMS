@@ -10,4 +10,5 @@ import java.util.List;
 public interface AlertTranslationRepository extends JpaRepository<AlertTranslation, Integer> {
     List<AlertTranslation> findAlertTranslationByLanguage(Language language);
     AlertTranslation findByErrorTranslation(String errorTranslation);
+    List<AlertTranslation> findByAlertCode(AlertCode alertCode);
 }

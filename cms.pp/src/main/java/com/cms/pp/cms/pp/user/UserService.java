@@ -25,10 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -179,11 +176,11 @@ public class UserService {
             }
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
-
+                    java.util.Date date = new java.util.Date();
                     myUserDetailsService.loadUserByUsername(userMail);
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
-                    System.out.println(currentPrincipalName + " logged to the service");
+                    System.out.println("["+date+"]"+"[USER]: " + currentPrincipalName + " logged into service");
                     return user;
                 }
                 else {

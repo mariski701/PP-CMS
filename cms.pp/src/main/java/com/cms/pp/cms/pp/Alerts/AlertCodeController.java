@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(
@@ -18,7 +19,7 @@ import java.util.List;
                 RequestMethod.HEAD, RequestMethod.TRACE
         }
 )
-@RequestMapping("/api/english/alerts/")
+@RequestMapping("/api/original/alerts/")
 public class AlertCodeController {
 
     @Autowired
@@ -27,5 +28,20 @@ public class AlertCodeController {
     @GetMapping("findALl")
     public List<AlertCode> getAlertCodes() {
         return alertCodeService.getAlertCodes();
+    }
+
+    @PostMapping("add")
+    public Object addCode(Map<String, String> body) {
+        return alertCodeService.addCode(body.get("alertCode"), body.get("alertName"));
+    }
+
+    @DeleteMapping("remove/{id}")
+    public Object removeCode(@PathVariable int id) {
+        return alertCodeService.removeCode(id);
+    }
+
+    @PutMapping("edit")
+    public Object editCode(@RequestBody Map<String,String> body) {
+        return alertCodeService.editCode(Integer.parseInt(body.get("id")), body.get("alertCode"), body.get("alertName"));
     }
 }

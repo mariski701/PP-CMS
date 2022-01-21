@@ -2,9 +2,10 @@ package com.cms.pp.cms.pp.user;
 
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +50,10 @@ public class UserController {
         return userService.deleteUser(id);
     }
 
-    //@RolesAllowed({"ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_EDITOR"})
     @GetMapping("getusers")
     public List<User> getUsers() {
         return userService.getUsers();
     }
-
 
     @PostMapping("login")
     public Object login(@RequestBody Map<String, String> body ) {
@@ -63,6 +62,16 @@ public class UserController {
 
     @PostMapping("logout")
     public Object logout() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        }
+        else {
+            username = principal.toString();
+        }
+        java.util.Date date = new java.util.Date();
+        System.out.println("["+date+"]"+"[USER]: " + username + " logged out from service");
         ErrorProvidedDataHandler errorProvidedDataHandler  = new ErrorProvidedDataHandler();
         errorProvidedDataHandler.setError("2001");
         httpSession.invalidate();
