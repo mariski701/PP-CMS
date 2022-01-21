@@ -33,7 +33,7 @@ public class RoleController {
         return roleService.getRoles();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("find/{id}")
     public Role getRole(@PathVariable Long id) {
         return roleService.getRole(id);
     }
