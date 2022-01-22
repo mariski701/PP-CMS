@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.user;
 
+import com.cms.pp.cms.pp.CustomCorsConfigAnnotation;
 import com.cms.pp.cms.pp.ErrorProvidedDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,18 +14,7 @@ import java.util.Map;
 
 
 @RestController
-@CrossOrigin(
-        origins = {"http://localhost:4200"},
-        allowCredentials = "true",
-        maxAge = 3600,
-        allowedHeaders = "*",
-        methods = {
-                RequestMethod.GET,RequestMethod.POST,
-                RequestMethod.DELETE, RequestMethod.PUT,
-                RequestMethod.PATCH, RequestMethod.OPTIONS,
-                RequestMethod.HEAD, RequestMethod.TRACE
-        }
-)
+@CustomCorsConfigAnnotation
 @RequestMapping("/api/user/")
 public class UserController {
 
@@ -100,7 +90,6 @@ public class UserController {
 
     @PutMapping("edit/username")
     public Object editUserName(@RequestBody Map<String, String> body) {
-        System.out.println(body.get("userName"));
         return userService.editUserName(body.get("userName"));
     }
 

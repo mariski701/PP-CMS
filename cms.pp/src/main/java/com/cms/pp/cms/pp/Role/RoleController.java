@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.Role;
 
+import com.cms.pp.cms.pp.CustomCorsConfigAnnotation;
 import com.cms.pp.cms.pp.Priviliges.Privilege;
 import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,19 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+
 @RestController
-@CrossOrigin(
-        origins = {"http://localhost:4200"},
-        allowCredentials = "true",
-        maxAge = 3600,
-        allowedHeaders = "*",
-        methods = {
-                RequestMethod.GET,RequestMethod.POST,
-                RequestMethod.DELETE, RequestMethod.PUT,
-                RequestMethod.PATCH, RequestMethod.OPTIONS,
-                RequestMethod.HEAD, RequestMethod.TRACE
-        }
-)
+@CustomCorsConfigAnnotation
 @RequestMapping("/api/cms/role")
 public class RoleController {
     @Autowired

@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.Article;
 
+import com.cms.pp.cms.pp.CustomCorsConfigAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,18 +10,7 @@ import java.util.Map;
 
 
 @RestController
-@CrossOrigin(
-        origins = {"http://localhost:4200"},
-        allowCredentials = "true",
-        maxAge = 3600,
-        allowedHeaders = "*",
-        methods = {
-                RequestMethod.GET,RequestMethod.POST,
-                RequestMethod.DELETE, RequestMethod.PUT,
-                RequestMethod.PATCH, RequestMethod.OPTIONS,
-                RequestMethod.HEAD, RequestMethod.TRACE
-        }
-)
+@CustomCorsConfigAnnotation
 public class ArticleTagController {
     @Autowired
     ArticleTagService articleTagService;
