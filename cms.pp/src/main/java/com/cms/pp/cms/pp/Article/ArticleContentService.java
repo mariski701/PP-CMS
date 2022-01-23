@@ -88,6 +88,7 @@ public class ArticleContentService {
             articleContent.setLanguage(language);
             articleContent.setPublished("UNPUBLISHED");
             articleContent.setImage(articleContentDTO.getImage());
+            articleContent.setCommentsAllowed(true);
             User user = userRepository.findByUserName(username);
             articleContent.setUser(user);
             articleContentRepository.save(articleContent);

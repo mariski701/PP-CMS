@@ -110,25 +110,46 @@ public class UserService {
     }
 
     public Object addCMSUser(CMSUserDTO cmsUserDTO) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (!cmsUserDTO.getRole().equals("ROLE_ADMIN") && !cmsUserDTO.getRole().equals("ROLE_MODERATOR") && !cmsUserDTO.getRole().equals("ROLE_EDITOR")) {
-            return "Wrong role";
+            errorProvidedDataHandler.setError("3020");
+            return errorProvidedDataHandler;
         }
-        if (cmsUserDTO.getUserName().equals("") || cmsUserDTO.getUserMail().equals("") || cmsUserDTO.getRole().isEmpty() || cmsUserDTO.getUserPassword().equals("")) {
-            return "Lack of data";
+        if (cmsUserDTO.getUserName().equals(""))
+        {
+            errorProvidedDataHandler.setError("3023");
+            return errorProvidedDataHandler;
         }
-        else {
-            User user = new User();
-            user.setUserName(cmsUserDTO.getUserName());
-            user.setUserMail(cmsUserDTO.getUserMail());
-            Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
-            List<Role> roles = new ArrayList<>();
-            roles.add(userRole);
-            user.setRoles(roles);
-            user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
-            user.setEnabled(true);
-            userRepository.save(user);
-            return user;
+        if (cmsUserDTO.getUserName().equals("")) {
+            errorProvidedDataHandler.setError("3025");
+            return errorProvidedDataHandler;
         }
+        if (cmsUserDTO.getUserPassword().equals("")) {
+            errorProvidedDataHandler.setError("3024");
+            return errorProvidedDataHandler;
+        }
+
+        if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName())) {
+            errorProvidedDataHandler.setError("3013"); //user already exists
+            return errorProvidedDataHandler;
+        }
+        if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail())) {
+            errorProvidedDataHandler.setError("3011"); //usermail already used
+            return errorProvidedDataHandler;
+        }
+
+        User user = new User();
+        user.setUserName(cmsUserDTO.getUserName());
+        user.setUserMail(cmsUserDTO.getUserMail());
+        Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
+        List<Role> roles = new ArrayList<>();
+        roles.add(userRole);
+        user.setRoles(roles);
+        user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
+        user.setEnabled(true);
+        userRepository.save(user);
+        return user;
+
 
     }
 
