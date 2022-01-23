@@ -159,4 +159,15 @@ public class ArticleContentController {
         return articleContentService.findByTag(tagName);
     }
 
+    @GetMapping("cms/findall")
+    public List<ArticleContent> getAllForCMS() {
+        return articleContentService.getAllForCMS();
+    }
+
+    @GetMapping("cms/findbyuser")
+    public List<ArticleContent> getAllByUsersInCMS() {
+        return articleContentService.getAllByUsersInCMS();
+    }
+
+
 }

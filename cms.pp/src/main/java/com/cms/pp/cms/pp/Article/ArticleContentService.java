@@ -274,7 +274,7 @@ public class ArticleContentService {
         if (lang == null) {
             return null;
         }
-        return articleContentRepository.findAllByLanguage(language, Sort.by("id").descending());
+        return articleContentRepository.findAllByLanguageAndPublished(language, "PUBLISHED" , Sort.by("id").descending());
 
     }
 
@@ -293,8 +293,7 @@ public class ArticleContentService {
         if (language == null)
             return null;
         Pageable pageableWithElements = PageRequest.of(0, count, Sort.by("views").descending());
-        articleContentRepository.findAllByLanguage(language, pageableWithElements);
-        return articleContentRepository.findAllByLanguage(language, pageableWithElements);
+        return articleContentRepository.findAllByLanguageAndPublished(language, "PUBLISHED",  pageableWithElements);
     }
 
     public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {
@@ -315,7 +314,7 @@ public class ArticleContentService {
 
             List<List<ArticleContent>> articleContentList = new ArrayList<>();
             for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByArticleTagsAndLanguage( articleTag, lang, Sort.by("id").descending()));
+                articleContentList.add(articleContentRepository.findByPublishedAndArticleTagsAndLanguage( "PUBLISHED",articleTag, lang, Sort.by("id").descending()));
             }
 
             List<ArticleContent> temp = new ArrayList<>();
@@ -335,7 +334,7 @@ public class ArticleContentService {
         }
 
         if (tagNames == null) {
-            return articleContentRepository.findByTitleIgnoreCaseContainingAndLanguage(title, lang, Sort.by("id").descending());
+            return articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndLanguage(title, "PUBLISHED", lang, Sort.by("id").descending());
         }
 
         if (!title.equals("") && tagNames != null) {
@@ -347,7 +346,7 @@ public class ArticleContentService {
 
             List<List<ArticleContent>> articleContentList = new ArrayList<>();
             for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndArticleTagsAndLanguage( title, articleTag, lang, Sort.by("title").ascending()));
+                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndArticleTagsAndLanguage( title, "PUBLISHED" , articleTag, lang, Sort.by("title").ascending()));
             }
 
             List<ArticleContent> temp = new ArrayList<>();
@@ -405,6 +404,25 @@ public class ArticleContentService {
         {
             return null;
         }
-        return articleContentRepository.findByArticleTags(articleTag, Sort.by("id").descending());
+        return articleContentRepository.findByPublishedAndArticleTags("PUBLISHED" ,articleTag, Sort.by("id").descending());
+    }
+
+    public List<ArticleContent> getAllForCMS(){
+        return articleContentRepository.findAll(Sort.by("id").descending());
+    }
+
+    public List<ArticleContent> getAllByUsersInCMS() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        }
+        else {
+            username = principal.toString();
+        }
+        if (username.equals("anonymousUser")) {
+            return null;
+        }
+        return articleContentRepository.findAllByUser(userRepository.findByUserName(username), Sort.by("id").descending());
     }
 }
