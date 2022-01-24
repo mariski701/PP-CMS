@@ -1,0 +1,24 @@
+2022-01-24 20:45:56 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]
+2022-01-24 20:46:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]
+2022-01-24 20:47:03 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (751)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (751)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]
+2022-01-24 20:47:28 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('Lightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the mixture ... (709)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('Lightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the mixture ... (709)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]
+2022-01-24 20:51:09 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]
+2022-01-24 20:54:00 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLDataException: Wartość za długa dla kolumny "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"
+Value too long for column "CONTENT VARCHAR(255)": "STRINGDECODE('STEP 1\nLightly whisk 2 large eggs, 6 tbsp single cream or full cream milk and a pinch of salt together until the ... (756)"; SQL statement:
+insert into article_content (comments_allowed, content, article_date, image, language_id, article_published, title, user_id, version, views, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-200]

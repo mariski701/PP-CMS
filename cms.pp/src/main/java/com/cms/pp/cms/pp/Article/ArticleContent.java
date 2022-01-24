@@ -4,6 +4,7 @@ import com.cms.pp.cms.pp.Comment.Comment;
 import com.cms.pp.cms.pp.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -23,7 +24,9 @@ public class ArticleContent {
     @Column(unique = true, length = 128, updatable = false, nullable = false)
     private int id;
 
-    @Column(name = "content")
+
+    @Column(name = "content", length = 5000)
+    @Lob
     private String content;
 
     @Column(name = "title")

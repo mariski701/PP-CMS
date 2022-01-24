@@ -26,7 +26,7 @@ import java.util.*;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    boolean alreadySetup = true;
+    boolean alreadySetup = false;
     @Autowired
     private UserRepository userRepository;
     @Autowired
