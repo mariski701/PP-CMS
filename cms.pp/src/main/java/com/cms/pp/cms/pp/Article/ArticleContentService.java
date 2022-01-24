@@ -120,7 +120,10 @@ public class ArticleContentService {
             errorProvidedDataHandler.setError("3016"); //article not found.
             return errorProvidedDataHandler;
         }
-
+        if (articleStatus.equals("PUBLISHED"))
+        {
+            articleContent.setDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));;
+        }
         if (articleStatus.equals("PUBLISHED") || articleStatus.equals("UNPUBLISHED")) {
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
