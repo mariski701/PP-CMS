@@ -65,6 +65,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/user/edit/mail").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/password").hasAuthority("EDIT_USER").and()
                 .authorizeRequests().antMatchers("/api/user/edit/username").hasAuthority("EDIT_USER").and()
+                .authorizeRequests().antMatchers("/api/articles/cms/findall").hasAuthority("READ_CMS_USERS").and()
+                .authorizeRequests().antMatchers("/api/articles/cms/findbyuser").hasAuthority("ADD_ARTICLE").and()
                 .addFilterBefore(new CorsCustomFilter(), BasicAuthenticationFilter.class)
                 .formLogin();
 
