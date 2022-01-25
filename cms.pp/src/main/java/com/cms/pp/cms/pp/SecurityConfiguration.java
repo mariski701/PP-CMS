@@ -48,7 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/language/add").hasAuthority("ADD_LANGUAGE").and()
                 .authorizeRequests().antMatchers("/api/language/edit").hasAuthority("EDIT_LANGUAGE").and()
                 .authorizeRequests().antMatchers("/api/comments/add").hasAuthority("WRITE_COMMENT").and()
-                .authorizeRequests().antMatchers("/api/comments/edit").hasAuthority("EDIT_OWN_COMMENT").and()
+                .authorizeRequests().antMatchers("/api/comments/edit").hasAnyAuthority("EDIT_OWN_COMMENT", "EDIT_COMMENT").and()
                 .authorizeRequests().antMatchers("/api/comments/remove/{id}").hasAnyAuthority("EDIT_COMMENT", "EDIT_OWN_COMMENT").and()
                 .authorizeRequests().antMatchers("/api/comments/cms/edit/{id}").hasAuthority("EDIT_COMMENT").and()
                 .authorizeRequests().antMatchers("/api/cms/admin/config/comments/{boolean}").hasAuthority("MANAGE_CONFIG_FLAGS").and()
