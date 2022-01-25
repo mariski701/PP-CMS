@@ -114,11 +114,11 @@ public class LanguageService {
             errorProvidedDataHandler.setError("3038");//langcode empty
             return errorProvidedDataHandler;
         }
-        if (language.getName().equals(languageRepository.findByName(language.getName()))) {
+        if (language.getName().equals(languageRepository.findByName(lang.getName()))) {
             errorProvidedDataHandler.setError("3039"); //provided name is already used by other language in database
             return errorProvidedDataHandler;
         }
-        if (language.getLanguageCode().equals(languageRepository.findByLanguageCode(language.getLanguageCode()))) {
+        if (language.getLanguageCode().equals(languageRepository.findByLanguageCode(lang.getLanguageCode()))) {
             errorProvidedDataHandler.setError("3039");
             return errorProvidedDataHandler;
         }
