@@ -15,7 +15,7 @@ public class AlertCodeController {
     @Autowired
     private AlertCodeService alertCodeService;
 
-    @GetMapping("findALl")
+    @GetMapping("findAll")
     public List<AlertCode> getAlertCodes() {
         return alertCodeService.getAlertCodes();
     }
