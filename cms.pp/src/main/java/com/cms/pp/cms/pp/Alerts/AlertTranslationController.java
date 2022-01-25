@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CustomCorsConfigAnnotation
@@ -21,5 +22,10 @@ public class AlertTranslationController {
     @PostMapping("add")
     public Object addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
         return alertTranslationService.addAlertTranslation(alertTranslationDTO);
+    }
+
+    @PutMapping("edit")
+    public Object editAlertTranslation(@RequestBody Map<String, String> body) {
+        return alertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
     }
 }

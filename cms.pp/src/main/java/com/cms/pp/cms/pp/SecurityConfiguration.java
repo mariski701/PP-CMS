@@ -59,6 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/cms/role/edit/{id}").hasAuthority("EDIT_ROLE").and()
                 .authorizeRequests().antMatchers("/api/cms/role/remove/{id}").hasAuthority("REMOVE_ROLE").and()
                 .authorizeRequests().antMatchers("/api/alerts/add").hasAuthority("ADD_TRANSLATION").and()
+                .authorizeRequests().antMatchers("/api/alerts/edit").hasAuthority("ADD_TRANSLATION").and()
                 .authorizeRequests().antMatchers("/api/original/alerts/add").hasAuthority("ADD_TRANSLATION").and()
                 .authorizeRequests().antMatchers("/api/original/alerts/edit").hasAuthority("ADD_TRANSLATION").and()
                 .authorizeRequests().antMatchers("/api/original/alerts/remove/{id}").hasAuthority("ADD_TRANSLATION").and()

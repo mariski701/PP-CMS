@@ -116,7 +116,7 @@ public class LanguageService {
             }
 
         }
-        
+
         if (lang.getName().equals("")) {
             errorProvidedDataHandler.setError("3037"); //lang name empty
             return errorProvidedDataHandler;

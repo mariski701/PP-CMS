@@ -57,4 +57,22 @@ public class AlertTranslationService {
         return errorProvidedDataHandler;
     }
 
+    public Object editAlertTranslation(int id, String errorTranslation) {
+        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
+        if (alertTranslation == null) {
+            errorProvidedDataHandler.setError("3041");
+            return errorProvidedDataHandler;
+        }
+        if (errorTranslation.equals("")) {
+            errorProvidedDataHandler.setError("3043");
+            return errorProvidedDataHandler;
+        }
+        alertTranslation.setErrorTranslation(errorTranslation);
+        alertTranslationRepository.save(alertTranslation);
+        errorProvidedDataHandler.setError("2001");
+        return errorProvidedDataHandler;
+
+    }
+
 }
