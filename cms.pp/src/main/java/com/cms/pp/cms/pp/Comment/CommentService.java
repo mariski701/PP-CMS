@@ -145,8 +145,9 @@ public class CommentService {
             {
                 canEdit = true;
             }
-            if (principalUser.getId() != comment.getUser().getId()) {
+            if (!canEdit && principalUser.getId() != comment.getUser().getId()) {
                 errorProvidedDataHandler.setError("4003");
+                System.out.println("dupadriven");
                 return errorProvidedDataHandler;
             }
             else
@@ -166,6 +167,7 @@ public class CommentService {
             }
             else {
                 errorProvidedDataHandler.setError("4003");
+                System.out.println("dupadrive2n");
                 return errorProvidedDataHandler;
             }
 
