@@ -37,6 +37,11 @@ public class AlertCodeService {
 
     public Object addCode(String alertCode, String alertName) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
+        if (alertCodeTemp!=null) {
+            errorProvidedDataHandler.setError("3044");
+            return errorProvidedDataHandler;
+        }
         if (alertCode.equals("")) {
             errorProvidedDataHandler.setError("3042");
             return errorProvidedDataHandler;
@@ -55,7 +60,18 @@ public class AlertCodeService {
 
     public Object editCode(int id, String alertCode, String alertName) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+        AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         AlertCode editedAlertCode = alertCodeRepository.findById(id).orElse(null);
+
+        if(alertCodeTemp!= null) {
+            if (!editedAlertCode.getAlertCode().equals(alertCode))
+            {
+                errorProvidedDataHandler.setError("3044");
+                return errorProvidedDataHandler;
+            }
+
+        }
+
         if (editedAlertCode == null) {
             errorProvidedDataHandler.setError("3041"); //error code not found
             return errorProvidedDataHandler;
