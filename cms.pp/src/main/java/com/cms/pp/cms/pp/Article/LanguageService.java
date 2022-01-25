@@ -98,30 +98,35 @@ public class LanguageService {
     }
 
     public Object editLanguage(Language lang) {
-        Language language = languageRepository.findById(lang.getId()).orElse(null);
+
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (language == null)
-        {
+        Language language = languageRepository.findById(lang.getId()).orElse(null);
+        Language checkLangName = languageRepository.findByName(lang.getName());
+        Language checkLangCode = languageRepository.findByLanguageCode(lang.getLanguageCode());
+
+        if (language == null) {
             errorProvidedDataHandler.setError("3018"); //nie ma takiego języka
             return errorProvidedDataHandler;
         }
-        if (language.getName().equals(""))
-        {
+
+        if (checkLangCode != null || checkLangName != null) {
+            if (!language.getName().equals(lang.getName()) || !language.getLanguageCode().equals(lang.getLanguageCode())) {
+                errorProvidedDataHandler.setError("3039");
+                return errorProvidedDataHandler;
+            }
+
+        }
+        
+        if (lang.getName().equals("")) {
             errorProvidedDataHandler.setError("3037"); //lang name empty
             return errorProvidedDataHandler;
         }
-        if (language.getLanguageCode().equals("")) {
+
+        if (lang.getLanguageCode().equals("")) {
             errorProvidedDataHandler.setError("3038");//langcode empty
             return errorProvidedDataHandler;
         }
-        if (language.getName().equals(languageRepository.findByName(lang.getName()))) {
-            errorProvidedDataHandler.setError("3039"); //provided name is already used by other language in database
-            return errorProvidedDataHandler;
-        }
-        if (language.getLanguageCode().equals(languageRepository.findByLanguageCode(lang.getLanguageCode()))) {
-            errorProvidedDataHandler.setError("3039");
-            return errorProvidedDataHandler;
-        }
+
         language.setName(lang.getName());
         language.setLanguageCode(lang.getLanguageCode());
         languageRepository.save(language);
