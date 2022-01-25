@@ -21,7 +21,7 @@ public class AlertCodeController {
     }
 
     @PostMapping("add")
-    public Object addCode(Map<String, String> body) {
+    public Object addCode(@RequestBody Map<String, String> body) {
         return alertCodeService.addCode(body.get("alertCode"), body.get("alertName"));
     }
 
