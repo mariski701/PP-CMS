@@ -118,6 +118,10 @@ public class LanguageService {
             errorProvidedDataHandler.setError("3039"); //provided name is already used by other language in database
             return errorProvidedDataHandler;
         }
+        if (language.getLanguageCode().equals(languageRepository.findByLanguageCode(language.getLanguageCode()))) {
+            errorProvidedDataHandler.setError("3039");
+            return errorProvidedDataHandler;
+        }
         language.setName(lang.getName());
         language.setLanguageCode(lang.getLanguageCode());
         languageRepository.save(language);
