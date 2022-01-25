@@ -29,9 +29,14 @@ public class LanguageService {
     public Object addLanguage(Language language) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         Language langTemp = languageRepository.findByName(language.getName());
+        Language langTemp2 = languageRepository.findByLanguageCode(language.getLanguageCode());
         if (language.getName().equals(""))
         {
             errorProvidedDataHandler.setError("3037"); //lang name empty
+            return errorProvidedDataHandler;
+        }
+        if (langTemp2 != null) {
+            errorProvidedDataHandler.setError("3039");
             return errorProvidedDataHandler;
         }
         if (langTemp != null) {
