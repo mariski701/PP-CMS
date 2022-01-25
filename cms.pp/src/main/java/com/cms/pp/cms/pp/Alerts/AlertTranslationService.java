@@ -75,4 +75,8 @@ public class AlertTranslationService {
 
     }
 
+    public AlertTranslation findById(int id) {
+        return alertTranslationRepository.findById(id).orElse(null);
+    }
+
 }

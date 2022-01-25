@@ -28,4 +28,9 @@ public class AlertTranslationController {
     public Object editAlertTranslation(@RequestBody Map<String, String> body) {
         return alertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
     }
+
+    @GetMapping("find/{id}")
+    public AlertTranslation findById(@PathVariable int id) {
+        return alertTranslationService.findById(id);
+    }
 }
