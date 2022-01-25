@@ -89,4 +89,8 @@ public class AlertCodeService {
         return errorProvidedDataHandler;
     }
 
+    public AlertCode findById(int id) {
+        return alertCodeRepository.findById(id).orElse(null);
+    }
+
 }

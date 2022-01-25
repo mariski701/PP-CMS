@@ -34,4 +34,9 @@ public class AlertCodeController {
     public Object editCode(@RequestBody Map<String,String> body) {
         return alertCodeService.editCode(Integer.parseInt(body.get("id")), body.get("alertCode"), body.get("alertName"));
     }
+
+    @GetMapping("find/{id}")
+    public AlertCode findById(@PathVariable int id) {
+        return alertCodeService.findById(id);
+    }
 }
