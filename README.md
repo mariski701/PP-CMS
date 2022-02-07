@@ -25,3 +25,6 @@ The system offers:
 
 ## Frontend
 > Dedicated frontend for this system can be found here https://github.com/kamkow10/pp-cms-frontend/tree/prod
+
+## Documentation
+> Documentation in Polish language is available here https://drive.google.com/file/d/1BJfAsnfLvQDqr7-gusWHOJ9z9vSgTYS2/view?usp=sharing
