@@ -1,6 +1,6 @@
 # PP-CMS
 
-The server part of the Multilanguage Content Management System project implemented for the Content Management Systems subject in the second semester of the Master's degree studies at the Poznań University of Technology.
+The server part of the Multilangual Content Management System project implemented for the Content Management Systems subject in the second semester of the Master's degree studies at the Poznań University of Technology.
 
 The system was developed in Java, Spring Boot framework, JPA, Spring Security, Spring Session, REST API. This release uses the H2 database.
 
