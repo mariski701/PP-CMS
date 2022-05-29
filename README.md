@@ -28,3 +28,6 @@ The system offers:
 
 ## Documentation
 > Documentation in Polish language is available here https://drive.google.com/file/d/1BJfAsnfLvQDqr7-gusWHOJ9z9vSgTYS2/view?usp=sharing
+
+## Instalation
+> Install project using docker files from this repo https://github.com/mariski701/pp-cms-docker
