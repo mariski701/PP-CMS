@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @CrossOrigin(
-        originPatterns = "*",
+        origins = {"http://localhost:4200"},
         allowCredentials = "true",
         maxAge = 3600,
         allowedHeaders = "*",
