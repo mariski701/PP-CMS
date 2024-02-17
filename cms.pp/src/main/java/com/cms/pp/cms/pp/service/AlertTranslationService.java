@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.AlertCode;
 import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.model.entity.Language;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("AlertTranslationService")
 public class AlertTranslationService {
     @Autowired
     private AlertTranslationRepository alertTranslationRepository;
@@ -53,7 +54,7 @@ public class AlertTranslationService {
 
     public Object addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        errorProvidedDataHandler.setError("2001");
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
         AlertTranslation alertTranslation = new AlertTranslation();
         alertTranslation.setLanguage(languageRepository.findByName(alertTranslationDTO.getLanguage()));
         alertTranslation.setAlertCode(alertCodeRepository.findByAlertCode(alertTranslationDTO.getAlertCode()));
@@ -66,16 +67,16 @@ public class AlertTranslationService {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
         if (alertTranslation == null) {
-            errorProvidedDataHandler.setError("3041");
+            errorProvidedDataHandler.setError(Code.CODE_3041.getValue());
             return errorProvidedDataHandler;
         }
-        if (errorTranslation.equals("")) {
-            errorProvidedDataHandler.setError("3043");
+        if (errorTranslation.isEmpty()) {
+            errorProvidedDataHandler.setError(Code.CODE_3043.getValue());
             return errorProvidedDataHandler;
         }
         alertTranslation.setErrorTranslation(errorTranslation);
         alertTranslationRepository.save(alertTranslation);
-        errorProvidedDataHandler.setError("2001");
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
         return errorProvidedDataHandler;
 
     }

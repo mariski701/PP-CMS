@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
@@ -16,30 +17,30 @@ public class ConfigurationFlagsService {
         return configurationFlagsRepository.findById(1).orElse(null);
     }
 
-    public Object changeCommentConfiguration(boolean commentsAvailable) {
+    public Object updateCommentConfiguration(boolean commentsAvailable) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setComments(commentsAvailable);
-        errorProvidedDataHandler.setError("2001");
         configurationFlagsRepository.save(configurationFlags);
-        return errorProvidedDataHandler; //success
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
+        return errorProvidedDataHandler;
     }
 
-    public Object changeRegisterConfiguration(boolean registerAvailable) {
+    public Object updateRegisterConfiguration(boolean registerAvailable) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setRegister(registerAvailable);
-        errorProvidedDataHandler.setError("2001");
         configurationFlagsRepository.save(configurationFlags);
-        return errorProvidedDataHandler; //success
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
+        return errorProvidedDataHandler;
     }
 
-    public Object changeLoginConfiguration(boolean loginAvailable) {
+    public Object updateLoginConfiguration(boolean loginAvailable) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         configurationFlags.setLogin(loginAvailable);
-        errorProvidedDataHandler.setError("2001");
         configurationFlagsRepository.save(configurationFlags);
-        return errorProvidedDataHandler; //success
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
+        return errorProvidedDataHandler;
     }
 }

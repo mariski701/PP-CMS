@@ -1,5 +1,7 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.Code;
+import com.cms.pp.cms.pp.enums.PrivilegeName;
 import com.cms.pp.cms.pp.model.entity.ArticleContent;
 import com.cms.pp.cms.pp.repository.ArticleContentRepository;
 import com.cms.pp.cms.pp.model.entity.Comment;
@@ -25,6 +27,7 @@ import java.util.List;
 
 @Service
 public class CommentService {
+    private static final String ANONYMOUS_USER = "anonymousUser";
     @Autowired
     CommentRepository commentRepository;
     @Autowired
@@ -84,37 +87,37 @@ public class CommentService {
             else {
                 username = principal.toString();
             }
-            if (username.equals("anonymousUser")) {
-                errorProvidedDataHandler.setError("3005");//user not logged in
+            if (username.equals(ANONYMOUS_USER)) {
+                errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
                 return errorProvidedDataHandler;
             }
             else
             {
                 ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
-                if (commentDTO.getContent().equals("")) {
-                    errorProvidedDataHandler.setError("3004");//content empty
+                if (commentDTO.getContent().isEmpty()) {
+                    errorProvidedDataHandler.setError(Code.CODE_3004.getValue());
                     return errorProvidedDataHandler;
                 }
                 if (articleContent == null) {
-                    errorProvidedDataHandler.setError("3016");//article not found
+                    errorProvidedDataHandler.setError(Code.CODE_3016.getValue());
                     return errorProvidedDataHandler;
                 }
                 if(!articleContent.isCommentsAllowed()) {
-                    errorProvidedDataHandler.setError("3031"); //comments are turned off in this article
+                    errorProvidedDataHandler.setError(Code.CODE_3031.getValue());
                     return errorProvidedDataHandler;
                 }
                 Comment comment = new Comment();
                 comment.setContent(commentDTO.getContent());
                 comment.setUser(userRepository.findByUserName(username));
                 comment.setArticleContent(articleContent);
-                errorProvidedDataHandler.setError("2001");//success
+                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
                 commentRepository.save(comment);
                 return errorProvidedDataHandler;
             }
         }
         else
         {
-            errorProvidedDataHandler.setError("4008");//comments turned off
+            errorProvidedDataHandler.setError(Code.CODE_4008.getValue());
             return errorProvidedDataHandler;
         }
 
@@ -131,44 +134,44 @@ public class CommentService {
         else {
             username = principal.toString();
         }
-        if (username.equals("anonymousUser")) {
-            errorProvidedDataHandler.setError("3005");
+        if (username.equals(ANONYMOUS_USER)) {
+            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
             return errorProvidedDataHandler;
         }
         else {
             User principalUser = userRepository.findByUserName(username);
             Comment comment = commentRepository.findById(commentId).orElse(null);
             if (comment == null) {
-                errorProvidedDataHandler.setError("3019"); //comment not found
+                errorProvidedDataHandler.setError(Code.CODE_3019.getValue());
                 return errorProvidedDataHandler;
             }
             Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
             Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
-            if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_COMMENT")))
+            if (principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_COMMENT.getPrivilegeName())))
             {
                 canEdit = true;
             }
             if (!canEdit && principalUser.getId() != comment.getUser().getId()) {
-                errorProvidedDataHandler.setError("4003");
+                errorProvidedDataHandler.setError(Code.CODE_4003.getValue());
                 return errorProvidedDataHandler;
             }
             else
             {
                 canEdit = true;
             }
-            if (commentContent.equals("")) {
-                errorProvidedDataHandler.setError("3004");
+            if (commentContent.isEmpty()) {
+                errorProvidedDataHandler.setError(Code.CODE_3004.getValue());
                 return errorProvidedDataHandler;
             }
             if (canEdit)
             {
                 comment.setContent(commentContent);
-                errorProvidedDataHandler.setError("2001");
+                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
                 commentRepository.save(comment);
                 return errorProvidedDataHandler;
             }
             else {
-                errorProvidedDataHandler.setError("4003");
+                errorProvidedDataHandler.setError(Code.CODE_4003.getValue());
                 return errorProvidedDataHandler;
             }
 
@@ -179,15 +182,15 @@ public class CommentService {
         Comment comment = commentRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (comment == null) {
-            errorProvidedDataHandler.setError("3019"); //comment not found
+            errorProvidedDataHandler.setError(Code.CODE_3019.getValue());
             return errorProvidedDataHandler;
         }
-        if (content.equals("")) {
-            errorProvidedDataHandler.setError("3004"); //content empty
+        if (content.isEmpty()) {
+            errorProvidedDataHandler.setError(Code.CODE_3004.getValue());
             return errorProvidedDataHandler;
         }
         comment.setContent(content);
-        errorProvidedDataHandler.setError("2001");
+        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
         commentRepository.save(comment);
         return errorProvidedDataHandler;
     }
@@ -203,39 +206,33 @@ public class CommentService {
         else {
             username = principal.toString();
         }
-        if (username.equals("anonymousUser")) {
-            errorProvidedDataHandler.setError("3005");
+        if (username.equals(ANONYMOUS_USER)) {
+            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
             return errorProvidedDataHandler;
         }
         User principalUser = userRepository.findByUserName(username);
         Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment == null) {
+            errorProvidedDataHandler.setError(Code.CODE_3019.getValue());
+            return errorProvidedDataHandler;
+        }
         Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
         Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
         User userComment = comment.getUser();
-        if (principalPrivileges.contains(privilegeRepository.findByName("EDIT_COMMENT")))
-        {
+        if (principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_COMMENT.getPrivilegeName())))
             canEdit = true;
-        }
 
         if (principalUser.getId() == userComment.getId())
-        {
             canEdit = true;
-        }
-        System.out.println(principalPrivileges);
-
-        if (comment == null) {
-            errorProvidedDataHandler.setError("3019"); //comment not found
-            return errorProvidedDataHandler;
-        }
 
         if (canEdit)
         {
             commentRepository.delete(comment);
-            errorProvidedDataHandler.setError("2001");
+            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
             return errorProvidedDataHandler;
         }
         else {
-            errorProvidedDataHandler.setError("3036");
+            errorProvidedDataHandler.setError(Code.CODE_3036.getValue());
             return errorProvidedDataHandler;
         }
 

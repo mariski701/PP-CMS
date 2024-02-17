@@ -23,18 +23,18 @@ public class AlertCodeController {
     }
 
     @PostMapping("add")
-    public Object addCode(@RequestBody Map<String, String> body) {
-        return alertCodeService.addCode(body.get("alertCode"), body.get("alertName"));
+    public Object addAlertCode(@RequestBody Map<String, String> body) {
+        return alertCodeService.addAlertCode(body.get("alertCode"), body.get("alertName"));
     }
 
     @DeleteMapping("remove/{id}")
-    public Object removeCode(@PathVariable int id) {
-        return alertCodeService.removeCode(id);
+    public Object removeAlertCode(@PathVariable int id) {
+        return alertCodeService.removeAlertCode(id);
     }
 
     @PutMapping("edit")
-    public Object editCode(@RequestBody Map<String,String> body) {
-        return alertCodeService.editCode(Integer.parseInt(body.get("id")), body.get("alertCode"), body.get("alertName"));
+    public Object editAlertCode(@RequestBody Map<String,String> body) {
+        return alertCodeService.editAlertCode(Integer.parseInt(body.get("id")), body.get("alertCode"), body.get("alertName"));
     }
 
     @GetMapping("find/{id}")

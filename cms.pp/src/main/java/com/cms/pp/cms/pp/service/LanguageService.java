@@ -1,8 +1,10 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,64 +24,42 @@ public class LanguageService {
     @Autowired
     private ArticleTagRepository articleTagRepository;
 
-
-
     public Object addLanguage(Language language) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         Language langTemp = languageRepository.findByName(language.getName());
         Language langTemp2 = languageRepository.findByLanguageCode(language.getLanguageCode());
-        if (language.getName().equals(""))
-        {
-            errorProvidedDataHandler.setError("3037"); //lang name empty
-            return errorProvidedDataHandler;
-        }
-        if (langTemp2 != null) {
-            errorProvidedDataHandler.setError("3039");
-            return errorProvidedDataHandler;
-        }
-        if (langTemp != null) {
-            errorProvidedDataHandler.setError("3039"); //lang already exists in db
-            return errorProvidedDataHandler;
-        }
-        if (language.getLanguageCode().equals("")) {
-            errorProvidedDataHandler.setError("3038");//langcode empty
-            return errorProvidedDataHandler;
-        }
+        if (language.getName().isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
+        if (langTemp2 != null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
+        if (langTemp != null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
+        if (language.getLanguageCode().isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
         languageRepository.save(language);
-        errorProvidedDataHandler.setError("2001"); //success
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     public Object removeLanguage(int id) {
         Language language = languageRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (language == null) {
-            errorProvidedDataHandler.setError("3018");
-            return errorProvidedDataHandler;
-        }
-        if (id<=1) {
-            errorProvidedDataHandler.setError("3040"); // you cant remove main website language
-            return errorProvidedDataHandler;
-        }
+        if (language == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3018.getValue());
+        if (id<=1)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3040.getValue());
         List<ArticleContent> articleContentList = articleContentRepository.findAllByLanguage(language);
         List<ArticleTag> articleTagList = articleTagRepository.findByLanguage(language);
         List<AlertTranslation> alertTranslationList = alertTranslationRepository.findAlertTranslationByLanguage(language);
         List<List<Comment>> commentList = new ArrayList<>();
-
         for (ArticleContent articleContent : articleContentList) {
             commentList.add(commentRepository.findByArticleContent(articleContent));
         }
-
         for (List<Comment> commentList1 : commentList) {
             commentRepository.deleteAll(commentList1);
         }
         articleContentRepository.deleteAll(articleContentList);
         articleTagRepository.deleteAll(articleTagList);
         alertTranslationRepository.deleteAll(alertTranslationList);
-
         languageRepository.deleteById(id);
-        errorProvidedDataHandler.setError("2001");
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
 
     }
 
@@ -96,39 +76,26 @@ public class LanguageService {
     }
 
     public Object editLanguage(Language lang) {
-
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         Language language = languageRepository.findById(lang.getId()).orElse(null);
         Language checkLangName = languageRepository.findByName(lang.getName());
         Language checkLangCode = languageRepository.findByLanguageCode(lang.getLanguageCode());
-
-        if (language == null) {
-            errorProvidedDataHandler.setError("3018"); //nie ma takiego języka
-            return errorProvidedDataHandler;
-        }
+        if (language == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3018.getValue());
 
         if (checkLangCode != null || checkLangName != null) {
             if (!language.getName().equals(lang.getName()) || !language.getLanguageCode().equals(lang.getLanguageCode())) {
-                errorProvidedDataHandler.setError("3039");
-                return errorProvidedDataHandler;
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
             }
-
         }
+        if (lang.getName().isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
 
-        if (lang.getName().equals("")) {
-            errorProvidedDataHandler.setError("3037"); //lang name empty
-            return errorProvidedDataHandler;
-        }
-
-        if (lang.getLanguageCode().equals("")) {
-            errorProvidedDataHandler.setError("3038");//langcode empty
-            return errorProvidedDataHandler;
-        }
+        if (lang.getLanguageCode().isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
 
         language.setName(lang.getName());
         language.setLanguageCode(lang.getLanguageCode());
         languageRepository.save(language);
-        errorProvidedDataHandler.setError("2001");
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 }
