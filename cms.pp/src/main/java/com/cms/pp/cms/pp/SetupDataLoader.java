@@ -9,6 +9,7 @@ import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,8 @@ import java.util.*;
 @Component
 @Slf4j
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    boolean alreadySetup = false;
+    @Value("${setupDataLoader.alreadySetup}")
+    boolean alreadySetup;
     @Autowired
     private UserRepository userRepository;
     @Autowired
