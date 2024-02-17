@@ -1,20 +1,12 @@
 package com.cms.pp.cms.pp;
 
-import com.cms.pp.cms.pp.Alerts.AlertCode;
-import com.cms.pp.cms.pp.Alerts.AlertCodeRepository;
-import com.cms.pp.cms.pp.Alerts.AlertTranslation;
-import com.cms.pp.cms.pp.Alerts.AlertTranslationRepository;
-import com.cms.pp.cms.pp.Article.*;
-import com.cms.pp.cms.pp.Comment.Comment;
-import com.cms.pp.cms.pp.Comment.CommentRepository;
-import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlags;
-import com.cms.pp.cms.pp.ConfigurationFlags.ConfigurationFlagsRepository;
-import com.cms.pp.cms.pp.Priviliges.Privilege;
-import com.cms.pp.cms.pp.Priviliges.PrivilegeRepository;
-import com.cms.pp.cms.pp.Role.Role;
-import com.cms.pp.cms.pp.Role.RoleRepository;
-import com.cms.pp.cms.pp.user.User;
-import com.cms.pp.cms.pp.user.UserRepository;
+import com.cms.pp.cms.pp.model.entity.*;
+import com.cms.pp.cms.pp.repository.*;
+import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
+import com.cms.pp.cms.pp.repository.RoleRepository;
+import com.cms.pp.cms.pp.enums.PrivilegeName;
+import com.cms.pp.cms.pp.enums.RoleName;
+import com.cms.pp.cms.pp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -23,7 +15,13 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.*;
-
+/*
+* Class used to generate data.
+* Should be started at first application start.
+* To generate data change alreadySetup flag to false.
+* After first application start remember to change alreadySetup flag to false.
+* !important: Remember to change generated users passwords
+*/
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
     boolean alreadySetup = true;
@@ -67,60 +65,54 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         englishLanguage.setLanguageCode("en_EN");
         polishLanguage.setLanguageCode("pl_PL");
 
-
-        Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound("ADMIN_PANEL");
-        Privilege removeTags = createPrivilegeIfNotFound("REMOVE_TAGS"); //
-        Privilege addTagsCMS = createPrivilegeIfNotFound("ADD_TAGS_CMS"); //
-        Privilege addLanguagePrivilege = createPrivilegeIfNotFound("ADD_LANGUAGE"); //
-        Privilege removeLanguagePrivilege = createPrivilegeIfNotFound("REMOVE_LANGUAGE"); //
-        Privilege editLanguagePrivilege = createPrivilegeIfNotFound("EDIT_LANGUAGE"); //
-        Privilege editUserPrivilege  = createPrivilegeIfNotFound("EDIT_USER"); //
-        Privilege editCMSUserPrivilege = createPrivilegeIfNotFound("EDIT_CMS_USER"); //
-        Privilege removeUserPrivilege = createPrivilegeIfNotFound("REMOVE_USER"); //
-        Privilege addTranslationPrivilege = createPrivilegeIfNotFound("ADD_TRANSLATION"); //
-        Privilege removeTranslationPrivilege = createPrivilegeIfNotFound("REMOVE_TRANSLATION"); //
-        Privilege editTranslationPrivilege = createPrivilegeIfNotFound("EDIT_TRANSLATION"); //
-        Privilege readCMSUsersPrivilege = createPrivilegeIfNotFound("READ_CMS_USERS"); //
-        Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE"); //
-        Privilege writeCommentPrivilege = createPrivilegeIfNotFound("WRITE_COMMENT"); //
-        Privilege removeCommentPrivilege = createPrivilegeIfNotFound("REMOVE_COMMENT");
-        Privilege editCommentPrivilege = createPrivilegeIfNotFound("EDIT_COMMENT"); //
-        Privilege editOwnCommentPrivilege = createPrivilegeIfNotFound("EDIT_OWN_COMMENT"); //
-        Privilege editArticlesPrivilege = createPrivilegeIfNotFound("EDIT_ARTICLE"); //
-        Privilege editAdminsArticlePrivilege = createPrivilegeIfNotFound("EDIT_ADMINS_ARTICLE"); //
-        Privilege editModeratorsArticlePrivilege = createPrivilegeIfNotFound("EDIT_MODERATORS_ARTICLE"); //
-        Privilege editEditorsArticlePrivilege = createPrivilegeIfNotFound("EDIT_EDITORS_ARTICLE"); //
-        Privilege addRolePrivilege = createPrivilegeIfNotFound("ADD_ROLE"); //
-        Privilege editRole = createPrivilegeIfNotFound("EDIT_ROLE"); //
-        Privilege editUserRole = createPrivilegeIfNotFound("EDIT_USER_ROLE"); //
-        Privilege addCmsUser = createPrivilegeIfNotFound("ADD_CMS_USER"); //
-        Privilege addArticlePrivilege = createPrivilegeIfNotFound("ADD_ARTICLE"); //
-        Privilege removeArticlePrivilege = createPrivilegeIfNotFound("REMOVE_ARTICLE"); //
-        Privilege editTagPrivilege = createPrivilegeIfNotFound("EDIT_TAG"); //
-        Privilege manageConfigFlagsPrivilege = createPrivilegeIfNotFound("MANAGE_CONFIG_FLAGS"); //
-        Privilege removeRolePrivilege = createPrivilegeIfNotFound("REMOVE_ROLE"); //
-        Privilege publishArticlePrivilege = createPrivilegeIfNotFound("PUBLISH_ARTICLE"); //
-        Privilege administrationUsersPrivilegeAccess = createPrivilegeIfNotFound("ADMIN_USERS_PRIVILEGE_ACCESS");
+        // note: keep in sync with PrivilegeName
+        Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound(PrivilegeName.ADMIN_PANEL.getPrivilegeName());
+        Privilege removeTags = createPrivilegeIfNotFound(PrivilegeName.REMOVE_TAGS.getPrivilegeName());
+        Privilege addTagsCMS = createPrivilegeIfNotFound(PrivilegeName.ADD_TAGS_CMS.getPrivilegeName());
+        Privilege addLanguagePrivilege = createPrivilegeIfNotFound(PrivilegeName.ADD_LANGUAGE.getPrivilegeName());
+        Privilege removeLanguagePrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_LANGUAGE.getPrivilegeName());
+        Privilege editLanguagePrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_LANGUAGE.getPrivilegeName());
+        Privilege editUserPrivilege  = createPrivilegeIfNotFound(PrivilegeName.EDIT_USER.getPrivilegeName());
+        Privilege editCMSUserPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_CMS_USER.getPrivilegeName());
+        Privilege removeUserPrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_USER.getPrivilegeName());
+        Privilege addTranslationPrivilege = createPrivilegeIfNotFound(PrivilegeName.ADD_TRANSLATION.getPrivilegeName());
+        Privilege removeTranslationPrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_TRANSLATION.getPrivilegeName());
+        Privilege editTranslationPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_TRANSLATION.getPrivilegeName());
+        Privilege readCMSUsersPrivilege = createPrivilegeIfNotFound(PrivilegeName.READ_CMS_USERS.getPrivilegeName());
+        Privilege readPrivilege = createPrivilegeIfNotFound(PrivilegeName.READ_PRIVILEGE.getPrivilegeName());
+        Privilege writeCommentPrivilege = createPrivilegeIfNotFound(PrivilegeName.WRITE_COMMENT.getPrivilegeName());
+        Privilege removeCommentPrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_COMMENT.getPrivilegeName());
+        Privilege editCommentPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_COMMENT.getPrivilegeName());
+        Privilege editOwnCommentPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_OWN_COMMENT.getPrivilegeName());
+        Privilege editArticlesPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_ARTICLE.getPrivilegeName());
+        Privilege editAdminsArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName());
+        Privilege editModeratorsArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName());
+        Privilege editEditorsArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName());
+        Privilege addRolePrivilege = createPrivilegeIfNotFound(PrivilegeName.ADD_ROLE.getPrivilegeName());
+        Privilege editRole = createPrivilegeIfNotFound(PrivilegeName.EDIT_ROLE.getPrivilegeName());
+        Privilege editUserRole = createPrivilegeIfNotFound(PrivilegeName.EDIT_USER_ROLE.getPrivilegeName());
+        Privilege addCmsUser = createPrivilegeIfNotFound(PrivilegeName.ADD_CMS_USER.getPrivilegeName());
+        Privilege addArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.ADD_ARTICLE.getPrivilegeName());
+        Privilege removeArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_ARTICLE.getPrivilegeName());
+        Privilege editTagPrivilege = createPrivilegeIfNotFound(PrivilegeName.EDIT_TAG.getPrivilegeName());
+        Privilege manageConfigFlagsPrivilege = createPrivilegeIfNotFound(PrivilegeName.MANAGE_CONFIG_FLAGS.getPrivilegeName());
+        Privilege removeRolePrivilege = createPrivilegeIfNotFound(PrivilegeName.REMOVE_ROLE.getPrivilegeName());
+        Privilege publishArticlePrivilege = createPrivilegeIfNotFound(PrivilegeName.PUBLISH_ARTICLE.getPrivilegeName());
+        Privilege administrationUsersPrivilegeAccess = createPrivilegeIfNotFound(PrivilegeName.ADMIN_USERS_PRIVILEGE_ACCESS.getPrivilegeName());
 
         List<Privilege> adminPrivileges = Arrays.asList(administrationUsersPrivilegeAccess, editUserRole, publishArticlePrivilege, removeRolePrivilege, manageConfigFlagsPrivilege, editTagPrivilege, addArticlePrivilege, removeArticlePrivilege, addCmsUser, editEditorsArticlePrivilege, editModeratorsArticlePrivilege, editAdminsArticlePrivilege, editRole, addRolePrivilege, editTranslationPrivilege, removeTranslationPrivilege, addTranslationPrivilege,  removeUserPrivilege, editCMSUserPrivilege, editUserPrivilege, editLanguagePrivilege, removeLanguagePrivilege, addLanguagePrivilege,  removeTags,  addTagsCMS, readCMSUsersPrivilege, readPrivilege,  writeCommentPrivilege, removeCommentPrivilege, editArticlesPrivilege, adminPanelAccessPrivilege, editCommentPrivilege, editOwnCommentPrivilege);
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_MODERATOR", Arrays.asList(adminPanelAccessPrivilege, readPrivilege, removeUserPrivilege, editCMSUserPrivilege, readCMSUsersPrivilege, addArticlePrivilege, removeArticlePrivilege, publishArticlePrivilege, editModeratorsArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, manageConfigFlagsPrivilege, editUserPrivilege));
-        createRoleIfNotFound("ROLE_EDITOR", Arrays.asList(adminPanelAccessPrivilege, readPrivilege, addArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, writeCommentPrivilege, editOwnCommentPrivilege));
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editUserPrivilege));
-        createRoleIfNotFound("ROLE_USERWITHOUTCOMMENTS", Arrays.asList(readPrivilege));
-        createRoleIfNotFound("ROLE_GUEST", Arrays.asList(readPrivilege));
-
-        Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        Role moderatorRole = roleRepository.findByName("ROLE_MODERATOR");
-        Role editorRole = roleRepository.findByName("ROLE_EDITOR");
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        Role userWithoutCommentsRole = roleRepository.findByName("ROLE_USERWITHOUTCOMMENTS");
+        createRoleIfNotFound(RoleName.ROLE_ADMIN.getRoleName(), adminPrivileges);
+        createRoleIfNotFound(RoleName.ROLE_MODERATOR.getRoleName(), Arrays.asList(adminPanelAccessPrivilege, readPrivilege, removeUserPrivilege, editCMSUserPrivilege, readCMSUsersPrivilege, addArticlePrivilege, removeArticlePrivilege, publishArticlePrivilege, editModeratorsArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editCommentPrivilege, manageConfigFlagsPrivilege, editUserPrivilege));
+        createRoleIfNotFound(RoleName.ROLE_EDITOR.getRoleName(), Arrays.asList(adminPanelAccessPrivilege, readPrivilege, addArticlePrivilege, editEditorsArticlePrivilege, editArticlesPrivilege, writeCommentPrivilege, editOwnCommentPrivilege));
+        createRoleIfNotFound(RoleName.ROLE_USER.getRoleName(), Arrays.asList(readPrivilege, writeCommentPrivilege, editOwnCommentPrivilege, editUserPrivilege));
+        createRoleIfNotFound(RoleName.ROLE_USERWITHOUTCOMMENTS.getRoleName(), Collections.singletonList(readPrivilege));
+        createRoleIfNotFound(RoleName.ROLE_GUEST.getRoleName(), Collections.singletonList(readPrivilege));
 
         User admin = new User();
         admin.setUserName("admin");
         admin.setUserPassword(passwordEncoder.encode("admin"));
         admin.setUserMail("admin@cms.pp.com");
-        admin.setRoles(Arrays.asList(adminRole));
+        admin.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_ADMIN.getRoleName())));
         admin.setEnabled(true);
         userRepository.save(admin);
 
@@ -128,7 +120,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setUserName("user");
         user.setUserPassword(passwordEncoder.encode("user"));
         user.setUserMail("user@user.pl");
-        user.setRoles(Arrays.asList(userRole));
+        user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER.getRoleName())));
         user.setEnabled(true);
         userRepository.save(user);
 
@@ -136,7 +128,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         moderator.setUserName("moderator");
         moderator.setUserMail("moderator@pp.cms.com");
         moderator.setUserPassword(passwordEncoder.encode("moderator"));
-        moderator.setRoles(Arrays.asList(moderatorRole));
+        moderator.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_MODERATOR.getRoleName())));
         moderator.setEnabled(true);
         userRepository.save(moderator);
 
@@ -144,7 +136,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         editor.setUserName("editor");
         editor.setUserMail("editor@pp.cms.com");
         editor.setUserPassword(passwordEncoder.encode("editor"));
-        editor.setRoles(Arrays.asList(editorRole));
+        editor.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_EDITOR.getRoleName())));
         editor.setEnabled(true);
         userRepository.save(editor);
 
@@ -152,11 +144,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         withoutcomments.setUserName("withoutcomments");
         withoutcomments.setUserMail("withoutcomments@pp.cms.com");
         withoutcomments.setUserPassword(passwordEncoder.encode("withoutcomments"));
-        withoutcomments.setRoles(Arrays.asList(userWithoutCommentsRole));
+        withoutcomments.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USERWITHOUTCOMMENTS.getRoleName())));
         withoutcomments.setEnabled(true);
         userRepository.save(withoutcomments);
-
-
 
         ArticleTag generalTag = createTagIfNotFound("general");
         generalTag.setLanguage(englishLanguage);
@@ -180,7 +170,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentPolish.setViews(2);
         articleContentPolish.setCommentsAllowed(true);
         articleContentPolish.setLanguage(polishLanguage);
-        articleContentPolish.setArticleTags(Arrays.asList(ogolnyTag));
+        articleContentPolish.setArticleTags(Collections.singletonList(ogolnyTag));
         articleContentRepository.save(articleContentPolish);
 
         ArticleContent articleContentKulinaria = new ArticleContent();
@@ -192,7 +182,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentKulinaria.setViews(2);
         articleContentKulinaria.setCommentsAllowed(true);
         articleContentKulinaria.setLanguage(polishLanguage);
-        articleContentKulinaria.setArticleTags(Arrays.asList(kulinariaTag));
+        articleContentKulinaria.setArticleTags(Collections.singletonList(kulinariaTag));
         articleContentRepository.save(articleContentKulinaria);
 
         ArticleContent articleContentEnglish = new ArticleContent();
@@ -204,7 +194,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentEnglish.setCommentsAllowed(true);
         articleContentEnglish.setViews(1);
         articleContentEnglish.setLanguage(englishLanguage);
-        generalTag.setArticlesContent(Arrays.asList(articleContentEnglish));
+        generalTag.setArticlesContent(Collections.singletonList(articleContentEnglish));
         articleContentRepository.save(articleContentEnglish);
 
 
@@ -217,7 +207,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentCulinary.setCommentsAllowed(true);
         articleContentCulinary.setViews(1);
         articleContentCulinary.setLanguage(englishLanguage);
-        articleContentCulinary.setArticleTags(Arrays.asList(culinaryTag));
+        articleContentCulinary.setArticleTags(Collections.singletonList(culinaryTag));
         articleContentRepository.save(articleContentCulinary);
 
         Comment comment = new Comment();
@@ -435,7 +425,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     @Transactional
     Privilege createPrivilegeIfNotFound(String name) {
-
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege();

@@ -20,9 +20,6 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-
-
-
 	@Bean
 	public WebMvcConfigurer corsConfigurer() { //no cors
 		return new WebMvcConfigurerAdapter() {
@@ -37,7 +34,7 @@ public class Application {
 	@Bean
 	public RoleHierarchy roleHierarchy() {
 		RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-		String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR > ROLE_EDITOR > ROLE_USER";
+		String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR > ROLE_EDITOR > ROLE_USER > ROLE_USERWITHOUTCOMMENTS";
 		roleHierarchy.setHierarchy(hierarchy);
 		return roleHierarchy;
 	}
