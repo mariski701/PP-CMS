@@ -1,18 +1,17 @@
 package com.cms.pp.cms.pp.service;
 
-
 import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
 import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.model.CommentsCountModel;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import com.cms.pp.cms.pp.utils.PrincipalUtils;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,51 +20,43 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-@Service
+@Data
+@RequiredArgsConstructor
+@Service("UserService")
 @Slf4j
-public class UserService {
+public class UserService implements IUserService {
     public final static String ANONYMOUS_USER = "anonymousUser";
-    private ErrorProvidedDataHandlerUtils errorProvidedDataHandlerUtils;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private ConfigurationFlagsRepository configurationFlagsRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
-    @Autowired
-    private HttpSession httpSession;
-    @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final ConfigurationFlagsRepository configurationFlagsRepository;
+    private final CommentRepository commentRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final HttpSession httpSession;
+    private final MyUserDetailsService myUserDetailsService;
 
 
-
-    public boolean checkIfUserWithProvidedMailExists(String mail) {
+    private boolean checkIfUserWithProvidedMailExists(String mail) {
         return userRepository.findByUserMail(mail) != null;
     }
 
-    public boolean checkIfUserWithProvidedNameExists(String name) {
+    private boolean checkIfUserWithProvidedNameExists(String name) {
         return userRepository.findByUserName(name) != null;
     }
 
+    @Override
     public User findById(int id) {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isRegister()) {
@@ -93,6 +84,7 @@ public class UserService {
         }
     }
 
+    @Override
     public Object addCMSUser(CMSUserDTO cmsUserDTO) {
         if (!(Arrays.asList(RoleName.ROLE_ADMIN.getRoleName(),
                         RoleName.ROLE_EDITOR.getRoleName(),
@@ -127,6 +119,7 @@ public class UserService {
         return user;
     }
 
+    @Override
     public Object deleteUser(int id) {
         User user = userRepository.findById(id).orElse(null);
 
@@ -149,21 +142,21 @@ public class UserService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public List<User> getUsers()
     {
         return userRepository.findAll();
     }
 
+    @Override
     public Object logout() {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        java.util.Date date = new java.util.Date();
-        log.info("[{}][USER]: {} logged out from service", date, username);
-        ErrorProvidedDataHandler errorProvidedDataHandler  = new ErrorProvidedDataHandler();
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
+        log.info("[{}][USER]: {} logged out from service", new java.util.Date(), username);
         httpSession.invalidate();
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public Object loginToService(String userMail, String password) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isLogin()) {
@@ -189,6 +182,7 @@ public class UserService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_4009.getValue());
     }
 
+    @Override
     public Object changePassword(String oldPassword, String newPassword) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (oldPassword.isEmpty())
@@ -218,16 +212,19 @@ public class UserService {
         }
     }
 
+    @Override
     public List<User> findByUserNameIgnoreCaseContaining(String userName) {
         return userRepository.findByUserNameIgnoreCaseContaining(userName, Sort.by("userName").ascending());
     }
 
+    @Override
     public List<User> findSomeUsersByLazyLoadingAndUserName(int page, int size, String username) {
         Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("userName").ascending());
         return userRepository.findByUserNameIgnoreCaseContaining(username, pageableWithElements);
 
     }
 
+    @Override
     public Object editUserMail(String newUserMail) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (newUserMail.isEmpty())
@@ -246,6 +243,7 @@ public class UserService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
     }
 
+    @Override
     public Object editUserName(String newUsername) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (newUsername.isEmpty())
@@ -271,6 +269,7 @@ public class UserService {
 
     }
 
+    @Override
     public Object editUserRole(String roleName, int id) {
         User user = userRepository.findById(id).orElse(null);
         Role role = roleRepository.findByName(roleName);
@@ -286,6 +285,7 @@ public class UserService {
 
     }
 
+    @Override
     public List<User> findCmsUsers() {
         Collection<String> roles = Arrays.asList(
                 RoleName.ROLE_ADMIN.getRoleName(),
@@ -299,8 +299,7 @@ public class UserService {
         return mergedList;
     }
 
-
-
+    @Override
     public Object changeUserMail(int id, String newMail) {
         User user = userRepository.findById(id).orElse(null);
         if (newMail.isEmpty())
@@ -315,6 +314,7 @@ public class UserService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
     }
 
+    @Override
     public Object changeUserName(int id, String newUserName) {
         User user = userRepository.findById(id).orElse(null);
         if (newUserName.isEmpty())
@@ -329,6 +329,7 @@ public class UserService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
     }
 
+    @Override
     public List<CustomTopCommentersClass> findTheBestCommenter(int size) {
         Pageable pageableWithElements = PageRequest.of(0, size);
         List<CommentsCountModel> commentsCountModels = commentRepository.countTotalCommentsByUser(pageableWithElements);

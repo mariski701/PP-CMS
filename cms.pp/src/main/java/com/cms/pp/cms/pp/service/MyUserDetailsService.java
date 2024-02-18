@@ -6,7 +6,8 @@ import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.model.entity.User;
 import com.cms.pp.cms.pp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,14 +18,13 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-@Service("userDetailsService")
+@Data
+@RequiredArgsConstructor
+@Service("UserDetailsService")
 @Transactional
 public class MyUserDetailsService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {

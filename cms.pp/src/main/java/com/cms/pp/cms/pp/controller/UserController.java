@@ -1,14 +1,14 @@
 package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.enums.Code;
+import com.cms.pp.cms.pp.service.IUserService;
 import com.cms.pp.cms.pp.service.MyUserDetailsService;
-import com.cms.pp.cms.pp.service.UserService;
 import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
 import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
 import com.cms.pp.cms.pp.model.entity.User;
 import com.cms.pp.cms.pp.model.dto.UserDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -16,20 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/user/")
 public class UserController {
-
-    @Autowired
-    UserService userService;
-    @Autowired
-    HttpSession httpSession ;
-    @Autowired
-    MyUserDetailsService myUserDetailsService;
-
-    Code code;
+    private final IUserService userService;
+    private final HttpSession httpSession ;
+    private final MyUserDetailsService myUserDetailsService;
 
     @PostMapping("register")
     public Object addUser(@RequestBody User user) {

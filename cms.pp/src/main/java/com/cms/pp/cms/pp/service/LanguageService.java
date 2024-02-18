@@ -3,27 +3,25 @@ package com.cms.pp.cms.pp.service;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.repository.*;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 @Service
-public class LanguageService {
-    @Autowired
-    private LanguageRepository languageRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private AlertTranslationRepository alertTranslationRepository;
-    @Autowired
-    private ArticleTagRepository articleTagRepository;
+public class LanguageService implements ILanguageService {
+    private final LanguageRepository languageRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final CommentRepository commentRepository;
+    private final AlertTranslationRepository alertTranslationRepository;
+    private final ArticleTagRepository articleTagRepository;
 
+    @Override
     public Object addLanguage(Language language) {
         Language langTemp = languageRepository.findByName(language.getName());
         Language langTemp2 = languageRepository.findByLanguageCode(language.getLanguageCode());
@@ -39,6 +37,7 @@ public class LanguageService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public Object removeLanguage(int id) {
         Language language = languageRepository.findById(id).orElse(null);
         if (language == null)
@@ -63,18 +62,22 @@ public class LanguageService {
 
     }
 
+    @Override
     public List<Language> getAllLanguages() {
         return languageRepository.findAll();
     }
 
+    @Override
     public Language getLanguage(String name) {
         return languageRepository.findByName(name);
     }
 
+    @Override
     public Language getLanguageById(int id) {
         return languageRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Object editLanguage(Language lang) {
         Language language = languageRepository.findById(lang.getId()).orElse(null);
         Language checkLangName = languageRepository.findByName(lang.getName());

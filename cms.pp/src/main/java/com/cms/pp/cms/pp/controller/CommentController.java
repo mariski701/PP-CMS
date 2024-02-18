@@ -1,68 +1,67 @@
 package com.cms.pp.cms.pp.controller;
 
-
 import com.cms.pp.cms.pp.model.entity.Comment;
 import com.cms.pp.cms.pp.model.dto.CommentDTO;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.service.CommentService;
-import com.cms.pp.cms.pp.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.ICommentService;
+import com.cms.pp.cms.pp.service.IUserService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/comments/")
 public class CommentController {
-
-    @Autowired
-    private CommentService commentService;
-    @Autowired
-    private UserService userService;
+    private final ICommentService ICommentService;
+    private final IUserService userService;
 
     @GetMapping("find/{id}")
     public Comment findCommentById(@PathVariable long id) {
-        return commentService.findCommentById(id);
+        return ICommentService.findCommentById(id);
     }
 
     @GetMapping("findAll")
     public List<Comment> findAll() {
-        return commentService.findAll();
+        return ICommentService.findAll();
     }
 
     @GetMapping("find/user/{id}")
     public  List<Comment> findByUserId(@PathVariable int id) {
-        return commentService.findByUsers(id);
+        return ICommentService.findByUsers(id);
     }
 
     @GetMapping("find/{username}")
-    public List<Comment> findByUserName(@PathVariable String username) { return commentService.findByUserName(username); }
+    public List<Comment> findByUserName(@PathVariable String username) { return ICommentService.findByUserName(username); }
 
     @GetMapping("find/article/{id}")
     public  List<Comment> findByArticleContentId(@PathVariable int id) {
-        return commentService.findByArticleContent(id);
+        return ICommentService.findByArticleContent(id);
     }
 
     @PostMapping("add")
     public Object addComment(@RequestBody CommentDTO commentDTO) {
-        return commentService.addComment(commentDTO);
+        return ICommentService.addComment(commentDTO);
     }
 
     @PutMapping("/cms/edit/{id}")
     public Object editCommentInCMS(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return commentService.editCommentInCMS(id, body.get("content"));
+        return ICommentService.editCommentInCMS(id, body.get("content"));
     }
 
     @PutMapping("edit")
     public Object editCommentByUser(@RequestBody Map<String, String> body) {
-        return commentService.editCommentByUser(Long.parseLong(body.get("commentId")), body.get("content"));
+        return ICommentService.editCommentByUser(Long.parseLong(body.get("commentId")), body.get("content"));
     }
 
     @DeleteMapping("remove/{id}")
     public Object removeOwnComment(@PathVariable long id) {
-        return commentService.removeOwnComment(id);
+        return ICommentService.removeOwnComment(id);
     }
 
 }

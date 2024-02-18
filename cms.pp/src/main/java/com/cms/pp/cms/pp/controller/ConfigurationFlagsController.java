@@ -2,16 +2,18 @@ package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.service.ConfigurationFlagsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.IConfigurationFlagService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/cms/admin/config")
 public class ConfigurationFlagsController {
-    @Autowired
-    private ConfigurationFlagsService configurationFlagsService;
+    private final IConfigurationFlagService configurationFlagsService;
 
     @GetMapping("")
     public ConfigurationFlags getConfig() {

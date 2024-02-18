@@ -6,25 +6,30 @@ import com.cms.pp.cms.pp.model.entity.Language;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.repository.ArticleTagRepository;
 import com.cms.pp.cms.pp.repository.LanguageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class ArticleTagService {
-    @Autowired
-    ArticleTagRepository articleTagRepository;
-    @Autowired
-    LanguageRepository languageRepository;
+@Data
+@RequiredArgsConstructor
+@Service("ArticleTagService")
+public class ArticleTagService implements IArticleTagService {
+    private final ArticleTagRepository articleTagRepository;
+    private final LanguageRepository languageRepository;
 
-    public List<ArticleTag> getArticleTags ()  {
+    @Override
+    public List<ArticleTag> getArticleTags()  {
         return articleTagRepository.findAll();
     }
+
+    @Override
     public ArticleTag getArticleTag(int id) {
         return articleTagRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Object addTag(String language, String name) {
         Language lang = languageRepository.findByName(language);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -48,6 +53,7 @@ public class ArticleTagService {
 
     }
 
+    @Override
     public Object removeTag(int id) {
         ArticleTag articleTag = articleTagRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -61,6 +67,7 @@ public class ArticleTagService {
 
     }
 
+    @Override
     public Object modifyTag(int id, ArticleTag articleTag) {
         ArticleTag oldArticleTag = articleTagRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -81,6 +88,7 @@ public class ArticleTagService {
 
     }
 
+    @Override
     public List<ArticleTag> findByLanguage(String lang) {
         Language language = languageRepository.findByName(lang);
         if (language == null) 

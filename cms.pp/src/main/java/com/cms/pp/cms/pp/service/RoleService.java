@@ -5,15 +5,17 @@ import com.cms.pp.cms.pp.model.entity.Privilege;
 import com.cms.pp.cms.pp.model.entity.Role;
 import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.enums.Code;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 @Service
-public class RoleService {
-    @Autowired
-    private RoleRepository roleRepository;
+public class RoleService implements IRoleService {
+    private final RoleRepository roleRepository;
 
     public List<Role> getRoles() {
         return roleRepository.findAll();

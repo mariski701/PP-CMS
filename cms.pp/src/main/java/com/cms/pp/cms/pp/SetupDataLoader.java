@@ -7,8 +7,9 @@ import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.enums.PrivilegeName;
 import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.repository.UserRepository;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.*;
+
 /*
 * Class used to generate data.
 * Should be started at first application start.
@@ -24,33 +26,25 @@ import java.util.*;
 * After first application start remember to change alreadySetup flag to false.
 * !important: Remember to change generated users passwords
 */
+
+@Data
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
     @Value("${setupDataLoader.alreadySetup}")
     boolean alreadySetup;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private LanguageRepository languageRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
-    @Autowired
-    private ArticleTagRepository articleTagRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private AlertCodeRepository alertCodeRepository;
-    @Autowired
-    private AlertTranslationRepository alertTranslationRepository;
-    @Autowired
-    private ConfigurationFlagsRepository configurationFlagsRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final LanguageRepository languageRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final ArticleTagRepository articleTagRepository;
+    private final CommentRepository commentRepository;
+    private final AlertCodeRepository alertCodeRepository;
+    private final AlertTranslationRepository alertTranslationRepository;
+    private final ConfigurationFlagsRepository configurationFlagsRepository;
 
     @Transactional
     @Override

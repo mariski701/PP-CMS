@@ -3,26 +3,28 @@ package com.cms.pp.cms.pp.service;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.AlertCode;
 import com.cms.pp.cms.pp.model.entity.AlertTranslation;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.repository.AlertCodeRepository;
 import com.cms.pp.cms.pp.repository.AlertTranslationRepository;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 @Service("AlertCodeService")
-public class AlertCodeService {
-    @Autowired
-    private AlertCodeRepository alertCodeRepository;
-    @Autowired
-    private AlertTranslationRepository alertTranslationRepository;
+public class AlertCodeService implements IAlertCodeService {
+    private final AlertCodeRepository alertCodeRepository;
+    private final AlertTranslationRepository alertTranslationRepository;
 
+    @Override
     public List<AlertCode> getAlertCodes() {
         return alertCodeRepository.findAll();
     }
 
+    @Override
     public Object removeAlertCode(int id) {
         AlertCode alertCode = alertCodeRepository.findById(id).orElse(null);
         if (alertCode == null)
@@ -35,6 +37,7 @@ public class AlertCodeService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public Object addAlertCode(String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         if (alertCodeTemp != null)
@@ -50,6 +53,7 @@ public class AlertCodeService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public Object editAlertCode(int id, String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         AlertCode editedAlertCode = alertCodeRepository.findById(id).orElse(null);
@@ -72,6 +76,7 @@ public class AlertCodeService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public AlertCode findById(int id) {
         return alertCodeRepository.findById(id).orElse(null);
     }

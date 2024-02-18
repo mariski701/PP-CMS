@@ -14,7 +14,8 @@ import com.cms.pp.cms.pp.model.entity.Privilege;
 import com.cms.pp.cms.pp.model.entity.Role;
 import com.cms.pp.cms.pp.model.entity.User;
 import com.cms.pp.cms.pp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,26 +26,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
-public class ArticleContentService {
+@Data
+@RequiredArgsConstructor
+@Service("ArticleContentService")
+public class ArticleContentService implements IArticleContentService {
     private static final String ANONYMOUS_USER = "anonymousUser";
-    @Autowired
-    ArticleContentRepository articleContentRepository;
-    @Autowired
-    LanguageRepository languageRepository;
-    @Autowired
-    ArticleTagRepository articleTagRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    CommentRepository commentRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    PrivilegeRepository privilegeRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final LanguageRepository languageRepository;
+    private final ArticleTagRepository articleTagRepository;
+    private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
 
 
-
+    @Override
     public Object addArticleContent(ArticleContentDTO articleContentDTO) {
         ArticleContent articleContent = new ArticleContent();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -103,8 +99,8 @@ public class ArticleContentService {
 
     }
 
-    @Nullable
-    public ArticleContent getArticleContent(int id) {
+    @Override
+    @Nullable public ArticleContent getArticleContent(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         if (articleContent == null)
             return null;
@@ -115,6 +111,7 @@ public class ArticleContentService {
         return articleContent;
     }
 
+    @Override
     public Object changeArticleStatus(int id, String articleStatus) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -137,6 +134,7 @@ public class ArticleContentService {
         }
     }
 
+    @Override
     public Object removeArticle(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
@@ -152,6 +150,7 @@ public class ArticleContentService {
 
     }
 
+    @Override
     public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content, String image) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         boolean canEditArticle = false;
@@ -245,10 +244,12 @@ public class ArticleContentService {
         }
     }
 
+    @Override
     public List<ArticleContent> findAll() {
         return articleContentRepository.findAll();
     }
 
+    @Override
     public List<ArticleContent> findAllByLanguage(String lang) {
         Language language = languageRepository.findByName(lang);
         if (lang == null)
@@ -256,6 +257,7 @@ public class ArticleContentService {
         return articleContentRepository.findAllByLanguageAndPublished(language, ArticleStatus.PUBLISHED.getStatus() , Sort.by("id").descending());
     }
 
+    @Override
     public List<ArticleContent> findAllByUser(int id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null)
@@ -264,6 +266,7 @@ public class ArticleContentService {
 
     }
 
+    @Override
     public List<ArticleContent> findSomeArticlesByViews(int count, String lang) {
         Language language = languageRepository.findByName(lang);
         if (language == null)
@@ -272,10 +275,12 @@ public class ArticleContentService {
         return articleContentRepository.findAllByLanguageAndPublished(language, ArticleStatus.PUBLISHED.getStatus(),  pageableWithElements);
     }
 
+    @Override
     public List<ArticleContent> findByTitleIgnoreCaseContaining(String title) {
         return articleContentRepository.findByTitleIgnoreCaseContaining(title, Sort.by("id").descending());
     }
 
+    @Override
     public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(String language, String title, List<Map<String, String>> tagNames) {
         Language lang = languageRepository.findByName(language);
         if (lang == null)
@@ -338,15 +343,18 @@ public class ArticleContentService {
         return null;
     }
 
+    @Override
     public ArticleContent findByTitle(String title){
         return articleContentRepository.findByTitle(title);
     }
 
+    @Override
     public List<ArticleContent> findSomeArticlesByLazyLoading(int page, int size, String title) {
         Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("id").descending());
         return articleContentRepository.findByTitleIgnoreCaseContaining(title,  pageableWithElements);
     }
 
+    @Override
     public Object allowCommentsInArticle(int id, boolean allowComments) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
@@ -360,6 +368,7 @@ public class ArticleContentService {
         return errorProvidedDataHandler;
     }
 
+    @Override
     public ArticleContent getArticleContentByCommentId(Long id) {
         Comment comment = commentRepository.findById(id).orElse(null);
 
@@ -369,6 +378,7 @@ public class ArticleContentService {
         return articleContentRepository.findArticleContentByComments(comment);
     }
 
+    @Override
     public List<ArticleContent> findByTag(String tagName) {
         ArticleTag articleTag = articleTagRepository.findByName(tagName);
         if (articleTag == null)
@@ -376,10 +386,12 @@ public class ArticleContentService {
         return articleContentRepository.findByPublishedAndArticleTags(ArticleStatus.PUBLISHED.getStatus() ,articleTag, Sort.by("id").descending());
     }
 
-    public List<ArticleContent> getAllForCMS(){
+    @Override
+    public List<ArticleContent> getAllForCMS() {
         return articleContentRepository.findAll(Sort.by("id").descending());
     }
 
+    @Override
     public List<ArticleContent> getAllByUsersInCMS() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = "";

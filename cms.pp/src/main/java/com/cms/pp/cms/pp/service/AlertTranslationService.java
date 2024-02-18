@@ -9,18 +9,18 @@ import com.cms.pp.cms.pp.repository.LanguageRepository;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.repository.AlertCodeRepository;
 import com.cms.pp.cms.pp.repository.AlertTranslationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 @Service("AlertTranslationService")
-public class AlertTranslationService {
-    @Autowired
+public class AlertTranslationService implements IAlertTranslationService {
     private AlertTranslationRepository alertTranslationRepository;
-    @Autowired
     private LanguageRepository languageRepository;
-    @Autowired
     private AlertCodeRepository alertCodeRepository;
 
     public static AlertTranslationDTO createDTOTranslation(String alertCode, String alertName, String language, int id) {
@@ -32,6 +32,7 @@ public class AlertTranslationService {
         return alertTranslationDTO;
     }
 
+    @Override
     public List<AlertTranslationDTO> findByLanguage(String language) {
         List<AlertTranslationDTO> alertTranslationDTOList = new ArrayList<>();
         if (language.equals("english"))
@@ -52,6 +53,7 @@ public class AlertTranslationService {
         return alertTranslationDTOList;
     }
 
+    @Override
     public Object addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
@@ -63,6 +65,7 @@ public class AlertTranslationService {
         return errorProvidedDataHandler;
     }
 
+    @Override
     public Object editAlertTranslation(int id, String errorTranslation) {
         ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
@@ -81,6 +84,7 @@ public class AlertTranslationService {
 
     }
 
+    @Override
     public AlertTranslation findById(int id) {
         return alertTranslationRepository.findById(id).orElse(null);
     }
