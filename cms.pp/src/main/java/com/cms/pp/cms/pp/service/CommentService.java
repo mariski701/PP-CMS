@@ -93,11 +93,10 @@ public class CommentService implements ICommentService {
                 if(!articleContent.isCommentsAllowed()) {
                     return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3031.getValue());
                 }
-                Comment comment = new Comment();
-                comment.setContent(commentDTO.getContent());
-                comment.setUser(userRepository.findByUserName(username));
-                comment.setArticleContent(articleContent);
-                commentRepository.save(comment);
+                commentRepository.save(new Comment()
+                        .setContent(commentDTO.getContent())
+                        .setUser(userRepository.findByUserName(username))
+                        .setArticleContent(articleContent));
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
             }
         }
@@ -159,6 +158,4 @@ public class CommentService implements ICommentService {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3036.getValue());
         }
     }
-
-
 }

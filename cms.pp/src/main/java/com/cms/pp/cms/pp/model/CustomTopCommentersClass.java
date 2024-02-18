@@ -15,6 +15,4 @@ public class CustomTopCommentersClass {
         this.userName = userName;
         this.commentCount = commentCount;
     }
-
-
 }

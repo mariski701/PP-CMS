@@ -61,10 +61,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         log.info("Configuration flags had been generated: \n{}", configurationFlags);
 
-        Language englishLanguage = createLanguageIfNotFound("english");
-        Language polishLanguage = createLanguageIfNotFound("polish");
-        englishLanguage.setLanguageCode("en_EN");
-        polishLanguage.setLanguageCode("pl_PL");
+        Language englishLanguage = createLanguageIfNotFound("english", "en_EN");
+        Language polishLanguage = createLanguageIfNotFound("polish", "pl_PL");
 
         // note: keep in sync with PrivilegeName
         Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound(PrivilegeName.ADMIN_PANEL.getPrivilegeName());
@@ -428,11 +426,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    public Language createLanguageIfNotFound(String name) {
+    public Language createLanguageIfNotFound(String name, String languageCode) {
         Language language = languageRepository.findByName(name);
         if (language == null) {
             language = new Language();
             language.setName(name);
+            language.setLanguageCode(languageCode);
             languageRepository.save(language);
             log.info("Language had been generated: \n{}", language);
         }

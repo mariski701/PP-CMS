@@ -4,6 +4,7 @@ import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,37 +17,30 @@ public class ConfigurationFlagsService implements IConfigurationFlagService {
 
     @Override
     public ConfigurationFlags getConfig() {
-        int id = 1;
-        return configurationFlagsRepository.findById(1).orElse(null);
+        return configurationFlagsRepository.findFirstByOrderByDateDESC();
     }
 
     @Override
     public Object updateCommentConfiguration(boolean commentsAvailable) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
         configurationFlags.setComments(commentsAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     @Override
     public Object updateRegisterConfiguration(boolean registerAvailable) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
         configurationFlags.setRegister(registerAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     @Override
     public Object updateLoginConfiguration(boolean loginAvailable) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
+        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
         configurationFlags.setLogin(loginAvailable);
         configurationFlagsRepository.save(configurationFlags);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 }

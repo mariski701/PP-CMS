@@ -1,5 +1,6 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.mapper.AddCMSUserMapper;
 import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
@@ -22,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -41,6 +43,7 @@ public class UserService implements IUserService {
     private final ArticleContentRepository articleContentRepository;
     private final HttpSession httpSession;
     private final MyUserDetailsService myUserDetailsService;
+    private final AddCMSUserMapper addCMSUserMapper;
 
 
     private boolean checkIfUserWithProvidedMailExists(String mail) {
@@ -60,7 +63,6 @@ public class UserService implements IUserService {
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isRegister()) {
-
             if (user.getUserName().isEmpty())
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
             if (user.getUserPassword().isEmpty())
@@ -93,65 +95,47 @@ public class UserService implements IUserService {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
         }
         if (cmsUserDTO.getUserName().isEmpty())
-        {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
-        }
-        if (cmsUserDTO.getUserPassword().isEmpty()) {
+        if (cmsUserDTO.getUserPassword().isEmpty())
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
-        }
-
-        if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName())) {
+        if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName()))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
-        }
-        if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail())) {
+        if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail()))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
-        }
-        User user = new User();
-        user.setUserName(cmsUserDTO.getUserName());
-        user.setUserMail(cmsUserDTO.getUserMail());
-        Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
-        List<Role> roles = new ArrayList<>();
-        roles.add(userRole);
-        user.setRoles(roles);
-        user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
-        user.setEnabled(true);
-        userRepository.save(user);
-        return user;
+        User user = addCMSUserMapper.mapCMSUserDTOToUser(cmsUserDTO);
+        log.info("{} [{}][Add CMS User]: {} added new CMS User [username: {}], [userMail: {}], [userRole: {}]", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()), user.getUserName(), user.getUserMail(), user.getRoles());
+        return userRepository.save(user);
     }
 
     @Override
     public Object deleteUser(int id) {
         User user = userRepository.findById(id).orElse(null);
-
         if (user == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
-
         List<Comment> comments = commentRepository.findByUser(user);
         List<ArticleContent> articleContents = articleContentRepository.findAllByUser(user);
-
         for (ArticleContent articleContent : articleContents) {
             articleContent.setUser(null);
         }
-
         for (Comment comment : comments) {
             comment.setUser(null);
         }
         articleContentRepository.saveAll(articleContents);
         commentRepository.saveAll(comments);
         userRepository.deleteById(id);
+        log.info("{} [{}][delete User]: {} deleted user of id {}", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()), id);
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     @Override
-    public List<User> getUsers()
-    {
+    public List<User> getUsers() {
         return userRepository.findAll();
     }
 
     @Override
     public Object logout() {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        log.info("[{}][USER]: {} logged out from service", new java.util.Date(), username);
+        log.info("{} [{}][Logout]: {} logged out from service", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
         httpSession.invalidate();
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
@@ -161,16 +145,14 @@ public class UserService implements IUserService {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isLogin()) {
             User user = userRepository.findByUserMail(userMail);
-            if (user == null) {
+            if (user == null)
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
-            }
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
-                    java.util.Date date = new java.util.Date();
                     myUserDetailsService.loadUserByUsername(userMail);
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
-                    log.info("[{}][USER]: {} logged into service", date, currentPrincipalName);
+                    log.info("{} [{}][Login]: {} logged into service", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), currentPrincipalName);
                     return user;
                 }
                 else {
@@ -205,11 +187,11 @@ public class UserService implements IUserService {
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("{} [{}][Change password]: User {} changed password", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else{
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3009.getValue());
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3009.getValue());
+
     }
 
     @Override
@@ -229,15 +211,15 @@ public class UserService implements IUserService {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (newUserMail.isEmpty())
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
-
         if (username.equals(ANONYMOUS_USER))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-        User checkUser = userRepository.findByUserMail(newUserMail);
-        if (checkUser == null)
+        User isNewMailUsedByAnyUser = userRepository.findByUserMail(newUserMail);
+        if (isNewMailUsedByAnyUser == null)
         {
-            User user = userRepository.findByUserName(username);
-            user.setUserMail(newUserMail);
+            User user = userRepository.findByUserName(username)
+                    .setUserMail(newUserMail);
             userRepository.save(user);
+            log.info("{} [{}][Change mail]: User {} changed mail", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
@@ -250,12 +232,10 @@ public class UserService implements IUserService {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
         if (username.equals(ANONYMOUS_USER))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-
         User checkUser = userRepository.findByUserName(newUsername);
-        if (checkUser == null)
-        {
-            User user = userRepository.findByUserName(username);
-            user.setUserName(newUsername);
+        if (checkUser == null) {
+            User user = userRepository.findByUserName(username)
+                    .setUserName(newUsername);
             userRepository.save(user);
             Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
                     .getAuthentication()
@@ -263,6 +243,7 @@ public class UserService implements IUserService {
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("{} [{}][Change username]: User {} changed username", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
@@ -336,13 +317,11 @@ public class UserService implements IUserService {
         List<CustomTopCommentersClass> customTopCommentersClassList = new ArrayList<>();
         for (CommentsCountModel commentsCountModel : commentsCountModels) {
             customTopCommentersClassList.add(new CustomTopCommentersClass(
-                    userRepository.findById(commentsCountModel.getCommentId()).orElse(null).getUserName(), commentsCountModel.getTotal()
+                    Objects.requireNonNull(userRepository.findById(commentsCountModel.getCommentId()).orElse(null)).getUserName(), commentsCountModel.getTotal()
             ));
         }
         if (customTopCommentersClassList.isEmpty())
             return null;
         return customTopCommentersClassList;
     }
-
-
 }

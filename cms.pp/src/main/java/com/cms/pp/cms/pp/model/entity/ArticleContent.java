@@ -2,6 +2,7 @@ package com.cms.pp.cms.pp.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import java.util.Collection;
 
 @Data
 @Entity
+@Accessors(chain = true)
 @Table(name = "ArticleContent")
 public class ArticleContent {
     @Id

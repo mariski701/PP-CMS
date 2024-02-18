@@ -19,13 +19,11 @@ public class AlertCodeService implements IAlertCodeService {
     private final AlertCodeRepository alertCodeRepository;
     private final AlertTranslationRepository alertTranslationRepository;
 
-    @Override
-    public List<AlertCode> getAlertCodes() {
+    @Override public List<AlertCode> getAlertCodes() {
         return alertCodeRepository.findAll();
     }
 
-    @Override
-    public Object removeAlertCode(int id) {
+    @Override public Object removeAlertCode(int id) {
         AlertCode alertCode = alertCodeRepository.findById(id).orElse(null);
         if (alertCode == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
@@ -37,8 +35,7 @@ public class AlertCodeService implements IAlertCodeService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    @Override
-    public Object addAlertCode(String alertCode, String alertName) {
+    @Override public Object addAlertCode(String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         if (alertCodeTemp != null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
@@ -46,18 +43,15 @@ public class AlertCodeService implements IAlertCodeService {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
         if (alertName.isEmpty())
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
-        AlertCode newAlertCode = new AlertCode();
-        newAlertCode.setAlertCode(alertCode);
-        newAlertCode.setAlertName(alertName);
-        alertCodeRepository.save(newAlertCode);
+        alertCodeRepository.save(new AlertCode()
+                .setAlertCode(alertCode)
+                .setAlertName(alertName));
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    @Override
-    public Object editAlertCode(int id, String alertCode, String alertName) {
+    @Override public Object editAlertCode(int id, String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         AlertCode editedAlertCode = alertCodeRepository.findById(id).orElse(null);
-
         if(alertCodeTemp != null && editedAlertCode != null)
             if (!editedAlertCode.getAlertCode().equals(alertCode))
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
@@ -76,8 +70,7 @@ public class AlertCodeService implements IAlertCodeService {
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    @Override
-    public AlertCode findById(int id) {
+    @Override public AlertCode findById(int id) {
         return alertCodeRepository.findById(id).orElse(null);
     }
 

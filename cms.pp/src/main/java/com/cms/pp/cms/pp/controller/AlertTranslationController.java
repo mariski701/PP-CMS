@@ -17,25 +17,25 @@ import java.util.Map;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/alerts/")
 public class AlertTranslationController {
-    private final IAlertTranslationService IAlertTranslationService;
+    private final IAlertTranslationService alertTranslationService;
 
     @GetMapping("{language}")
     public List<AlertTranslationDTO> findByLanguage(@PathVariable String language) {
-        return IAlertTranslationService.findByLanguage(language);
+        return alertTranslationService.findByLanguage(language);
     }
 
     @PostMapping("add")
     public Object addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
-        return IAlertTranslationService.addAlertTranslation(alertTranslationDTO);
+        return alertTranslationService.addAlertTranslation(alertTranslationDTO);
     }
 
     @PutMapping("edit")
     public Object editAlertTranslation(@RequestBody Map<String, String> body) {
-        return IAlertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
+        return alertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
     }
 
     @GetMapping("find/{id}")
     public AlertTranslation findById(@PathVariable int id) {
-        return IAlertTranslationService.findById(id);
+        return alertTranslationService.findById(id);
     }
 }

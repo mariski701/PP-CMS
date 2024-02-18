@@ -92,10 +92,8 @@ public class LanguageService implements ILanguageService {
         }
         if (lang.getName().isEmpty())
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
-
         if (lang.getLanguageCode().isEmpty())
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
-
         language.setName(lang.getName());
         language.setLanguageCode(lang.getLanguageCode());
         languageRepository.save(language);

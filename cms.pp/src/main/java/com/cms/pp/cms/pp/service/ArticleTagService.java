@@ -6,6 +6,7 @@ import com.cms.pp.cms.pp.model.entity.Language;
 import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.repository.ArticleTagRepository;
 import com.cms.pp.cms.pp.repository.LanguageRepository;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,77 +20,50 @@ public class ArticleTagService implements IArticleTagService {
     private final ArticleTagRepository articleTagRepository;
     private final LanguageRepository languageRepository;
 
-    @Override
-    public List<ArticleTag> getArticleTags()  {
+    @Override public List<ArticleTag> getArticleTags() {
         return articleTagRepository.findAll();
     }
 
-    @Override
-    public ArticleTag getArticleTag(int id) {
+    @Override public ArticleTag getArticleTag(int id) {
         return articleTagRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public Object addTag(String language, String name) {
+    @Override public Object addTag(String language, String name) {
         Language lang = languageRepository.findByName(language);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (lang == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3015.getValue());
-            return errorProvidedDataHandler;
-        }
+        if (lang == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3015.getValue());
         ArticleTag checkIfTagExists = articleTagRepository.findByName(name);
         if (checkIfTagExists == null) {
-            ArticleTag articleTag = new ArticleTag();
-            articleTag.setLanguage(lang);
-            articleTag.setName(name);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            articleTagRepository.save(articleTag);
-            return errorProvidedDataHandler;
+            articleTagRepository.save(new ArticleTag()
+                        .setLanguage(lang)
+                        .setName(name));
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else {
-            errorProvidedDataHandler.setError(Code.CODE_3014.getValue());
-            return errorProvidedDataHandler;
-        }
-
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3014.getValue());
     }
 
-    @Override
-    public Object removeTag(int id) {
+    @Override public Object removeTag(int id) {
         ArticleTag articleTag = articleTagRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (articleTag == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3016.getValue());
-            return errorProvidedDataHandler;
-        }
+        if (articleTag == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
         articleTagRepository.delete(articleTag);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
-
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    @Override
-    public Object modifyTag(int id, ArticleTag articleTag) {
+    @Override public Object modifyTag(int id, ArticleTag articleTag) {
         ArticleTag oldArticleTag = articleTagRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (oldArticleTag == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3016.getValue());
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
         }
         ArticleTag articleTagTemp = articleTagRepository.findByName(articleTag.getName());
         if (articleTagTemp != null)
-        {
-            errorProvidedDataHandler.setError(Code.CODE_3014.getValue());
-            return errorProvidedDataHandler;
-        }
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3014.getValue());
         oldArticleTag.setName(articleTag.getName());
         articleTagRepository.save(oldArticleTag);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
-
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    @Override
-    public List<ArticleTag> findByLanguage(String lang) {
+    @Override public List<ArticleTag> findByLanguage(String lang) {
         Language language = languageRepository.findByName(lang);
         if (language == null) 
             return null;

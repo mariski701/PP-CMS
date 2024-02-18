@@ -3,11 +3,13 @@ package com.cms.pp.cms.pp.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Entity
 @Data
+@Accessors(chain = true)
 @Table(name = "Alert_translation")
 public class AlertTranslation {
     @Id
