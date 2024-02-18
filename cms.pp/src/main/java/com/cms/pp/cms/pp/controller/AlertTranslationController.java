@@ -3,19 +3,21 @@ package com.cms.pp.cms.pp.controller;
 import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.model.dto.AlertTranslationDTO;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.service.AlertTranslationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.IAlertTranslationService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/alerts/")
 public class AlertTranslationController {
-    @Autowired
-    private AlertTranslationService alertTranslationService;
+    private final IAlertTranslationService alertTranslationService;
 
     @GetMapping("{language}")
     public List<AlertTranslationDTO> findByLanguage(@PathVariable String language) {

@@ -2,16 +2,18 @@ package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.service.ConfigurationFlagsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.IConfigurationFlagService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/cms/admin/config")
 public class ConfigurationFlagsController {
-    @Autowired
-    private ConfigurationFlagsService configurationFlagsService;
+    private final IConfigurationFlagService configurationFlagsService;
 
     @GetMapping("")
     public ConfigurationFlags getConfig() {
@@ -19,17 +21,17 @@ public class ConfigurationFlagsController {
     }
 
     @PutMapping("comments/{commentsAvailable}")
-    public Object changeCommentConfiguration(@PathVariable boolean commentsAvailable) {
-        return configurationFlagsService.changeCommentConfiguration(commentsAvailable);
+    public Object updateCommentConfiguration(@PathVariable boolean commentsAvailable) {
+        return configurationFlagsService.updateCommentConfiguration(commentsAvailable);
     }
 
     @PutMapping("register/{registerAvailable}")
-    public Object changeRegisterConfiguration(@PathVariable boolean registerAvailable) {
-        return configurationFlagsService.changeRegisterConfiguration(registerAvailable);
+    public Object updateRegisterConfiguration(@PathVariable boolean registerAvailable) {
+        return configurationFlagsService.updateRegisterConfiguration(registerAvailable);
     }
 
     @PutMapping("login/{loginAvailable}")
-    public Object changeLoginConfiguration(@PathVariable boolean loginAvailable) {
-        return configurationFlagsService.changeLoginConfiguration(loginAvailable);
+    public Object updateLoginConfiguration(@PathVariable boolean loginAvailable) {
+        return configurationFlagsService.updateLoginConfiguration(loginAvailable);
     }
 }

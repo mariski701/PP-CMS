@@ -7,7 +7,10 @@ import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.enums.PrivilegeName;
 import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.*;
+
 /*
 * Class used to generate data.
 * Should be started at first application start.
@@ -22,37 +26,32 @@ import java.util.*;
 * After first application start remember to change alreadySetup flag to false.
 * !important: Remember to change generated users passwords
 */
+
+@Data
+@RequiredArgsConstructor
 @Component
+@Slf4j
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    boolean alreadySetup = true;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private LanguageRepository languageRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
-    @Autowired
-    private ArticleTagRepository articleTagRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private AlertCodeRepository alertCodeRepository;
-    @Autowired
-    private AlertTranslationRepository alertTranslationRepository;
-    @Autowired
-    private ConfigurationFlagsRepository configurationFlagsRepository;
+    @Value("${setupDataLoader.alreadySetup}")
+    boolean alreadySetup;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final LanguageRepository languageRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final ArticleTagRepository articleTagRepository;
+    private final CommentRepository commentRepository;
+    private final AlertCodeRepository alertCodeRepository;
+    private final AlertTranslationRepository alertTranslationRepository;
+    private final ConfigurationFlagsRepository configurationFlagsRepository;
 
     @Transactional
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup)
             return;
+        log.info("Setup data loader started generating data...");
 
         ConfigurationFlags configurationFlags = new ConfigurationFlags();
         configurationFlags.setComments(true);
@@ -60,10 +59,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         configurationFlags.setLogin(true);
         configurationFlagsRepository.save(configurationFlags);
 
-        Language englishLanguage = createLanguageIfNotFound("english");
-        Language polishLanguage = createLanguageIfNotFound("polish");
-        englishLanguage.setLanguageCode("en_EN");
-        polishLanguage.setLanguageCode("pl_PL");
+        log.info("Configuration flags had been generated: \n{}", configurationFlags);
+
+        Language englishLanguage = createLanguageIfNotFound("english", "en_EN");
+        Language polishLanguage = createLanguageIfNotFound("polish", "pl_PL");
 
         // note: keep in sync with PrivilegeName
         Privilege adminPanelAccessPrivilege = createPrivilegeIfNotFound(PrivilegeName.ADMIN_PANEL.getPrivilegeName());
@@ -115,6 +114,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         admin.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_ADMIN.getRoleName())));
         admin.setEnabled(true);
         userRepository.save(admin);
+        log.info("User admin had been generated: \n{}", admin);
 
         User user = new User();
         user.setUserName("user");
@@ -123,6 +123,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER.getRoleName())));
         user.setEnabled(true);
         userRepository.save(user);
+        log.info("User user had been generated: \n{}", user);
 
         User moderator = new User();
         moderator.setUserName("moderator");
@@ -131,6 +132,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         moderator.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_MODERATOR.getRoleName())));
         moderator.setEnabled(true);
         userRepository.save(moderator);
+        log.info("User moderator had been generated: \n{}", moderator);
 
         User editor = new User();
         editor.setUserName("editor");
@@ -139,6 +141,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         editor.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_EDITOR.getRoleName())));
         editor.setEnabled(true);
         userRepository.save(editor);
+        log.info("User editor had been generated: \n{}", editor);
 
         User withoutcomments = new User();
         withoutcomments.setUserName("withoutcomments");
@@ -147,6 +150,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         withoutcomments.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USERWITHOUTCOMMENTS.getRoleName())));
         withoutcomments.setEnabled(true);
         userRepository.save(withoutcomments);
+        log.info("User withoutcomments had been generated: \n{}", withoutcomments);
 
         ArticleTag generalTag = createTagIfNotFound("general");
         generalTag.setLanguage(englishLanguage);
@@ -172,6 +176,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentPolish.setLanguage(polishLanguage);
         articleContentPolish.setArticleTags(Collections.singletonList(ogolnyTag));
         articleContentRepository.save(articleContentPolish);
+        log.info("articleContentPolish had been generated: \n{}", articleContentPolish);
 
         ArticleContent articleContentKulinaria = new ArticleContent();
         articleContentKulinaria.setContent("Wlej wodę do garnka, włącz kuchenkę, połóż na kuchence, jak woda będzie wrzeć to będzie ugotowana.");
@@ -184,6 +189,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentKulinaria.setLanguage(polishLanguage);
         articleContentKulinaria.setArticleTags(Collections.singletonList(kulinariaTag));
         articleContentRepository.save(articleContentKulinaria);
+        log.info("articleContentKulinaria had been generated: \n{}", articleContentKulinaria);
 
         ArticleContent articleContentEnglish = new ArticleContent();
         articleContentEnglish.setContent("Test of article in English.");
@@ -196,6 +202,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentEnglish.setLanguage(englishLanguage);
         generalTag.setArticlesContent(Collections.singletonList(articleContentEnglish));
         articleContentRepository.save(articleContentEnglish);
+        log.info("articleContentEnglish had been generated: \n{}", articleContentEnglish);
 
 
         ArticleContent articleContentCulinary = new ArticleContent();
@@ -209,6 +216,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         articleContentCulinary.setLanguage(englishLanguage);
         articleContentCulinary.setArticleTags(Collections.singletonList(culinaryTag));
         articleContentRepository.save(articleContentCulinary);
+        log.info("articleContentCulinary had been generated: \n{}", articleContentCulinary);
+
 
         Comment comment = new Comment();
         comment.setContent("Ale smaczna woda!");
@@ -216,6 +225,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         comment.setArticleContent(articleContentKulinaria);
         comment.setUser(user);
         commentRepository.save(comment);
+        log.info("comment had been generated: \n{}", comment);
+
 
         Comment comment2 = new Comment();
         comment2.setContent("Niesamowite jak smaczna potrafi być ta woda, dzięki!");
@@ -223,6 +234,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         comment2.setArticleContent(articleContentKulinaria);
         comment2.setUser(moderator);
         commentRepository.save(comment2);
+        log.info("comment2 had been generated: \n{}", comment2);
 
         Comment comment3 = new Comment();
         comment3.setContent("Amazing taste of the water bro!");
@@ -230,6 +242,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         comment3.setArticleContent(articleContentCulinary);
         comment3.setUser(moderator);
         commentRepository.save(comment3);
+        log.info("comment3 had been generated: \n{}", comment3);
 
         Comment comment4 = new Comment();
         comment4.setContent("Ugh that's ugly man!");
@@ -237,6 +250,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         comment4.setArticleContent(articleContentCulinary);
         comment4.setUser(user);
         commentRepository.save(comment4);
+        log.info("comment4 had been generated: \n{}", comment4);
 
         AlertCode buttonAddComment = createAlertIfNotFound("Add Comment", "button.add-comment");
         AlertCode buttonCancel = createAlertIfNotFound("Cancel", "button.cancel");
@@ -255,9 +269,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         AlertCode buttonYes = createAlertIfNotFound("Yes", "button.yes");
         AlertCode headerArticles = createAlertIfNotFound("Articles", "header.articles");
         AlertCode headerChangeEmail = createAlertIfNotFound("Change mail", "header.change-email");
-
         AlertCode headerChangePassword = createAlertIfNotFound("Change password", "header.change-password");
-
         AlertCode headerChangeUsername = createAlertIfNotFound("Change username", "header.change-username");
         AlertCode headerLeaveComment = createAlertIfNotFound("Leave comment", "header.leave-comment");
         AlertCode headerPopular = createAlertIfNotFound("Popular", "header.popular");
@@ -408,17 +420,20 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             articleTag = new ArticleTag();
             articleTag.setName(name);
             articleTagRepository.save(articleTag);
+            log.info("Article tag had been generated: \n{}", articleTag);
         }
         return articleTag;
     }
 
     @Transactional
-    public Language createLanguageIfNotFound(String name) {
+    public Language createLanguageIfNotFound(String name, String languageCode) {
         Language language = languageRepository.findByName(name);
         if (language == null) {
             language = new Language();
             language.setName(name);
+            language.setLanguageCode(languageCode);
             languageRepository.save(language);
+            log.info("Language had been generated: \n{}", language);
         }
         return language;
     }
@@ -430,6 +445,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             privilege = new Privilege();
             privilege.setName(name);
             privilegeRepository.save(privilege);
+            log.info("Privilege had been generated: \n{}", privilege);
         }
         return privilege;
     }
@@ -442,6 +458,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             role.setName(name);
             role.setPrivileges(privileges);
             roleRepository.save(role);
+            log.info("Role had been generated: \n{}", role);
         }
         return role;
     }
@@ -454,6 +471,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             alertCode.setAlertName(name);
             alertCode.setAlertCode(code);
             alertCodeRepository.save(alertCode);
+            log.info("AlertCode had been generated: \n{}", alertCode);
         }
         return alertCode;
     }
@@ -467,6 +485,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             alertTranslation.setLanguage(language);
             alertTranslation.setErrorTranslation(translation);
             alertTranslationRepository.save(alertTranslation);
+        log.info("Alert translation had been generated: \n{}", alertTranslation);
      //   }
         return alertTranslation;
     }

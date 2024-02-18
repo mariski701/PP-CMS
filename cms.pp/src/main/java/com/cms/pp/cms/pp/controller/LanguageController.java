@@ -2,17 +2,19 @@ package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.model.entity.Language;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
-import com.cms.pp.cms.pp.service.LanguageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.ILanguageService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 public class LanguageController {
-    @Autowired
-    LanguageService languageService;
+    private final ILanguageService languageService;
 
     @PostMapping("/api/language/add")
     public Object addLanguage(@RequestBody Language language) {

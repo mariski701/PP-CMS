@@ -1,11 +1,13 @@
 package com.cms.pp.cms.pp.model.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Data
 @Entity
+@Accessors(chain = true)
 @Table(name="ConfigurationFlags")
 public class ConfigurationFlags {
     @Id

@@ -1,99 +1,76 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.AlertCode;
 import com.cms.pp.cms.pp.model.entity.AlertTranslation;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.repository.AlertCodeRepository;
 import com.cms.pp.cms.pp.repository.AlertTranslationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class AlertCodeService {
-    @Autowired
-    private AlertCodeRepository alertCodeRepository;
-    @Autowired
-    private AlertTranslationRepository alertTranslationRepository;
+@Data
+@RequiredArgsConstructor
+@Service("AlertCodeService")
+public class AlertCodeService implements IAlertCodeService {
+    private final AlertCodeRepository alertCodeRepository;
+    private final AlertTranslationRepository alertTranslationRepository;
 
-    public List<AlertCode> getAlertCodes() {
+    @Override public List<AlertCode> getAlertCodes() {
         return alertCodeRepository.findAll();
     }
 
-    public Object removeCode(int id) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+    @Override public Object removeAlertCode(int id) {
         AlertCode alertCode = alertCodeRepository.findById(id).orElse(null);
         if (alertCode == null)
-        {
-            errorProvidedDataHandler.setError("3041");
-            return errorProvidedDataHandler;
-        }
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
         List<AlertTranslation> alertTranslationList = alertTranslationRepository.findByAlertCode(alertCode);
         if (!alertTranslationList.isEmpty()) {
             alertTranslationRepository.deleteAll(alertTranslationList);
         }
-
         alertCodeRepository.delete(alertCode);
-        errorProvidedDataHandler.setError("2001");
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    public Object addCode(String alertCode, String alertName) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+    @Override public Object addAlertCode(String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
-        if (alertCodeTemp!=null) {
-            errorProvidedDataHandler.setError("3044");
-            return errorProvidedDataHandler;
-        }
-        if (alertCode.equals("")) {
-            errorProvidedDataHandler.setError("3042");
-            return errorProvidedDataHandler;
-        }
-        if (alertName.equals("")) {
-            errorProvidedDataHandler.setError("3043");
-            return errorProvidedDataHandler;
-        }
-        AlertCode newAlertCode = new AlertCode();
-        newAlertCode.setAlertCode(alertCode);
-        newAlertCode.setAlertName(alertName);
-        errorProvidedDataHandler.setError("2001");
-        alertCodeRepository.save(newAlertCode);
-        return errorProvidedDataHandler;
+        if (alertCodeTemp != null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
+        if (alertCode.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
+        if (alertName.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
+        alertCodeRepository.save(new AlertCode()
+                .setAlertCode(alertCode)
+                .setAlertName(alertName));
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    public Object editCode(int id, String alertCode, String alertName) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
+    @Override public Object editAlertCode(int id, String alertCode, String alertName) {
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         AlertCode editedAlertCode = alertCodeRepository.findById(id).orElse(null);
-
-        if(alertCodeTemp!= null) {
+        if(alertCodeTemp != null && editedAlertCode != null)
             if (!editedAlertCode.getAlertCode().equals(alertCode))
-            {
-                errorProvidedDataHandler.setError("3044");
-                return errorProvidedDataHandler;
-            }
-
-        }
-
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
         if (editedAlertCode == null) {
-            errorProvidedDataHandler.setError("3041"); //error code not found
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
         }
-        if (alertCode.equals("")) {
-            errorProvidedDataHandler.setError("3042");
+        if (alertCode.isEmpty()) {
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
         }
-        if (alertName.equals("")) {
-            errorProvidedDataHandler.setError("3043");
+        if (alertName.isEmpty()) {
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
         }
         editedAlertCode.setAlertCode(alertCode);
         editedAlertCode.setAlertName(alertName);
-        errorProvidedDataHandler.setError("2001");
         alertCodeRepository.save(editedAlertCode);
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    public AlertCode findById(int id) {
+    @Override public AlertCode findById(int id) {
         return alertCodeRepository.findById(id).orElse(null);
     }
 

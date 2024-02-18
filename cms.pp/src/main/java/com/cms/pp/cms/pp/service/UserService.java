@@ -1,16 +1,18 @@
 package com.cms.pp.cms.pp.service;
 
-
+import com.cms.pp.cms.pp.mapper.AddCMSUserMapper;
 import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
 import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.model.CommentsCountModel;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.enums.RoleName;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import com.cms.pp.cms.pp.utils.PrincipalUtils;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,372 +21,252 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-@Service
+@Data
+@RequiredArgsConstructor
+@Service("UserService")
 @Slf4j
-public class UserService {
+public class UserService implements IUserService {
     public final static String ANONYMOUS_USER = "anonymousUser";
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private ConfigurationFlagsRepository configurationFlagsRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
-    @Autowired
-    private HttpSession httpSession;
-    @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final ConfigurationFlagsRepository configurationFlagsRepository;
+    private final CommentRepository commentRepository;
+    private final ArticleContentRepository articleContentRepository;
+    private final HttpSession httpSession;
+    private final MyUserDetailsService myUserDetailsService;
+    private final AddCMSUserMapper addCMSUserMapper;
 
 
-
-    public boolean checkIfUserWithProvidedMailExists(String mail) {
+    private boolean checkIfUserWithProvidedMailExists(String mail) {
         return userRepository.findByUserMail(mail) != null;
     }
 
-    public boolean checkIfUserWithProvidedNameExists(String name) {
+    private boolean checkIfUserWithProvidedNameExists(String name) {
         return userRepository.findByUserName(name) != null;
     }
 
+    @Override
     public User findById(int id) {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (configurationFlags.isRegister()) {
-
-            if (user.getUserName().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3023.getValue());
-                return errorProvidedDataHandler; //username not provided
-            }
+            if (user.getUserName().isEmpty())
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
             if (user.getUserPassword().isEmpty())
-            {
-                errorProvidedDataHandler.setError(Code.CODE_3024.getValue()); //password empty
-                return errorProvidedDataHandler;
-            }
-            if (user.getUserMail().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3025.getValue()); //usermail empty
-                return errorProvidedDataHandler;
-            }
-            if (checkIfUserWithProvidedNameExists(user.getUserName())) {
-                errorProvidedDataHandler.setError(Code.CODE_3013.getValue()); //user already exists
-                return errorProvidedDataHandler;
-            }
-            if (checkIfUserWithProvidedMailExists(user.getUserMail())) {
-                errorProvidedDataHandler.setError(Code.CODE_3011.getValue()); //usermail already used
-                return errorProvidedDataHandler;
-            }
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
+            if (user.getUserMail().isEmpty())
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3025.getValue());
+            if (checkIfUserWithProvidedNameExists(user.getUserName()))
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
+            if (checkIfUserWithProvidedMailExists(user.getUserMail()))
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
             Role userRole = roleRepository.findByName(RoleName.ROLE_USER.getRoleName());
             user.setRoles(Collections.singletonList(userRole));
             user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
             user.setEnabled(true);
             userRepository.save(user);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
         else {
-            errorProvidedDataHandler.setError(Code.CODE_4009.getValue());
             httpSession.invalidate();
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_4009.getValue());
         }
     }
 
+    @Override
     public Object addCMSUser(CMSUserDTO cmsUserDTO) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         if (!(Arrays.asList(RoleName.ROLE_ADMIN.getRoleName(),
                         RoleName.ROLE_EDITOR.getRoleName(),
                         RoleName.ROLE_MODERATOR.getRoleName())
                 .contains(cmsUserDTO.getRole()))) {
-            errorProvidedDataHandler.setError(Code.CODE_3020.getValue());
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
         }
         if (cmsUserDTO.getUserName().isEmpty())
-        {
-            errorProvidedDataHandler.setError(Code.CODE_3023.getValue());
-            return errorProvidedDataHandler;
-        }
-        if (cmsUserDTO.getUserPassword().isEmpty()) {
-            errorProvidedDataHandler.setError(Code.CODE_3024.getValue());
-            return errorProvidedDataHandler;
-        }
-
-        if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName())) {
-            errorProvidedDataHandler.setError(Code.CODE_3013.getValue()); //user already exists
-            return errorProvidedDataHandler;
-        }
-        if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail())) {
-            errorProvidedDataHandler.setError(Code.CODE_3011.getValue()); //usermail already used
-            return errorProvidedDataHandler;
-        }
-
-        User user = new User();
-        user.setUserName(cmsUserDTO.getUserName());
-        user.setUserMail(cmsUserDTO.getUserMail());
-        Role userRole = roleRepository.findByName(cmsUserDTO.getRole());
-        List<Role> roles = new ArrayList<>();
-        roles.add(userRole);
-        user.setRoles(roles);
-        user.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()));
-        user.setEnabled(true);
-        userRepository.save(user);
-        return user;
-
-
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
+        if (cmsUserDTO.getUserPassword().isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
+        if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName()))
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
+        if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail()))
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
+        User user = addCMSUserMapper.mapCMSUserDTOToUser(cmsUserDTO);
+        log.info("{} [{}][Add CMS User]: {} added new CMS User [username: {}], [userMail: {}], [userRole: {}]", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()), user.getUserName(), user.getUserMail(), user.getRoles());
+        return userRepository.save(user);
     }
 
+    @Override
     public Object deleteUser(int id) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3028.getValue());
-            return errorProvidedDataHandler;
+        if (user == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
+        List<Comment> comments = commentRepository.findByUser(user);
+        List<ArticleContent> articleContents = articleContentRepository.findAllByUser(user);
+        for (ArticleContent articleContent : articleContents) {
+            articleContent.setUser(null);
         }
-        else {
-            List<Comment> comments = commentRepository.findByUser(user);
-            List<ArticleContent> articleContents = articleContentRepository.findAllByUser(user);
-
-            for (ArticleContent articleContent : articleContents) {
-                articleContent.setUser(null);
-            }
-
-            for (Comment comment : comments) {
-                comment.setUser(null);
-            }
-            articleContentRepository.saveAll(articleContents);
-            commentRepository.saveAll(comments);
-            userRepository.deleteById(id);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            return errorProvidedDataHandler;
+        for (Comment comment : comments) {
+            comment.setUser(null);
         }
-
+        articleContentRepository.saveAll(articleContents);
+        commentRepository.saveAll(comments);
+        userRepository.deleteById(id);
+        log.info("{} [{}][delete User]: {} deleted user of id {}", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()), id);
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
-    public List<User> getUsers()
-    {
+    @Override
+    public List<User> getUsers() {
         return userRepository.findAll();
     }
 
+    @Override
     public Object logout() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        }
-        else {
-            username = principal.toString();
-        }
-        java.util.Date date = new java.util.Date();
-        log.info("[{}][USER]: {} logged out from service", date, username);
-        ErrorProvidedDataHandler errorProvidedDataHandler  = new ErrorProvidedDataHandler();
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        log.info("{} [{}][Logout]: {} logged out from service", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
         httpSession.invalidate();
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
+    @Override
     public Object loginToService(String userMail, String password) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (configurationFlags.isLogin())
-        {
+        if (configurationFlags.isLogin()) {
             User user = userRepository.findByUserMail(userMail);
-            if (user == null) {
-                errorProvidedDataHandler.setError(Code.CODE_3028.getValue());
-                return errorProvidedDataHandler;
-            }
+            if (user == null)
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
             else {
                 if (passwordEncoder.matches(password, user.getUserPassword())) {
-                    java.util.Date date = new java.util.Date();
                     myUserDetailsService.loadUserByUsername(userMail);
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName =  authentication.getName();
-                    log.info("[{}][USER]: {} logged into service", date, currentPrincipalName);
+                    log.info("{} [{}][Login]: {} logged into service", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), currentPrincipalName);
                     return user;
                 }
                 else {
-                    errorProvidedDataHandler.setError(Code.CODE_3029.getValue());
-                    return errorProvidedDataHandler;
+                    return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3029.getValue());
                 }
             }
         }
-        else {
-            errorProvidedDataHandler.setError(Code.CODE_4009.getValue());
-            httpSession.invalidate();
-            return errorProvidedDataHandler;
-        }
-
+        httpSession.invalidate();
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_4009.getValue());
     }
 
+    @Override
     public Object changePassword(String oldPassword, String newPassword) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        String username = "";
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        if (oldPassword.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3007.getValue());
+
+        if (newPassword.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3008.getValue());
+
+        if (username.equals(ANONYMOUS_USER))
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+
+        User user = userRepository.findByUserName(username);
+        if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
+            String newPasswordEncoded = passwordEncoder.encode(newPassword);
+            user.setUserPassword(newPasswordEncoded);
+            userRepository.save(user);
+            Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getAuthorities();
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("{} [{}][Change password]: User {} changed password", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else {
-            username = principal.toString();
-        }
-        if (oldPassword.isEmpty()) {
-            errorProvidedDataHandler.setError(Code.CODE_3007.getValue()); //old password empty
-            return errorProvidedDataHandler;
-        }
-        if (newPassword.isEmpty()) {
-            errorProvidedDataHandler.setError(Code.CODE_3008.getValue());//new password empty
-            return errorProvidedDataHandler;
-        }
-        if (username.equals(ANONYMOUS_USER)) {
-            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());//user not logged in
-            return errorProvidedDataHandler;
-        }
-        else
-        {
-            User user = userRepository.findByUserName(username);
-            if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
-                String newPasswordEncoded = passwordEncoder.encode(newPassword);
-                user.setUserPassword(newPasswordEncoded);
-                userRepository.save(user);
-                Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getAuthorities();
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                errorProvidedDataHandler.setError(Code.CODE_2001.getValue()); //success
-                return errorProvidedDataHandler;
-            }
-            else{
-                errorProvidedDataHandler.setError(Code.CODE_3009.getValue()); //wrong old password
-                return errorProvidedDataHandler;
-            }
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3009.getValue());
+
     }
 
+    @Override
     public List<User> findByUserNameIgnoreCaseContaining(String userName) {
         return userRepository.findByUserNameIgnoreCaseContaining(userName, Sort.by("userName").ascending());
     }
 
+    @Override
     public List<User> findSomeUsersByLazyLoadingAndUserName(int page, int size, String username) {
         Pageable pageableWithElements = PageRequest.of(page, size, Sort.by("userName").ascending());
         return userRepository.findByUserNameIgnoreCaseContaining(username, pageableWithElements);
 
     }
 
+    @Override
     public Object editUserMail(String newUserMail) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        if (newUserMail.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
+        if (username.equals(ANONYMOUS_USER))
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+        User isNewMailUsedByAnyUser = userRepository.findByUserMail(newUserMail);
+        if (isNewMailUsedByAnyUser == null)
+        {
+            User user = userRepository.findByUserName(username)
+                    .setUserMail(newUserMail);
+            userRepository.save(user);
+            log.info("{} [{}][Change mail]: User {} changed mail", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else {
-            username = principal.toString();
-        }
-        if (newUserMail.isEmpty()) {
-            errorProvidedDataHandler.setError(Code.CODE_3012.getValue());
-            return errorProvidedDataHandler; //new mail empty
-        }
-
-        if (username.equals(ANONYMOUS_USER)) {
-            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
-            return errorProvidedDataHandler; //user not logged in
-        }
-        else {
-            User checkUser = userRepository.findByUserMail(newUserMail);
-            if (checkUser == null)
-            {
-                User user = userRepository.findByUserName(username);
-                user.setUserMail(newUserMail);
-                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-                userRepository.save(user);
-                return errorProvidedDataHandler; //success
-            }
-            else {
-                errorProvidedDataHandler.setError(Code.CODE_3011.getValue());
-                return errorProvidedDataHandler; //usermail already used
-            }
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
     }
 
+    @Override
     public Object editUserName(String newUsername) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        if (newUsername.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
+        if (username.equals(ANONYMOUS_USER))
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+        User checkUser = userRepository.findByUserName(newUsername);
+        if (checkUser == null) {
+            User user = userRepository.findByUserName(username)
+                    .setUserName(newUsername);
+            userRepository.save(user);
+            Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getAuthorities();
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("{} [{}][Change username]: User {} changed username", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), username);
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else {
-            username = principal.toString();
-        }
-        if (newUsername.isEmpty()) {
-            //errorProvidedDataHandler.setError(Code.CODE_3006));
-            errorProvidedDataHandler.setError(Code.CODE_3006.getValue());
-            return errorProvidedDataHandler; //new username empty
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
 
-        if (username.equals(ANONYMOUS_USER)) {
-            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
-            return errorProvidedDataHandler; //user not logged in
-        }
-        else {
-            User checkUser = userRepository.findByUserName(newUsername);
-            if (checkUser == null)
-            {
-                User user = userRepository.findByUserName(username);
-                user.setUserName(newUsername);
-                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-                userRepository.save(user);
-                Collection<SimpleGrantedAuthority> nowAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getAuthorities();
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(user.getUserName(), user.getUserPassword(), nowAuthorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                return errorProvidedDataHandler; //success
-            }
-            else {
-                errorProvidedDataHandler.setError(Code.CODE_3013.getValue());
-                return errorProvidedDataHandler; //username already used
-            }
-        }
     }
 
+    @Override
     public Object editUserRole(String roleName, int id) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         User user = userRepository.findById(id).orElse(null);
         Role role = roleRepository.findByName(roleName);
-        if (user == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3028.getValue());
-            return errorProvidedDataHandler; //user not found
-        }
-        if (role == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3020.getValue());
-            return errorProvidedDataHandler; //role not found
-        }
-
+        if (user == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
+        if (role == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
         List<Role> roleList = new ArrayList<>();
         roleList.add(role);
         user.setRoles(roleList);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
         userRepository.save(user);
-        return errorProvidedDataHandler; //success
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
 
     }
 
+    @Override
     public List<User> findCmsUsers() {
         Collection<String> roles = Arrays.asList(
                 RoleName.ROLE_ADMIN.getRoleName(),
@@ -398,78 +280,48 @@ public class UserService {
         return mergedList;
     }
 
-
-
+    @Override
     public Object changeUserMail(int id, String newMail) {
         User user = userRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (newMail.isEmpty()) {
-            errorProvidedDataHandler.setError(Code.CODE_3012.getValue());
-            return errorProvidedDataHandler;
-        } // mail empty
-        if (user == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3028.getValue());
-            return errorProvidedDataHandler;
+        if (newMail.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
+        if (user == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
+        if (!checkIfUserWithProvidedMailExists(newMail)) {
+            user.setUserMail(newMail);
+            userRepository.save(user);
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else {
-            if (!checkIfUserWithProvidedMailExists(newMail)) {
-                user.setUserMail(newMail);
-                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-                userRepository.save(user);
-                return errorProvidedDataHandler; //sukces
-            }
-            else {
-                errorProvidedDataHandler.setError(Code.CODE_3011.getValue());
-                return errorProvidedDataHandler; //usermail already in database
-            }
-
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
     }
 
+    @Override
     public Object changeUserName(int id, String newUserName) {
         User user = userRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (newUserName.equals("")) {
-            errorProvidedDataHandler.setError(Code.CODE_3006.getValue());
-            return errorProvidedDataHandler; //new nickname empty
+        if (newUserName.isEmpty())
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
+        if (user == null) 
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
+        if (!checkIfUserWithProvidedNameExists(newUserName)) {
+            user.setUserName(newUserName);
+            userRepository.save(user);
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        if (user == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3028.getValue());
-            return errorProvidedDataHandler;
-        }
-        else {
-            if (!checkIfUserWithProvidedNameExists(newUserName)) {
-                user.setUserName(newUserName);
-                userRepository.save(user);
-                errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-                return errorProvidedDataHandler; //success
-            }
-            else
-            {
-                errorProvidedDataHandler.setError(Code.CODE_3013.getValue());
-                return errorProvidedDataHandler; //username already in database
-            }
-
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
     }
 
+    @Override
     public List<CustomTopCommentersClass> findTheBestCommenter(int size) {
         Pageable pageableWithElements = PageRequest.of(0, size);
         List<CommentsCountModel> commentsCountModels = commentRepository.countTotalCommentsByUser(pageableWithElements);
-
         List<CustomTopCommentersClass> customTopCommentersClassList = new ArrayList<>();
-
         for (CommentsCountModel commentsCountModel : commentsCountModels) {
             customTopCommentersClassList.add(new CustomTopCommentersClass(
-                    userRepository.findById(commentsCountModel.getCommentId()).orElse(null).getUserName(), commentsCountModel.getTotal()
+                    Objects.requireNonNull(userRepository.findById(commentsCountModel.getCommentId()).orElse(null)).getUserName(), commentsCountModel.getTotal()
             ));
         }
-
-        if (customTopCommentersClassList.isEmpty()) {
+        if (customTopCommentersClassList.isEmpty())
             return null;
-        }
         return customTopCommentersClassList;
     }
-
-
 }

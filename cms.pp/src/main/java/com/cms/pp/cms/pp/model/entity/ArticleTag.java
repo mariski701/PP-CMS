@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
 @Data
+@Accessors(chain = true)
 @Table(name = "tags")
 public class ArticleTag {
     @Id

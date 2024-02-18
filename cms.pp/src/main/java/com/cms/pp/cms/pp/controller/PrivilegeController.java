@@ -2,17 +2,20 @@ package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
 import com.cms.pp.cms.pp.model.entity.Privilege;
-import com.cms.pp.cms.pp.service.PrivilegeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.IPrivilegeService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/privileges")
 public class PrivilegeController {
-    @Autowired
-    private PrivilegeService privilegeService;
+    private final IPrivilegeService privilegeService;
 
     @GetMapping("findAll")
     public List<Privilege> findAllPrivileges() {

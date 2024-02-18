@@ -5,23 +5,23 @@ import com.cms.pp.cms.pp.model.entity.Privilege;
 import com.cms.pp.cms.pp.model.entity.Role;
 import com.cms.pp.cms.pp.model.dto.RoleDTO;
 import com.cms.pp.cms.pp.repository.PrivilegeRepository;
-import com.cms.pp.cms.pp.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cms.pp.cms.pp.service.IRoleService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+@Data
+@RequiredArgsConstructor
 @RestController
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/cms/role")
 public class RoleController {
-    @Autowired
-    RoleService roleService;
-    @Autowired
-    PrivilegeRepository privilegeRepository;
+    private final IRoleService roleService;
+    private final PrivilegeRepository privilegeRepository;
 
     @GetMapping("all")
     public List<Role> getRoles() {
