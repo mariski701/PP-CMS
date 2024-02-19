@@ -1,8 +1,8 @@
 package com.cms.pp.cms.pp.controller;
 
-import com.cms.pp.cms.pp.model.entity.Comment;
-import com.cms.pp.cms.pp.model.dto.CommentDTO;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
+import com.cms.pp.cms.pp.model.dto.CommentDTO;
+import com.cms.pp.cms.pp.model.entity.Comment;
 import com.cms.pp.cms.pp.service.ICommentService;
 import com.cms.pp.cms.pp.service.IUserService;
 import lombok.Data;

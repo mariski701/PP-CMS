@@ -2,15 +2,17 @@ package com.cms.pp.cms.pp.service;
 
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.mapper.AlertTranslationMapper;
-import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.model.dto.AlertTranslationDTO;
-import com.cms.pp.cms.pp.repository.LanguageRepository;
+import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.repository.AlertCodeRepository;
 import com.cms.pp.cms.pp.repository.AlertTranslationRepository;
+import com.cms.pp.cms.pp.repository.LanguageRepository;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import com.cms.pp.cms.pp.validator.EditAlertTranslationRequestValidator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Data
@@ -21,6 +23,7 @@ public class AlertTranslationService implements IAlertTranslationService {
     private final LanguageRepository languageRepository;
     private final AlertCodeRepository alertCodeRepository;
     private final AlertTranslationMapper alertTranslationMapper;
+    private final EditAlertTranslationRequestValidator editAlertTranslationRequestValidator;
 
     @Override
     public List<AlertTranslationDTO> findByLanguage(String language) {
@@ -42,11 +45,11 @@ public class AlertTranslationService implements IAlertTranslationService {
 
     @Override
     public Object editAlertTranslation(int id, String errorTranslation) {
+        Object validateRequest = editAlertTranslationRequestValidator.validateEditAlertTranslation(errorTranslation);
+        if (validateRequest != null) return validateRequest;
         AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
         if (alertTranslation == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
-        if (errorTranslation.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
         alertTranslation.setErrorTranslation(errorTranslation);
         alertTranslationRepository.save(alertTranslation);
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());

@@ -4,6 +4,8 @@ import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import com.cms.pp.cms.pp.validator.AddLanguageRequestValidator;
+import com.cms.pp.cms.pp.validator.EditLanguageRequestValidator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,19 +22,19 @@ public class LanguageService implements ILanguageService {
     private final CommentRepository commentRepository;
     private final AlertTranslationRepository alertTranslationRepository;
     private final ArticleTagRepository articleTagRepository;
+    private final AddLanguageRequestValidator addLanguageRequestValidator;
+    private final EditLanguageRequestValidator editLanguageRequestValidator;
 
     @Override
     public Object addLanguage(Language language) {
+        Object validateRequest = addLanguageRequestValidator.validateAddLanguage(language);
+        if (validateRequest != null) return validateRequest;
         Language langTemp = languageRepository.findByName(language.getName());
         Language langTemp2 = languageRepository.findByLanguageCode(language.getLanguageCode());
-        if (language.getName().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
         if (langTemp2 != null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
         if (langTemp != null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
-        if (language.getLanguageCode().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
         languageRepository.save(language);
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
@@ -79,21 +81,18 @@ public class LanguageService implements ILanguageService {
 
     @Override
     public Object editLanguage(Language lang) {
+        Object requestValidator = editLanguageRequestValidator.validateEditLanguage(lang);
+        if (requestValidator != null) return requestValidator;
         Language language = languageRepository.findById(lang.getId()).orElse(null);
         Language checkLangName = languageRepository.findByName(lang.getName());
         Language checkLangCode = languageRepository.findByLanguageCode(lang.getLanguageCode());
         if (language == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3018.getValue());
-
         if (checkLangCode != null || checkLangName != null) {
             if (!language.getName().equals(lang.getName()) || !language.getLanguageCode().equals(lang.getLanguageCode())) {
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3039.getValue());
             }
         }
-        if (lang.getName().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
-        if (lang.getLanguageCode().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
         language.setName(lang.getName());
         language.setLanguageCode(lang.getLanguageCode());
         languageRepository.save(language);

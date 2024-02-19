@@ -1,7 +1,7 @@
 package com.cms.pp.cms.pp.controller;
 
-import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
+import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.service.IConfigurationFlagService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

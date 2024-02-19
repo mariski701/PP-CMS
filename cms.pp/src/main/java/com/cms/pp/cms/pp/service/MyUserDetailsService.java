@@ -1,10 +1,10 @@
 package com.cms.pp.cms.pp.service;
 
+import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.model.entity.Privilege;
 import com.cms.pp.cms.pp.model.entity.Role;
-import com.cms.pp.cms.pp.repository.RoleRepository;
-import com.cms.pp.cms.pp.enums.RoleName;
 import com.cms.pp.cms.pp.model.entity.User;
+import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.repository.UserRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor

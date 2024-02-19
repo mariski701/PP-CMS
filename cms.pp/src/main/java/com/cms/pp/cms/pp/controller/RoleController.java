@@ -1,9 +1,9 @@
 package com.cms.pp.cms.pp.controller;
 
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
+import com.cms.pp.cms.pp.model.dto.RoleDTO;
 import com.cms.pp.cms.pp.model.entity.Privilege;
 import com.cms.pp.cms.pp.model.entity.Role;
-import com.cms.pp.cms.pp.model.dto.RoleDTO;
 import com.cms.pp.cms.pp.repository.PrivilegeRepository;
 import com.cms.pp.cms.pp.service.IRoleService;
 import lombok.Data;

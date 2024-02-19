@@ -1,8 +1,8 @@
 package com.cms.pp.cms.pp.controller;
 
-import com.cms.pp.cms.pp.model.entity.AlertTranslation;
-import com.cms.pp.cms.pp.model.dto.AlertTranslationDTO;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
+import com.cms.pp.cms.pp.model.dto.AlertTranslationDTO;
+import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.service.IAlertTranslationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

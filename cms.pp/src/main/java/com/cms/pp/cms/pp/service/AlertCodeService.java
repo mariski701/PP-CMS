@@ -6,6 +6,8 @@ import com.cms.pp.cms.pp.model.entity.AlertTranslation;
 import com.cms.pp.cms.pp.repository.AlertCodeRepository;
 import com.cms.pp.cms.pp.repository.AlertTranslationRepository;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import com.cms.pp.cms.pp.validator.AddAlertCodeRequestValidator;
+import com.cms.pp.cms.pp.validator.EditAlertCodeRequestValidator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.List;
 public class AlertCodeService implements IAlertCodeService {
     private final AlertCodeRepository alertCodeRepository;
     private final AlertTranslationRepository alertTranslationRepository;
+    private final AddAlertCodeRequestValidator addAlertCodeRequestValidator;
+    private final EditAlertCodeRequestValidator editAlertCodeRequestValidator;
 
     @Override public List<AlertCode> getAlertCodes() {
         return alertCodeRepository.findAll();
@@ -36,13 +40,11 @@ public class AlertCodeService implements IAlertCodeService {
     }
 
     @Override public Object addAlertCode(String alertCode, String alertName) {
+        Object validateRequest = addAlertCodeRequestValidator.validateAddAlertCode(alertCode, alertName);
+        if (validateRequest != null) return validateRequest;
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         if (alertCodeTemp != null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
-        if (alertCode.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
-        if (alertName.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
         alertCodeRepository.save(new AlertCode()
                 .setAlertCode(alertCode)
                 .setAlertName(alertName));
@@ -50,19 +52,15 @@ public class AlertCodeService implements IAlertCodeService {
     }
 
     @Override public Object editAlertCode(int id, String alertCode, String alertName) {
+        Object validateRequest = editAlertCodeRequestValidator.validateEditAlertCode(alertCode, alertName);
+        if (validateRequest != null) return validateRequest;
         AlertCode alertCodeTemp = alertCodeRepository.findByAlertCode(alertCode);
         AlertCode editedAlertCode = alertCodeRepository.findById(id).orElse(null);
-        if(alertCodeTemp != null && editedAlertCode != null)
+        if (alertCodeTemp != null && editedAlertCode != null)
             if (!editedAlertCode.getAlertCode().equals(alertCode))
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3044.getValue());
         if (editedAlertCode == null) {
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
-        }
-        if (alertCode.isEmpty()) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
-        }
-        if (alertName.isEmpty()) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
         }
         editedAlertCode.setAlertCode(alertCode);
         editedAlertCode.setAlertName(alertName);

@@ -1,8 +1,8 @@
 package com.cms.pp.cms.pp.controller;
 
+import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
 import com.cms.pp.cms.pp.model.entity.ArticleTag;
 import com.cms.pp.cms.pp.service.IArticleTagService;
-import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
