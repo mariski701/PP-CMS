@@ -1,12 +1,9 @@
 package com.cms.pp.cms.pp;
 
-import com.cms.pp.cms.pp.model.entity.*;
-import com.cms.pp.cms.pp.repository.*;
-import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
-import com.cms.pp.cms.pp.repository.RoleRepository;
 import com.cms.pp.cms.pp.enums.PrivilegeName;
 import com.cms.pp.cms.pp.enums.RoleName;
-import com.cms.pp.cms.pp.repository.UserRepository;
+import com.cms.pp.cms.pp.model.entity.*;
+import com.cms.pp.cms.pp.repository.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

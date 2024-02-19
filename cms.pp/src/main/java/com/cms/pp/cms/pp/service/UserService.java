@@ -1,15 +1,16 @@
 package com.cms.pp.cms.pp.service;
 
-import com.cms.pp.cms.pp.mapper.AddCMSUserMapper;
-import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
-import com.cms.pp.cms.pp.model.entity.*;
-import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
-import com.cms.pp.cms.pp.repository.*;
-import com.cms.pp.cms.pp.model.CommentsCountModel;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.enums.RoleName;
+import com.cms.pp.cms.pp.mapper.AddCMSUserMapper;
+import com.cms.pp.cms.pp.model.CommentsCountModel;
+import com.cms.pp.cms.pp.model.CustomTopCommentersClass;
+import com.cms.pp.cms.pp.model.dto.CMSUserDTO;
+import com.cms.pp.cms.pp.model.entity.*;
+import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import com.cms.pp.cms.pp.utils.PrincipalUtils;
+import com.cms.pp.cms.pp.validator.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,6 @@ import java.util.*;
 @Service("UserService")
 @Slf4j
 public class UserService implements IUserService {
-    public final static String ANONYMOUS_USER = "anonymousUser";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -44,6 +44,13 @@ public class UserService implements IUserService {
     private final HttpSession httpSession;
     private final MyUserDetailsService myUserDetailsService;
     private final AddCMSUserMapper addCMSUserMapper;
+    private final AddUserRequestValidator addUserRequestValidator;
+    private final AddCMSUserRequestValidator addCMSUserRequestValidator;
+    private final ChangePasswordRequestValidator changePasswordRequestValidator;
+    private final EditUserMailRequestValidator editUserMailRequestValidator;
+    private final EditUserNameRequestValidator editUserNameRequestValidator;
+    private final ChangeUserMailRequestValidator changeUserMailRequestValidator;
+    private final ChangeUserNameRequestValidator changeUserNameRequestValidator;
 
 
     private boolean checkIfUserWithProvidedMailExists(String mail) {
@@ -63,12 +70,9 @@ public class UserService implements IUserService {
     public Object addUser(User user) {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isRegister()) {
-            if (user.getUserName().isEmpty())
-                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
-            if (user.getUserPassword().isEmpty())
-                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
-            if (user.getUserMail().isEmpty())
-                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3025.getValue());
+            Object validateRequest = addUserRequestValidator.validateAddUser(user);
+            if (validateRequest != null)
+                return validateRequest;
             if (checkIfUserWithProvidedNameExists(user.getUserName()))
                 return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
             if (checkIfUserWithProvidedMailExists(user.getUserMail()))
@@ -88,21 +92,14 @@ public class UserService implements IUserService {
 
     @Override
     public Object addCMSUser(CMSUserDTO cmsUserDTO) {
-        if (!(Arrays.asList(RoleName.ROLE_ADMIN.getRoleName(),
-                        RoleName.ROLE_EDITOR.getRoleName(),
-                        RoleName.ROLE_MODERATOR.getRoleName())
-                .contains(cmsUserDTO.getRole()))) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
-        }
-        if (cmsUserDTO.getUserName().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
-        if (cmsUserDTO.getUserPassword().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
+        Object validateRequest =  addCMSUserRequestValidator.validateAddCMSUser(cmsUserDTO);
+        if (validateRequest != null)
+            return validateRequest;
         if (checkIfUserWithProvidedNameExists(cmsUserDTO.getUserName()))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3013.getValue());
         if (checkIfUserWithProvidedMailExists(cmsUserDTO.getUserMail()))
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
-        User user = addCMSUserMapper.mapCMSUserDTOToUser(cmsUserDTO);
+        User user = addCMSUserMapper.mapCMSUserDTOToUser(cmsUserDTO, Collections.singletonList(roleRepository.findByName(cmsUserDTO.getRole())));
         log.info("{} [{}][Add CMS User]: {} added new CMS User [username: {}], [userMail: {}], [userRole: {}]", new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(), PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()), user.getUserName(), user.getUserMail(), user.getRoles());
         return userRepository.save(user);
     }
@@ -167,15 +164,9 @@ public class UserService implements IUserService {
     @Override
     public Object changePassword(String oldPassword, String newPassword) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (oldPassword.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3007.getValue());
-
-        if (newPassword.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3008.getValue());
-
-        if (username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-
+        Object validateRequest = changePasswordRequestValidator.validateChangePassword(oldPassword, newPassword, username);
+        if (validateRequest != null)
+            return validateRequest;
         User user = userRepository.findByUserName(username);
         if (passwordEncoder.matches(oldPassword, user.getUserPassword())) {
             String newPasswordEncoded = passwordEncoder.encode(newPassword);
@@ -209,10 +200,8 @@ public class UserService implements IUserService {
     @Override
     public Object editUserMail(String newUserMail) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (newUserMail.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
-        if (username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+        Object validateRequest = editUserMailRequestValidator.validateEditUserMail(newUserMail, username);
+        if (validateRequest != null) return validateRequest;
         User isNewMailUsedByAnyUser = userRepository.findByUserMail(newUserMail);
         if (isNewMailUsedByAnyUser == null)
         {
@@ -228,10 +217,8 @@ public class UserService implements IUserService {
     @Override
     public Object editUserName(String newUsername) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (newUsername.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
-        if (username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+        Object validateRequest = editUserNameRequestValidator.validateEditUserName(newUsername, username);
+        if (validateRequest != null) return validateRequest;
         User checkUser = userRepository.findByUserName(newUsername);
         if (checkUser == null) {
             User user = userRepository.findByUserName(username)
@@ -282,9 +269,9 @@ public class UserService implements IUserService {
 
     @Override
     public Object changeUserMail(int id, String newMail) {
+        Object validateRequest = changeUserMailRequestValidator.validateChangeUserMail(newMail);
+        if (validateRequest != null) return validateRequest;
         User user = userRepository.findById(id).orElse(null);
-        if (newMail.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
         if (user == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
         if (!checkIfUserWithProvidedMailExists(newMail)) {
@@ -297,10 +284,10 @@ public class UserService implements IUserService {
 
     @Override
     public Object changeUserName(int id, String newUserName) {
+        Object validateRequest = changeUserNameRequestValidator.validateChangeUserName(newUserName);
+        if (validateRequest != null) return validateRequest;
         User user = userRepository.findById(id).orElse(null);
-        if (newUserName.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
-        if (user == null) 
+        if (user == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3028.getValue());
         if (!checkIfUserWithProvidedNameExists(newUserName)) {
             user.setUserName(newUserName);

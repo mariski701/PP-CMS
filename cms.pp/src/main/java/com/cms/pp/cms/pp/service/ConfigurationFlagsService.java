@@ -3,7 +3,6 @@ package com.cms.pp.cms.pp.service;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
 import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

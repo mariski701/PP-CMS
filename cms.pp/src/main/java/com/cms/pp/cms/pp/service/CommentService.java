@@ -2,21 +2,14 @@ package com.cms.pp.cms.pp.service;
 
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.enums.PrivilegeName;
-import com.cms.pp.cms.pp.model.entity.ArticleContent;
-import com.cms.pp.cms.pp.repository.ArticleContentRepository;
-import com.cms.pp.cms.pp.model.entity.Comment;
+import com.cms.pp.cms.pp.mapper.AddCommentMapper;
 import com.cms.pp.cms.pp.model.dto.CommentDTO;
-import com.cms.pp.cms.pp.repository.CommentRepository;
-import com.cms.pp.cms.pp.model.entity.ConfigurationFlags;
-import com.cms.pp.cms.pp.repository.ConfigurationFlagsRepository;
-import com.cms.pp.cms.pp.model.entity.Privilege;
-import com.cms.pp.cms.pp.repository.PrivilegeRepository;
-import com.cms.pp.cms.pp.model.entity.Role;
-import com.cms.pp.cms.pp.repository.RoleRepository;
-import com.cms.pp.cms.pp.model.entity.User;
-import com.cms.pp.cms.pp.repository.UserRepository;
+import com.cms.pp.cms.pp.model.entity.*;
+import com.cms.pp.cms.pp.repository.*;
 import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
 import com.cms.pp.cms.pp.utils.PrincipalUtils;
+import com.cms.pp.cms.pp.validator.AddCommentRequestValidator;
+import com.cms.pp.cms.pp.validator.EditCommentByUserRequestValidator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -37,6 +30,9 @@ public class CommentService implements ICommentService {
     private final ConfigurationFlagsRepository configurationFlagsRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
+    private final AddCommentRequestValidator addCommentRequestValidator;
+    private final AddCommentMapper addCommentMapper;
+    private final EditCommentByUserRequestValidator editCommentByUserRequestValidator;
 
     @Override
     public Comment findCommentById(long id) {
@@ -51,9 +47,8 @@ public class CommentService implements ICommentService {
     @Override
     public List<Comment> findByUsers(int id) {
         User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
+        if (user == null)
             return null;
-        }
         return commentRepository.findByUser(user, Sort.by("id").descending());
 
     }
@@ -79,26 +74,17 @@ public class CommentService implements ICommentService {
         ConfigurationFlags configurationFlags = configurationFlagsRepository.getById(1);
         if (configurationFlags.isComments()) {
             String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-            if (username.equals(ANONYMOUS_USER))
-                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-            else
-            {
-                ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
-                if (commentDTO.getContent().isEmpty()) {
-                    return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
-                }
-                if (articleContent == null) {
-                    return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
-                }
-                if(!articleContent.isCommentsAllowed()) {
-                    return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3031.getValue());
-                }
-                commentRepository.save(new Comment()
-                        .setContent(commentDTO.getContent())
-                        .setUser(userRepository.findByUserName(username))
-                        .setArticleContent(articleContent));
-                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+            Object validateRequest = addCommentRequestValidator.validateAddComment(commentDTO, username);
+            if (validateRequest != null) return null;
+            ArticleContent articleContent = articleContentRepository.findById(commentDTO.getArticleId()).orElse(null);
+            if (articleContent == null)
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
+            if(!articleContent.isCommentsAllowed()) {
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3031.getValue());
             }
+            commentRepository.save(addCommentMapper.mapToComment(commentDTO, userRepository.findByUserName(username), articleContent));
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+
         }
         return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_4008.getValue());
     }
@@ -106,13 +92,10 @@ public class CommentService implements ICommentService {
     @Override
     public Object editCommentByUser(long commentId, String commentContent) {
         String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+        Object validateRequest = editCommentByUserRequestValidator.validateEditCommentByUser(commentContent, username);
+        if (validateRequest != null) return validateRequest;
         User principalUser = userRepository.findByUserName(username);
         Comment comment = commentRepository.findById(commentId).orElse(null);
-        if (commentContent.isEmpty()) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
-        }
         if (comment == null)
             return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3019.getValue());
         Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);

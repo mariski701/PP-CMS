@@ -1,9 +1,6 @@
 package com.cms.pp.cms.pp.repository;
-import com.cms.pp.cms.pp.model.entity.ArticleContent;
-import com.cms.pp.cms.pp.model.entity.ArticleTag;
-import com.cms.pp.cms.pp.model.entity.Language;
-import com.cms.pp.cms.pp.model.entity.Comment;
-import com.cms.pp.cms.pp.model.entity.User;
+
+import com.cms.pp.cms.pp.model.entity.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

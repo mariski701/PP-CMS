@@ -3,17 +3,14 @@ package com.cms.pp.cms.pp.service;
 import com.cms.pp.cms.pp.enums.ArticleStatus;
 import com.cms.pp.cms.pp.enums.Code;
 import com.cms.pp.cms.pp.enums.PrivilegeName;
-import com.cms.pp.cms.pp.model.entity.ArticleContent;
+import com.cms.pp.cms.pp.mapper.AddArticleMapper;
 import com.cms.pp.cms.pp.model.dto.ArticleContentDTO;
-import com.cms.pp.cms.pp.model.entity.ArticleTag;
-import com.cms.pp.cms.pp.model.entity.Language;
-import com.cms.pp.cms.pp.model.entity.Comment;
+import com.cms.pp.cms.pp.model.entity.*;
 import com.cms.pp.cms.pp.repository.*;
-import com.cms.pp.cms.pp.model.ErrorProvidedDataHandler;
-import com.cms.pp.cms.pp.model.entity.Privilege;
-import com.cms.pp.cms.pp.model.entity.Role;
-import com.cms.pp.cms.pp.model.entity.User;
-import com.cms.pp.cms.pp.repository.UserRepository;
+import com.cms.pp.cms.pp.utils.ErrorProvidedDataHandlerUtils;
+import com.cms.pp.cms.pp.utils.PrincipalUtils;
+import com.cms.pp.cms.pp.validator.AddArticleContentRequestValidator;
+import com.cms.pp.cms.pp.validator.EditArticleRequestValidator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -38,65 +38,21 @@ public class ArticleContentService implements IArticleContentService {
     private final CommentRepository commentRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
-
+    private final AddArticleMapper addArticleMapper;
+    private final AddArticleContentRequestValidator addArticleContentRequestValidator;
+    private final EditArticleRequestValidator editArticleRequestValidator;
 
     @Override
     public Object addArticleContent(ArticleContentDTO articleContentDTO) {
-        ArticleContent articleContent = new ArticleContent();
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        }
-        else {
-            username = principal.toString();
-        }
-        if (username.equals(ANONYMOUS_USER)) {
-            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
-            return errorProvidedDataHandler;
-        }
-        else {
-            if (articleContentDTO.getTitle().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3001.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (articleContentDTO.getLanguage().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3002.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (articleContentDTO.getTags().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3003.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (articleContentDTO.getContent().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3004.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (articleContentDTO.getImage().isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3032.getValue());
-                return errorProvidedDataHandler;
-            }
-
-            articleContent.setTitle(articleContentDTO.getTitle());
-            Collection<ArticleTag> articleTags  = new ArrayList<>();
-            for (Map<String, String> names : articleContentDTO.getTags()) {
-                articleTags.add(articleTagRepository.findByName(names.get("name")));
-            }
-            articleContent.setArticleTags(articleTags);
-            articleContent.setContent(articleContentDTO.getContent());
-            Language language = languageRepository.findByName(articleContentDTO.getLanguage());
-            articleContent.setLanguage(language);
-            articleContent.setPublished(ArticleStatus.UNPUBLSHED.getStatus());
-            articleContent.setImage(articleContentDTO.getImage());
-            articleContent.setCommentsAllowed(true);
-            User user = userRepository.findByUserName(username);
-            articleContent.setUser(user);
-            articleContentRepository.save(articleContent);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            return errorProvidedDataHandler;
-        }
-
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Object validateRequest = addArticleContentRequestValidator.validateAddArticleContent(articleContentDTO, username);
+        if (validateRequest != null) return validateRequest;
+        articleContentRepository.save(addArticleMapper.mapToArticleContent(
+                articleContentDTO,
+                userRepository.findByUserName(username),
+                languageRepository.findByName(articleContentDTO.getLanguage()))
+        );
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     @Override
@@ -114,134 +70,71 @@ public class ArticleContentService implements IArticleContentService {
     @Override
     public Object changeArticleStatus(int id, String articleStatus) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (articleStatus.equals(ArticleStatus.PUBLISHED.getStatus()) || articleStatus.equals(ArticleStatus.UNPUBLSHED.getStatus())) {
-            if (articleContent == null) {
-                errorProvidedDataHandler.setError(Code.CODE_3016.getValue());
-                return errorProvidedDataHandler;
-            }
+        if (articleStatus != null && (articleStatus.equals(ArticleStatus.PUBLISHED.getStatus()) || articleStatus.equals(ArticleStatus.UNPUBLSHED.getStatus()))) {
+            if (articleContent == null)
+                return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
             if (articleStatus.equals(ArticleStatus.PUBLISHED.getStatus()))
                 articleContent.setDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
             articleContent.setPublished(articleStatus);
             articleContentRepository.save(articleContent);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else
-        {
-            errorProvidedDataHandler.setError(Code.CODE_3034.getValue());
-            return errorProvidedDataHandler;
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3034.getValue());
     }
 
     @Override
     public Object removeArticle(int id) {
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        if (articleContent == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3016.getValue());
-            return errorProvidedDataHandler;
-        }
+        if (articleContent == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3016.getValue());
         List<Comment> comments = commentRepository.findByArticleContent(articleContent);
         commentRepository.deleteAll(comments);
         articleContentRepository.deleteById(id);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
 
     }
 
     @Override
     public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content, String image) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
-        boolean canEditArticle = false;
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        }
-        else {
-            username = principal.toString();
-        }
-        if (username.equals(ANONYMOUS_USER)) {
-            errorProvidedDataHandler.setError(Code.CODE_3005.getValue());
-            return errorProvidedDataHandler;
-        }
-
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Object requestValidator = editArticleRequestValidator.validateEditArticle(title, language, tags, content, image, username);
+        if (requestValidator != null) return requestValidator;
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-
+        if (articleContent == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3030.getValue());
         User editedArticleOfUser = userRepository.findById(articleContent.getUser().getId()).orElse(null);
+        if (editedArticleOfUser == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3030.getValue());
         Role editedArticleUserRole = editedArticleOfUser.getRoles().stream().findAny().orElse(null);
         Collection<Privilege> editedArticleUserPrivileges = roleRepository.findByName(editedArticleUserRole.getName()).getPrivileges();
-
-
         User principalUser = userRepository.findByUserName(username);
         Role principalRole = principalUser.getRoles().stream().findAny().orElse(null);
         Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
-        
-        if (principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName()))) {
-            canEditArticle = editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName())) ||
-                    editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName())) ||
-                    editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName()));
-        }
-        if (principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName())) &&
-                principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName())) &&
-                !(principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName())))) {
-            canEditArticle = (editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName())) ||
-                    editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName()))) &&
-                    !editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName()));
-        }
-        if (principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName())) &&
-                !(principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName()))) &&
-                !(principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName())))) {
-            if (editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName()))) {
-                int editedArticleUserId = articleContent.getUser().getId();
-                int principalId = principalUser.getId();
-                canEditArticle = editedArticleUserId == principalId;
-            }
-        }
+        boolean canEditArticle = canEditArticle(editedArticleUserPrivileges, principalPrivileges);
         if (canEditArticle) {
-            if (articleContent == null) {
-                errorProvidedDataHandler.setError(Code.CODE_3030.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (title.isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3001.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (language.isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3002.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (tags.isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3003.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (content.isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3004.getValue());
-                return errorProvidedDataHandler;
-            }
-            if (image.isEmpty()) {
-                errorProvidedDataHandler.setError(Code.CODE_3032.getValue());
-                return errorProvidedDataHandler;
-            }
-            articleContent.setTitle(title);
-            articleContent.setLanguage(languageRepository.findByName(language));
-            Collection<ArticleTag> articleTags  = new ArrayList<>();
-            for (Map<String, String> names : tags) {
-                articleTags.add(articleTagRepository.findByName(names.get("name")));
-            }
-            articleContent.setArticleTags(articleTags);
-            articleContent.setContent(content);
-            articleContent.setImage(image);
+            articleContent
+                    .setTitle(title)
+                    .setLanguage(languageRepository.findByName(language))
+                    .setArticleTags(tags.stream()
+                                    .map(names -> articleTagRepository.findByName(names.get("name")))
+                                    .collect(Collectors.toList()))
+                    .setContent(content)
+                    .setImage(image);
             articleContentRepository.save(articleContent);
-            errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-            return errorProvidedDataHandler;
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
         }
-        else
-        {
-            errorProvidedDataHandler.setError(Code.CODE_3033.getValue());
-            return errorProvidedDataHandler;
-        }
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3033.getValue());
+    }
+
+    private boolean canEditArticle(Collection<Privilege> editedArticleUserPrivileges, Collection<Privilege> principalPrivileges) {
+        boolean isAdmin = principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_ADMINS_ARTICLE.getPrivilegeName()));
+        boolean isModeratorAndEditor = principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName())) &&
+                principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName())) &&
+                !isAdmin;
+        boolean isEditor = principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName())) &&
+                !principalPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_MODERATORS_ARTICLE.getPrivilegeName())) &&
+                !isAdmin && editedArticleUserPrivileges.contains(privilegeRepository.findByName(PrivilegeName.EDIT_EDITORS_ARTICLE.getPrivilegeName()));
+        return isAdmin || isModeratorAndEditor || isEditor;
     }
 
     @Override
@@ -285,62 +178,27 @@ public class ArticleContentService implements IArticleContentService {
         Language lang = languageRepository.findByName(language);
         if (lang == null)
             return null;
-        if (title.isEmpty() && tagNames !=null) {
-            List<ArticleTag> articleTagList = new ArrayList<>();
-
-            for (Map<String, String> tagName : tagNames) {
-                articleTagList.add(articleTagRepository.findByName(tagName.get("name")));
-            }
-
-            List<List<ArticleContent>> articleContentList = new ArrayList<>();
-            for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByPublishedAndArticleTagsAndLanguage( ArticleStatus.PUBLISHED.getStatus(),articleTag, lang, Sort.by("id").descending()));
-            }
-
-            List<ArticleContent> temp = new ArrayList<>();
-
-            for (int j = 0; j < articleContentList.size(); j++)
-            {
-                for (int i = 0; i < articleContentList.get(j).size(); i++)
-                {
-                    temp.add(articleContentList.get(j).get(i));
-                }
-            }
-
-            for (int i = 0; i < temp.size(); i++) {
-                System.out.println(temp.get(i).getId());
-            }
-            return temp;
+        if (title.isEmpty() && tagNames != null) {
+            List<ArticleTag> articleTagList = tagNames.stream()
+                    .map(tagName -> articleTagRepository.findByName(tagName.get("name")))
+                    .collect(Collectors.toList());
+            return articleTagList.stream()
+                    .map(articleTag -> articleContentRepository.findByPublishedAndArticleTagsAndLanguage(
+                            ArticleStatus.PUBLISHED.getStatus(), articleTag, lang, Sort.by("id").descending()))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
         }
-
-        if (tagNames == null) {
-            return articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndLanguage(title, ArticleStatus.PUBLISHED.getStatus(), lang, Sort.by("id").descending());
-        }
-
-        if (!title.isEmpty() && tagNames != null) {
-            List<ArticleTag> articleTagList = new ArrayList<>();
-
-            for (int i = 0; i < tagNames.size(); i++) {
-                articleTagList.add(articleTagRepository.findByName(tagNames.get(i).get("name")));
-            }
-
-            List<List<ArticleContent>> articleContentList = new ArrayList<>();
-            for (ArticleTag articleTag : articleTagList) {
-                articleContentList.add(articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndArticleTagsAndLanguage( title, ArticleStatus.PUBLISHED.getStatus() , articleTag, lang, Sort.by("title").ascending()));
-            }
-
-            List<ArticleContent> temp = new ArrayList<>();
-
-            for (int j = 0; j < articleContentList.size(); j++)
-            {
-                for (int i = 0; i < articleContentList.get(j).size(); i++)
-                {
-                    temp.add(articleContentList.get(j).get(i));
-                }
-            }
-            return temp;
-        }
-        return null;
+        if (tagNames == null)
+            return articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndLanguage(
+                    title, ArticleStatus.PUBLISHED.getStatus(), lang, Sort.by("id").descending());
+        List<ArticleTag> articleTagList = tagNames.stream()
+                .map(tag -> articleTagRepository.findByName(tag.get("name")))
+                .collect(Collectors.toList());
+        return articleTagList.stream()
+                .map(articleTag -> articleContentRepository.findByTitleIgnoreCaseContainingAndPublishedAndArticleTagsAndLanguage(
+                        title, ArticleStatus.PUBLISHED.getStatus(), articleTag, lang, Sort.by("title").ascending()))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -356,25 +214,19 @@ public class ArticleContentService implements IArticleContentService {
 
     @Override
     public Object allowCommentsInArticle(int id, boolean allowComments) {
-        ErrorProvidedDataHandler errorProvidedDataHandler = new ErrorProvidedDataHandler();
         ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
-        if (articleContent == null) {
-            errorProvidedDataHandler.setError(Code.CODE_3030.getValue());
-            return errorProvidedDataHandler;
-        }
+        if (articleContent == null)
+            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3030.getValue());
         articleContent.setCommentsAllowed(allowComments);
         articleContentRepository.save(articleContent);
-        errorProvidedDataHandler.setError(Code.CODE_2001.getValue());
-        return errorProvidedDataHandler;
+        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
     }
 
     @Override
     public ArticleContent getArticleContentByCommentId(Long id) {
         Comment comment = commentRepository.findById(id).orElse(null);
-
         if (comment == null)
             return null;
-
         return articleContentRepository.findArticleContentByComments(comment);
     }
 
@@ -393,14 +245,7 @@ public class ArticleContentService implements IArticleContentService {
 
     @Override
     public List<ArticleContent> getAllByUsersInCMS() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = "";
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        }
-        else {
-            username = principal.toString();
-        }
+        String username = PrincipalUtils.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (username.equals(ANONYMOUS_USER)) {
             return null;
         }

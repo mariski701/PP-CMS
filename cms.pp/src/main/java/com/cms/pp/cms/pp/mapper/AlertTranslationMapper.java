@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Data
@@ -16,25 +16,19 @@ import java.util.List;
 public class AlertTranslationMapper {
 
     public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertCode> alertCodeList) {
-        if (alertCodeList == null) {
-            return new ArrayList<>();
-        }
-        List<AlertTranslationDTO> alertTranslationDTOList = new ArrayList<>();
-        alertCodeList.forEach(alertCode -> alertTranslationDTOList.add(
-                createAlertTranslationDTO(alertCode.getAlertCode(), alertCode.getAlertName(), "english", alertCode.getId()))
-        );
-        return alertTranslationDTOList;
+        return alertCodeList.stream()
+                .map(alertCode -> createAlertTranslationDTO(alertCode.getAlertCode(), alertCode.getAlertName(), "english", alertCode.getId()))
+                .collect(Collectors.toList());
     }
 
     public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertTranslation> alertTranslationList, String language) {
-        if (alertTranslationList == null) {
-            return new ArrayList<>();
-        }
-        List<AlertTranslationDTO> alertTranslationDTOList = new ArrayList<>();
-        alertTranslationList.forEach(alertTranslation -> alertTranslationDTOList.add(
-                createAlertTranslationDTO(alertTranslation.getAlertCode().getAlertCode(), alertTranslation.getErrorTranslation(), language, alertTranslation.getId()))
-        );
-        return alertTranslationDTOList;
+        return alertTranslationList.stream()
+                .map(alertTranslation -> createAlertTranslationDTO(
+                        alertTranslation.getAlertCode().getAlertCode(),
+                        alertTranslation.getErrorTranslation(),
+                        language,
+                        alertTranslation.getId()))
+                .collect(Collectors.toList());
     }
 
     private AlertTranslationDTO createAlertTranslationDTO(String alertCode, String alertName, String language, int id) {

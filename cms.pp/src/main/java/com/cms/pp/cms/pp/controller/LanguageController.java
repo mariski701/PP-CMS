@@ -1,7 +1,7 @@
 package com.cms.pp.cms.pp.controller;
 
-import com.cms.pp.cms.pp.model.entity.Language;
 import com.cms.pp.cms.pp.configuration.CustomCorsConfigAnnotation;
+import com.cms.pp.cms.pp.model.entity.Language;
 import com.cms.pp.cms.pp.service.ILanguageService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
