@@ -7,7 +7,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 @Data
 public class ErrorProvidedDataHandlerUtils {
-    public static ErrorProvidedDataHandler getErrorProvidedDataHandler(String code) {
-        return new ErrorProvidedDataHandler().setError(code);
-    }
+
+	public static ErrorProvidedDataHandler getErrorProvidedDataHandler(String code) {
+		return new ErrorProvidedDataHandler().setError(code);
+	}
+
 }

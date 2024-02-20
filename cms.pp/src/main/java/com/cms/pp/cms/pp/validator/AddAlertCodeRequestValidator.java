@@ -10,11 +10,13 @@ import org.springframework.stereotype.Component;
 @Data
 @RequiredArgsConstructor
 public class AddAlertCodeRequestValidator {
-    public Object validateAddAlertCode(String alertCode, String alertName) {
-        if (alertCode == null || alertCode.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
-        if (alertName == null || alertName.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
-        return null;
-    }
+
+	public Object validateAddAlertCode(String alertCode, String alertName) {
+		if (alertCode == null || alertCode.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3042.getValue());
+		if (alertName == null || alertName.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
+		return null;
+	}
+
 }

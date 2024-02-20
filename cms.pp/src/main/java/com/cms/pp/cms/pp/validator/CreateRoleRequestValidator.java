@@ -13,11 +13,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Data
 public class CreateRoleRequestValidator {
-    public Object validateCreateRole(String name, List<Privilege> privileges) {
-        if (name == null ||name.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3021.getValue());
-        if (privileges == null || privileges.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3022.getValue());
-        return null;
-    }
+
+	public Object validateCreateRole(String name, List<Privilege> privileges) {
+		if (name == null || name.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3021.getValue());
+		if (privileges == null || privileges.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3022.getValue());
+		return null;
+	}
+
 }

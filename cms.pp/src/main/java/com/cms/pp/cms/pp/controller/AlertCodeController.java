@@ -16,30 +16,33 @@ import java.util.Map;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/original/alerts/")
 public class AlertCodeController {
-    private final IAlertCodeService IAlertCodeService;
 
-    @GetMapping("findAll")
-    public List<AlertCode> getAlertCodes() {
-        return IAlertCodeService.getAlertCodes();
-    }
+	private final IAlertCodeService IAlertCodeService;
 
-    @PostMapping("add")
-    public Object addAlertCode(@RequestBody Map<String, String> body) {
-        return IAlertCodeService.addAlertCode(body.get("alertCode"), body.get("alertName"));
-    }
+	@GetMapping("findAll")
+	public List<AlertCode> getAlertCodes() {
+		return IAlertCodeService.getAlertCodes();
+	}
 
-    @DeleteMapping("remove/{id}")
-    public Object removeAlertCode(@PathVariable int id) {
-        return IAlertCodeService.removeAlertCode(id);
-    }
+	@PostMapping("add")
+	public Object addAlertCode(@RequestBody Map<String, String> body) {
+		return IAlertCodeService.addAlertCode(body.get("alertCode"), body.get("alertName"));
+	}
 
-    @PutMapping("edit")
-    public Object editAlertCode(@RequestBody Map<String,String> body) {
-        return IAlertCodeService.editAlertCode(Integer.parseInt(body.get("id")), body.get("alertCode"), body.get("alertName"));
-    }
+	@DeleteMapping("remove/{id}")
+	public Object removeAlertCode(@PathVariable int id) {
+		return IAlertCodeService.removeAlertCode(id);
+	}
 
-    @GetMapping("find/{id}")
-    public AlertCode findById(@PathVariable int id) {
-        return IAlertCodeService.findById(id);
-    }
+	@PutMapping("edit")
+	public Object editAlertCode(@RequestBody Map<String, String> body) {
+		return IAlertCodeService.editAlertCode(Integer.parseInt(body.get("id")), body.get("alertCode"),
+				body.get("alertName"));
+	}
+
+	@GetMapping("find/{id}")
+	public AlertCode findById(@PathVariable int id) {
+		return IAlertCodeService.findById(id);
+	}
+
 }

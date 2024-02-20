@@ -14,14 +14,15 @@ import java.util.List;
 @Data
 @Component
 public class AddCMSUserMapper {
-    private final PasswordEncoder passwordEncoder;
 
-    public User mapCMSUserDTOToUser(CMSUserDTO cmsUserDTO, List<Role> roles) {
-        return new User()
-                .setUserName(cmsUserDTO.getUserName())
-                .setUserMail(cmsUserDTO.getUserMail())
-                .setRoles(roles)
-                .setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()))
-                .setEnabled(true);
-    }
+	private final PasswordEncoder passwordEncoder;
+
+	public User mapCMSUserDTOToUser(CMSUserDTO cmsUserDTO, List<Role> roles) {
+		return new User().setUserName(cmsUserDTO.getUserName())
+			.setUserMail(cmsUserDTO.getUserMail())
+			.setRoles(roles)
+			.setUserPassword(passwordEncoder.encode(cmsUserDTO.getUserPassword()))
+			.setEnabled(true);
+	}
+
 }

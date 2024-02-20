@@ -12,20 +12,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service("PrivilegeService")
 public class PrivilegeService implements IPrivilegeService {
-    private final PrivilegeRepository privilegeRepository;
 
-    @Override
-    public List<Privilege> findAllPrivileges() {
-        return privilegeRepository.findAll();
-    }
+	private final PrivilegeRepository privilegeRepository;
 
-    @Override
-    public Privilege findByName(String name) {
-        return privilegeRepository.findByName(name);
-    }
+	@Override
+	public List<Privilege> findAllPrivileges() {
+		return privilegeRepository.findAll();
+	}
 
-    @Override
-    public Privilege findById(Long id) {
-        return privilegeRepository.findById(id).orElse(null);
-    }
+	@Override
+	public Privilege findByName(String name) {
+		return privilegeRepository.findByName(name);
+	}
+
+	@Override
+	public Privilege findById(Long id) {
+		return privilegeRepository.findById(id).orElse(null);
+	}
+
 }

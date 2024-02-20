@@ -12,9 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Data
 public class CreateRoleMapper {
-    public Role mapToRole(String name, List<Privilege> privileges) {
-        return new Role()
-                .setName(name)
-                .setPrivileges(privileges);
-    }
+
+	public Role mapToRole(String name, List<Privilege> privileges) {
+		return new Role().setName(name).setPrivileges(privileges);
+	}
+
 }

@@ -18,20 +18,22 @@ import java.util.List;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/privileges")
 public class PrivilegeController {
-    private final IPrivilegeService privilegeService;
 
-    @GetMapping("findAll")
-    public List<Privilege> findAllPrivileges() {
-        return privilegeService.findAllPrivileges();
-    }
+	private final IPrivilegeService privilegeService;
 
-    @GetMapping("find/name/{name}")
-    public Privilege findByName(@PathVariable String name) {
-        return privilegeService.findByName(name);
-    }
+	@GetMapping("findAll")
+	public List<Privilege> findAllPrivileges() {
+		return privilegeService.findAllPrivileges();
+	}
 
-    @GetMapping("find/id/{id}")
-    public Privilege findById(@PathVariable Long id) {
-        return privilegeService.findById(id);
-    }
+	@GetMapping("find/name/{name}")
+	public Privilege findByName(@PathVariable String name) {
+		return privilegeService.findByName(name);
+	}
+
+	@GetMapping("find/id/{id}")
+	public Privilege findById(@PathVariable Long id) {
+		return privilegeService.findById(id);
+	}
+
 }

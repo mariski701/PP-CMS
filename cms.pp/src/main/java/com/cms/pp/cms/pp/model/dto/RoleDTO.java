@@ -7,6 +7,9 @@ import java.util.Map;
 
 @Data
 public class RoleDTO {
-    private String name;
-    private List<Map<String, String>> privileges;
+
+	private String name;
+
+	private List<Map<String, String>> privileges;
+
 }

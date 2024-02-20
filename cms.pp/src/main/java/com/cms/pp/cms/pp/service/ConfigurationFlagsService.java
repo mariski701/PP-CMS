@@ -12,34 +12,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service("ConfigurationFlagsService")
 public class ConfigurationFlagsService implements IConfigurationFlagService {
-    private final ConfigurationFlagsRepository configurationFlagsRepository;
 
-    @Override
-    public ConfigurationFlags getConfig() {
-        return configurationFlagsRepository.findFirstByOrderByDateDESC();
-    }
+	private final ConfigurationFlagsRepository configurationFlagsRepository;
 
-    @Override
-    public Object updateCommentConfiguration(boolean commentsAvailable) {
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
-        configurationFlags.setComments(commentsAvailable);
-        configurationFlagsRepository.save(configurationFlags);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	@Override
+	public ConfigurationFlags getConfig() {
+		return configurationFlagsRepository.findFirstByOrderByIdDESC();
+	}
 
-    @Override
-    public Object updateRegisterConfiguration(boolean registerAvailable) {
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
-        configurationFlags.setRegister(registerAvailable);
-        configurationFlagsRepository.save(configurationFlags);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	@Override
+	public Object updateCommentConfiguration(boolean commentsAvailable) {
+		ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByIdDESC();
+		configurationFlags.setComments(commentsAvailable);
+		configurationFlagsRepository.save(configurationFlags);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
 
-    @Override
-    public Object updateLoginConfiguration(boolean loginAvailable) {
-        ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByDateDESC();
-        configurationFlags.setLogin(loginAvailable);
-        configurationFlagsRepository.save(configurationFlags);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	@Override
+	public Object updateRegisterConfiguration(boolean registerAvailable) {
+		ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByIdDESC();
+		configurationFlags.setRegister(registerAvailable);
+		configurationFlagsRepository.save(configurationFlags);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
+	@Override
+	public Object updateLoginConfiguration(boolean loginAvailable) {
+		ConfigurationFlags configurationFlags = configurationFlagsRepository.findFirstByOrderByIdDESC();
+		configurationFlags.setLogin(loginAvailable);
+		configurationFlagsRepository.save(configurationFlags);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
 }

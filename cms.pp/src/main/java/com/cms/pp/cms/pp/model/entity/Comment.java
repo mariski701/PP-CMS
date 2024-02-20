@@ -14,29 +14,31 @@ import java.util.Calendar;
 @Accessors(chain = true)
 @Table(name = "comments")
 public class Comment {
-    @Id
-    @SequenceGenerator(name = "MY_COMMENT_SEQ", sequenceName = "MY_COMMENT_SEQ", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_COMMENT_SEQ" )
-    @Column(unique = true, length = 128, updatable = false, nullable = false)
-    private long id;
 
-    @OneToOne
-    private User user;
+	@Id
+	@SequenceGenerator(name = "MY_COMMENT_SEQ", sequenceName = "MY_COMMENT_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_COMMENT_SEQ")
+	@Column(unique = true, length = 128, updatable = false, nullable = false)
+	private long id;
 
-    @Column(name = "comment_content")
-    private String content;
+	@OneToOne
+	private User user;
 
-    @Column(name = "comment_date")
-    private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+	@Column(name = "comment_content")
+	private String content;
 
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name = "article_content_id")
-    private ArticleContent articleContent;
+	@Column(name = "comment_date")
+	private java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
-    @JsonIgnore
-    @Version
-    private Long version;
+	@JsonIgnore
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@ManyToOne
+	@JoinColumn(name = "article_content_id")
+	private ArticleContent articleContent;
+
+	@JsonIgnore
+	@Version
+	private Long version;
+
 }

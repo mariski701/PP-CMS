@@ -11,10 +11,15 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    User findByUserName(String userName);
-    User findByUserMail(String userMail);
-    List<User> findByUserNameIgnoreCaseContaining(String userName);
-    List<User> findByUserNameIgnoreCaseContaining(String userName, Sort sort);
-    List<User> findByUserNameIgnoreCaseContaining(String userName, Pageable pageable);
-    List<User> findUserByRoles(Role role);
+
+	User findByUserName(String userName);
+
+	User findByUserMail(String userMail);
+
+	List<User> findByUserNameIgnoreCaseContaining(String userName, Sort sort);
+
+	List<User> findByUserNameIgnoreCaseContaining(String userName, Pageable pageable);
+
+	List<User> findUserByRoles(Role role);
+
 }
