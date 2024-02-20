@@ -117,7 +117,7 @@ public class UserService implements IUserService {
 			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3011.getValue());
 		User user = addCMSUserMapper.mapCMSUserDTOToUser(cmsUserDTO,
 				Collections.singletonList(roleRepository.findByName(cmsUserDTO.getRole())));
-		log.info("{} [{}][Add CMS User]: {} added new CMS User [username: {}], [userMail: {}], [userRole: {}]",
+		log.info("{} [{}][Add CMS User]: {} added new CMS User [username: {}], [userMail: {}], [userRoles: {}]",
 				new java.util.Date(), RequestContextHolder.currentRequestAttributes().getSessionId(),
 				PrincipalUtils
 					.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()),

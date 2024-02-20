@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -73,11 +73,9 @@ public class UserController {
 	public List<UserDTO> findSomeUsersByLazyLoadingAndUserName(@PathVariable int page, @PathVariable int size,
 			@PathVariable String username) {
 		List<User> users = userService.findSomeUsersByLazyLoadingAndUserName(page, size, username);
-		List<UserDTO> userDTOList = new ArrayList<>();
-		for (User user : users) {
-			userDTOList.add(new UserDTO(user.getId(), user.getUserName(), user.getUserMail()));
-		}
-		return userDTOList;
+		return users.stream()
+			.map(user -> new UserDTO(user.getId(), user.getUserName(), user.getUserMail()))
+			.collect(Collectors.toList());
 	}
 
 	@PutMapping("edit/username")

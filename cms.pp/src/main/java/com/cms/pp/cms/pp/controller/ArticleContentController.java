@@ -73,18 +73,14 @@ public class ArticleContentController {
 	@PostMapping(value = { "{language}/contains", "{language}/contains/{title}" })
 	public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(@PathVariable String language,
 			@PathVariable Map<String, String> title, @RequestBody List<Map<String, String>> tagNames) {
-		// System.out.println(language);
 		String tit = title.get("title");
 		if (tit != null && !(tagNames.isEmpty())) {
-			// System.out.println("ze stringiem i z tagami");
 			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, tit, tagNames);
 		}
 		else if (tit != null && tagNames.isEmpty()) {
-			// System.out.println("z tytułem ale bez tagów");
 			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, tit, null);
 		}
 		else if (tit == null && !(tagNames.get(0).isEmpty())) {
-			// System.out.println("z tagami bez tytulu");
 			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, "", tagNames);
 		}
 		return null;

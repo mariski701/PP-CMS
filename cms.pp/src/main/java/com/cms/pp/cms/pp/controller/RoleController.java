@@ -10,9 +10,9 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -37,32 +37,20 @@ public class RoleController {
 
 	@PostMapping("create")
 	public Object createRole(@RequestBody RoleDTO roleDTO) {
-		List<String> privilegeName = new ArrayList<>();
-		List<Privilege> privileges = new ArrayList<>();
-
-		for (int i = 0; i < roleDTO.getPrivileges().size(); i++) {
-			privilegeName.add(roleDTO.getPrivileges().get(i).get("privilegeName"));
-		}
-
-		System.out.println(privilegeName);
-		for (String s : privilegeName) {
-			privileges.add(privilegeRepository.findByName(s));
-		}
-
+		List<Privilege> privileges = roleDTO.getPrivileges()
+			.stream()
+			.map(privilegeMap -> privilegeMap.get("privilegeName"))
+			.map(privilegeRepository::findByName)
+			.collect(Collectors.toList());
 		return roleService.createRole(roleDTO.getName(), privileges);
 	}
 
 	@PutMapping("edit/{id}")
 	public Object editRole(@PathVariable Long id, @RequestBody List<Map<String, String>> body) {
-		List<String> privilegeName = new ArrayList<>();
-		List<Privilege> privileges = new ArrayList<>();
-		for (Map<String, String> stringStringMap : body) {
-			privilegeName.add(stringStringMap.get("privilegeName"));
-		}
-		System.out.println(privilegeName);
-		for (String s : privilegeName) {
-			privileges.add(privilegeRepository.findByName(s));
-		}
+		List<Privilege> privileges = body.stream()
+			.map(stringStringMap -> stringStringMap.get("privilegeName"))
+			.map(privilegeRepository::findByName)
+			.collect(Collectors.toList());
 		return roleService.editRole(id, privileges);
 	}
 
