@@ -19,8 +19,7 @@ public interface IArticleContentService {
 
 	Object removeArticle(int id);
 
-	Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags, String content,
-			String image);
+	Object editArticle(ArticleContentDTO articleContentDTO);
 
 	List<ArticleContent> findAll();
 

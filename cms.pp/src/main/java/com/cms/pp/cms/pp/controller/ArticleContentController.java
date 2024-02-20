@@ -8,9 +8,9 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -43,11 +43,7 @@ public class ArticleContentController {
 
 	@PutMapping("edit")
 	public Object editArticle(@RequestBody ArticleContentDTO articleContentDTO) {
-		if (articleContentDTO.getId().equals(null))
-			articleContentDTO.setId(0);
-		return IArticleContentService.editArticle(articleContentDTO.getId(), articleContentDTO.getTitle(),
-				articleContentDTO.getLanguage(), articleContentDTO.getTags(), articleContentDTO.getContent(),
-				articleContentDTO.getImage());
+		return IArticleContentService.editArticle(articleContentDTO);
 	}
 
 	@GetMapping("{language}")
@@ -73,17 +69,10 @@ public class ArticleContentController {
 	@PostMapping(value = { "{language}/contains", "{language}/contains/{title}" })
 	public List<ArticleContent> findByTitleIgnoreCaseContainingOrByTags(@PathVariable String language,
 			@PathVariable Map<String, String> title, @RequestBody List<Map<String, String>> tagNames) {
-		String tit = title.get("title");
-		if (tit != null && !(tagNames.isEmpty())) {
-			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, tit, tagNames);
-		}
-		else if (tit != null && tagNames.isEmpty()) {
-			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, tit, null);
-		}
-		else if (tit == null && !(tagNames.get(0).isEmpty())) {
-			return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, "", tagNames);
-		}
-		return null;
+		String subject = title.get("title");
+		if (subject == null)
+			subject = "";
+		return IArticleContentService.findByTitleIgnoreCaseContainingOrByTags(language, subject, tagNames);
 	}
 
 	@GetMapping("findByTitle")
@@ -96,15 +85,11 @@ public class ArticleContentController {
 			@PathVariable String title) {
 		List<ArticleContent> articleContentList = IArticleContentService.findSomeArticlesByLazyLoading(page, size,
 				title);
-		List<ArticleContentDTO> articleContentDTOList = new ArrayList<>();
-
-		for (int i = 0; i < articleContentList.size(); i++) {
-			articleContentDTOList.add(new ArticleContentDTO());
-			articleContentDTOList.get(i).setId(articleContentList.get(i).getId());
-			articleContentDTOList.get(i).setTitle(articleContentList.get(i).getTitle());
-			articleContentDTOList.get(i).setLanguage(articleContentList.get(i).getLanguage().getName());
-		}
-		return articleContentDTOList;
+		return articleContentList.stream()
+			.map(articleContent -> new ArticleContentDTO().setId(articleContent.getId())
+				.setTitle(articleContent.getTitle())
+				.setLanguage(articleContent.getLanguage().getName()))
+			.collect(Collectors.toList());
 	}
 
 	@PutMapping("{id}/allowcomments/{allowComments}")
