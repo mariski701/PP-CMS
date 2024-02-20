@@ -109,15 +109,13 @@ public class ArticleContentService implements IArticleContentService {
 	}
 
 	@Override
-	public Object editArticle(Integer id, String title, String language, Collection<Map<String, String>> tags,
-			String content, String image) {
+	public Object editArticle(ArticleContentDTO articleContentDTO) {
 		String username = PrincipalUtils
 			.getPrincipalUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Object requestValidator = editArticleRequestValidator.validateEditArticle(title, language, tags, content, image,
-				username);
+		Object requestValidator = editArticleRequestValidator.validateEditArticle(articleContentDTO, username);
 		if (requestValidator != null)
 			return requestValidator;
-		ArticleContent articleContent = articleContentRepository.findById(id).orElse(null);
+		ArticleContent articleContent = articleContentRepository.findById(articleContentDTO.getId()).orElse(null);
 		if (articleContent == null)
 			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3030.getValue());
 		User editedArticleOfUser = userRepository.findById(articleContent.getUser().getId()).orElse(null);
@@ -131,13 +129,14 @@ public class ArticleContentService implements IArticleContentService {
 		Collection<Privilege> principalPrivileges = roleRepository.findByName(principalRole.getName()).getPrivileges();
 		boolean canEditArticle = canEditArticle(editedArticleUserPrivileges, principalPrivileges);
 		if (canEditArticle) {
-			articleContent.setTitle(title)
-				.setLanguage(languageRepository.findByName(language))
-				.setArticleTags(tags.stream()
+			articleContent.setTitle(articleContentDTO.getTitle())
+				.setLanguage(languageRepository.findByName(articleContentDTO.getLanguage()))
+				.setArticleTags(articleContentDTO.getTags()
+					.stream()
 					.map(names -> articleTagRepository.findByName(names.get("name")))
 					.collect(Collectors.toList()))
-				.setContent(content)
-				.setImage(image);
+				.setContent(articleContentDTO.getContent())
+				.setImage(articleContentDTO.getImage());
 			articleContentRepository.save(articleContent);
 			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
 		}
