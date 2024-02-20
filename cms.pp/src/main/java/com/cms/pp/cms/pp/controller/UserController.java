@@ -22,97 +22,102 @@ import java.util.Map;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/user/")
 public class UserController {
-    private final IUserService userService;
-    private final HttpSession httpSession ;
-    private final MyUserDetailsService myUserDetailsService;
 
-    @PostMapping("register")
-    public Object addUser(@RequestBody User user) {
-        return userService.addUser(user);
-    }
+	private final IUserService userService;
 
-    @PostMapping("cms/register")
-    public Object addCMSUser(@RequestBody CMSUserDTO cmsUserDTO) {
-        return userService.addCMSUser(cmsUserDTO);
-    }
+	private final HttpSession httpSession;
 
-    @DeleteMapping("delete/{id}")
-    public Object deleteUser(@PathVariable int id) {
-        return userService.deleteUser(id);
-    }
+	private final MyUserDetailsService myUserDetailsService;
 
-    @GetMapping("getusers")
-    public List<User> getUsers() {
-        return userService.getUsers();
-    }
+	@PostMapping("register")
+	public Object addUser(@RequestBody User user) {
+		return userService.addUser(user);
+	}
 
-    @PostMapping("login")
-    public Object login(@RequestBody Map<String, String> body ) {
-        return userService.loginToService(body.get("userMail"), body.get("password"));
-    }
+	@PostMapping("cms/register")
+	public Object addCMSUser(@RequestBody CMSUserDTO cmsUserDTO) {
+		return userService.addCMSUser(cmsUserDTO);
+	}
 
-    @PostMapping("logout")
-    public Object logout() {
-        return userService.logout();
-    }
+	@DeleteMapping("delete/{id}")
+	public Object deleteUser(@PathVariable int id) {
+		return userService.deleteUser(id);
+	}
 
-    @GetMapping("findbyid/{id}")
-    public User findById(@PathVariable int id) {
-        return userService.findById(id);
-    }
+	@GetMapping("getusers")
+	public List<User> getUsers() {
+		return userService.getUsers();
+	}
 
-    @GetMapping("find/{userName}")
-    public List<User> findByUserNameIgnoreCaseContaining(@PathVariable String userName) {
-        return userService.findByUserNameIgnoreCaseContaining(userName);
-    }
+	@PostMapping("login")
+	public Object login(@RequestBody Map<String, String> body) {
+		return userService.loginToService(body.get("userMail"), body.get("password"));
+	}
 
-    @GetMapping("find/{page}/{size}/{username}")
-    public List<UserDTO> findSomeUsersByLazyLoadingAndUserName(@PathVariable int page, @PathVariable int size, @PathVariable String username) {
-        List<User> users = userService.findSomeUsersByLazyLoadingAndUserName(page, size, username);
-        List<UserDTO> userDTOList = new ArrayList<>();
-        for (User user : users) {
-            userDTOList.add(new UserDTO(user.getId(), user.getUserName(), user.getUserMail()));
-        }
-        return userDTOList;
-    }
+	@PostMapping("logout")
+	public Object logout() {
+		return userService.logout();
+	}
 
-    @PutMapping("edit/username")
-    public Object editUserName(@RequestBody Map<String, String> body) {
-        return userService.editUserName(body.get("userName"));
-    }
+	@GetMapping("findbyid/{id}")
+	public User findById(@PathVariable int id) {
+		return userService.findById(id);
+	}
 
-    @PutMapping("edit/password")
-    public Object changePassword(@RequestBody Map<String, String> body) {
-        return userService.changePassword(body.get("oldPassword"), body.get("newPassword"));
-    }
+	@GetMapping("find/{userName}")
+	public List<User> findByUserNameIgnoreCaseContaining(@PathVariable String userName) {
+		return userService.findByUserNameIgnoreCaseContaining(userName);
+	}
 
-    @PutMapping("edit/mail")
-    public Object editUserMail(@RequestBody Map<String, String> body) {
-        return userService.editUserMail(body.get("newMail"));
-    }
+	@GetMapping("find/{page}/{size}/{username}")
+	public List<UserDTO> findSomeUsersByLazyLoadingAndUserName(@PathVariable int page, @PathVariable int size,
+			@PathVariable String username) {
+		List<User> users = userService.findSomeUsersByLazyLoadingAndUserName(page, size, username);
+		List<UserDTO> userDTOList = new ArrayList<>();
+		for (User user : users) {
+			userDTOList.add(new UserDTO(user.getId(), user.getUserName(), user.getUserMail()));
+		}
+		return userDTOList;
+	}
 
-    @PutMapping("edit/role")
-    public Object editUserRole(@RequestBody Map<String, String> body) {
-        return userService.editUserRole(body.get("roleName"), Integer.parseInt(body.get("userID")));
-    }
+	@PutMapping("edit/username")
+	public Object editUserName(@RequestBody Map<String, String> body) {
+		return userService.editUserName(body.get("userName"));
+	}
 
-    @GetMapping("cms/users")
-    public List<User> findCmsUsers() {
-        return userService.findCmsUsers();
-    }
+	@PutMapping("edit/password")
+	public Object changePassword(@RequestBody Map<String, String> body) {
+		return userService.changePassword(body.get("oldPassword"), body.get("newPassword"));
+	}
 
-    @PutMapping("edit/changeMail")
-    public Object changeUserMail(@RequestBody Map<String, String> body) {
-        return userService.changeUserMail(Integer.parseInt(body.get("userId")), body.get("userMail"));
-    }
+	@PutMapping("edit/mail")
+	public Object editUserMail(@RequestBody Map<String, String> body) {
+		return userService.editUserMail(body.get("newMail"));
+	}
 
-    @PutMapping("edit/changeNickname")
-    public Object changeUserNickname(@RequestBody Map<String, String> body) {
-        return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
-    }
+	@PutMapping("edit/role")
+	public Object editUserRole(@RequestBody Map<String, String> body) {
+		return userService.editUserRole(body.get("roleName"), Integer.parseInt(body.get("userID")));
+	}
 
-    @GetMapping("find/topCommenter/{size}")
-    public List<CustomTopCommentersClass> findTheBestCommenter(@PathVariable int size) {
-        return userService.findTheBestCommenter(size);
-    }
+	@GetMapping("cms/users")
+	public List<User> findCmsUsers() {
+		return userService.findCmsUsers();
+	}
+
+	@PutMapping("edit/changeMail")
+	public Object changeUserMail(@RequestBody Map<String, String> body) {
+		return userService.changeUserMail(Integer.parseInt(body.get("userId")), body.get("userMail"));
+	}
+
+	@PutMapping("edit/changeNickname")
+	public Object changeUserNickname(@RequestBody Map<String, String> body) {
+		return userService.changeUserName(Integer.parseInt(body.get("userId")), body.get("userName"));
+	}
+
+	@GetMapping("find/topCommenter/{size}")
+	public List<CustomTopCommentersClass> findTheBestCommenter(@PathVariable int size) {
+		return userService.findTheBestCommenter(size);
+	}
+
 }

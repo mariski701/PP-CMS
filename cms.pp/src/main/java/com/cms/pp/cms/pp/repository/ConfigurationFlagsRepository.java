@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConfigurationFlagsRepository extends JpaRepository<ConfigurationFlags, Integer> {
-    @Query(value = "SELECT * FROM CONFIGURATION_FLAGS ORDER BY ID DESC LIMIT 1", nativeQuery = true)
-    ConfigurationFlags findFirstByOrderByDateDESC();
+
+	@Query(value = "SELECT * FROM CONFIGURATION_FLAGS ORDER BY ID DESC LIMIT 1", nativeQuery = true)
+	ConfigurationFlags findFirstByOrderByIdDESC();
+
 }

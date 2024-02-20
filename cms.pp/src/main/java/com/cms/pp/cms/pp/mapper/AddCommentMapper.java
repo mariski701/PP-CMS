@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class AddCommentMapper {
-    public Comment mapToComment(CommentDTO commentDTO, User user, ArticleContent articleContent) {
-        return new Comment()
-                .setContent(commentDTO.getContent())
-                .setUser(user)
-                .setArticleContent(articleContent);
-    }
+
+	public Comment mapToComment(CommentDTO commentDTO, User user, ArticleContent articleContent) {
+		return new Comment().setContent(commentDTO.getContent()).setUser(user).setArticleContent(articleContent);
+	}
+
 }

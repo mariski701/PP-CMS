@@ -6,5 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class ErrorProvidedDataHandler {
-    private String error;
+
+	private String error;
+
 }

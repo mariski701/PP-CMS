@@ -13,25 +13,27 @@ import org.springframework.web.bind.annotation.*;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/cms/admin/config")
 public class ConfigurationFlagsController {
-    private final IConfigurationFlagService configurationFlagsService;
 
-    @GetMapping("")
-    public ConfigurationFlags getConfig() {
-        return configurationFlagsService.getConfig();
-    }
+	private final IConfigurationFlagService configurationFlagsService;
 
-    @PutMapping("comments/{commentsAvailable}")
-    public Object updateCommentConfiguration(@PathVariable boolean commentsAvailable) {
-        return configurationFlagsService.updateCommentConfiguration(commentsAvailable);
-    }
+	@GetMapping("")
+	public ConfigurationFlags getConfig() {
+		return configurationFlagsService.getConfig();
+	}
 
-    @PutMapping("register/{registerAvailable}")
-    public Object updateRegisterConfiguration(@PathVariable boolean registerAvailable) {
-        return configurationFlagsService.updateRegisterConfiguration(registerAvailable);
-    }
+	@PutMapping("comments/{commentsAvailable}")
+	public Object updateCommentConfiguration(@PathVariable boolean commentsAvailable) {
+		return configurationFlagsService.updateCommentConfiguration(commentsAvailable);
+	}
 
-    @PutMapping("login/{loginAvailable}")
-    public Object updateLoginConfiguration(@PathVariable boolean loginAvailable) {
-        return configurationFlagsService.updateLoginConfiguration(loginAvailable);
-    }
+	@PutMapping("register/{registerAvailable}")
+	public Object updateRegisterConfiguration(@PathVariable boolean registerAvailable) {
+		return configurationFlagsService.updateRegisterConfiguration(registerAvailable);
+	}
+
+	@PutMapping("login/{loginAvailable}")
+	public Object updateLoginConfiguration(@PathVariable boolean loginAvailable) {
+		return configurationFlagsService.updateLoginConfiguration(loginAvailable);
+	}
+
 }

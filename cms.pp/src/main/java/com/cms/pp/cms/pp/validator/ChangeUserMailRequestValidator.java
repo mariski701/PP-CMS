@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class ChangeUserMailRequestValidator {
-    public Object validateChangeUserMail(String newMail) {
-        if (newMail == null || newMail.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
-        return null;
-    }
+
+	public Object validateChangeUserMail(String newMail) {
+		if (newMail == null || newMail.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3012.getValue());
+		return null;
+	}
+
 }

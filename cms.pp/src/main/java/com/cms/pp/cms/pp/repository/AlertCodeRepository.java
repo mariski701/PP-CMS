@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface AlertCodeRepository extends JpaRepository<AlertCode, Integer> {
 
-    @Query(value = "SELECT * FROM ALERT_CODE", nativeQuery = true)
-    List<AlertCode> findAllEntries();
-    AlertCode findByAlertName(String alertName);
-    AlertCode findByAlertCode(String alertCode);
+	AlertCode findByAlertCode(String alertCode);
+
 }

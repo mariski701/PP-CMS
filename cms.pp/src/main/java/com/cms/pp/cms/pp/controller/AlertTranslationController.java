@@ -17,25 +17,27 @@ import java.util.Map;
 @CustomCorsConfigAnnotation
 @RequestMapping("/api/alerts/")
 public class AlertTranslationController {
-    private final IAlertTranslationService alertTranslationService;
 
-    @GetMapping("{language}")
-    public List<AlertTranslationDTO> findByLanguage(@PathVariable String language) {
-        return alertTranslationService.findByLanguage(language);
-    }
+	private final IAlertTranslationService alertTranslationService;
 
-    @PostMapping("add")
-    public Object addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
-        return alertTranslationService.addAlertTranslation(alertTranslationDTO);
-    }
+	@GetMapping("{language}")
+	public List<AlertTranslationDTO> findByLanguage(@PathVariable String language) {
+		return alertTranslationService.findByLanguage(language);
+	}
 
-    @PutMapping("edit")
-    public Object editAlertTranslation(@RequestBody Map<String, String> body) {
-        return alertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
-    }
+	@PostMapping("add")
+	public Object addAlertTranslation(@RequestBody AlertTranslationDTO alertTranslationDTO) {
+		return alertTranslationService.addAlertTranslation(alertTranslationDTO);
+	}
 
-    @GetMapping("find/{id}")
-    public AlertTranslation findById(@PathVariable int id) {
-        return alertTranslationService.findById(id);
-    }
+	@PutMapping("edit")
+	public Object editAlertTranslation(@RequestBody Map<String, String> body) {
+		return alertTranslationService.editAlertTranslation(Integer.parseInt(body.get("id")), body.get("alertName"));
+	}
+
+	@GetMapping("find/{id}")
+	public AlertTranslation findById(@PathVariable int id) {
+		return alertTranslationService.findById(id);
+	}
+
 }

@@ -10,13 +10,15 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class EditCommentByUserRequestValidator {
-    private static final String ANONYMOUS_USER = "anonymousUser";
 
-    public Object validateEditCommentByUser(String commentContent, String username) {
-        if (username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-        if (commentContent == null || commentContent.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
-        return null;
-    }
+	private static final String ANONYMOUS_USER = "anonymousUser";
+
+	public Object validateEditCommentByUser(String commentContent, String username) {
+		if (username.equals(ANONYMOUS_USER))
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+		if (commentContent == null || commentContent.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
+		return null;
+	}
+
 }

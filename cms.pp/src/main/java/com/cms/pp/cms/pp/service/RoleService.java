@@ -17,40 +17,45 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class RoleService implements IRoleService {
-    private final RoleRepository roleRepository;
-    private final CreateRoleRequestValidator createRoleRequestValidator;
-    private final CreateRoleMapper createRoleMapper;
 
-    public List<Role> getRoles() {
-        return roleRepository.findAll();
-    }
+	private final RoleRepository roleRepository;
 
-    public Role getRole(Long id) {
-        return roleRepository.findById(id).orElse(null);
-    }
+	private final CreateRoleRequestValidator createRoleRequestValidator;
 
-    public Object createRole(String name, List<Privilege> privileges) {
-        Object requestValidator = createRoleRequestValidator.validateCreateRole(name, privileges);
-        if (requestValidator != null) return requestValidator;
-        roleRepository.save(createRoleMapper.mapToRole(name, privileges));
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	private final CreateRoleMapper createRoleMapper;
 
-    public Object editRole(Long id, List<Privilege> privileges) {
-        Role role = roleRepository.findById(id).orElse(null);
-        if (role == null)
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
-        role.setPrivileges(privileges);
-        roleRepository.save(role);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	public List<Role> getRoles() {
+		return roleRepository.findAll();
+	}
 
-    public Object removeRole(Long id) {
-        Role role = roleRepository.findById(id).orElse(null);
-        if (role == null) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
-        }
-        roleRepository.deleteById(id);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	public Role getRole(Long id) {
+		return roleRepository.findById(id).orElse(null);
+	}
+
+	public Object createRole(String name, List<Privilege> privileges) {
+		Object requestValidator = createRoleRequestValidator.validateCreateRole(name, privileges);
+		if (requestValidator != null)
+			return requestValidator;
+		roleRepository.save(createRoleMapper.mapToRole(name, privileges));
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
+	public Object editRole(Long id, List<Privilege> privileges) {
+		Role role = roleRepository.findById(id).orElse(null);
+		if (role == null)
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
+		role.setPrivileges(privileges);
+		roleRepository.save(role);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
+	public Object removeRole(Long id) {
+		Role role = roleRepository.findById(id).orElse(null);
+		if (role == null) {
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
+		}
+		roleRepository.deleteById(id);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
 }

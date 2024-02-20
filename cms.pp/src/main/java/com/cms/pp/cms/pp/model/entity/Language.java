@@ -14,38 +14,39 @@ import java.util.Collection;
 @Accessors(chain = true)
 @Table(name = "languages")
 public class Language {
-    @Id
-    @SequenceGenerator(name = "MY_LANGUAGE_SEQ", sequenceName = "MY_LANGUAGE_SEQ", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_LANGUAGE_SEQ" )
-    @Column(unique = true, length = 128, updatable = false, nullable = false)
-    private int id;
 
-    @Column(name = "language_name")
-    private String name;
+	@Id
+	@SequenceGenerator(name = "MY_LANGUAGE_SEQ", sequenceName = "MY_LANGUAGE_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "MY_LANGUAGE_SEQ")
+	@Column(unique = true, length = 128, updatable = false, nullable = false)
+	private int id;
 
-    @Column(name = "language_code")
-    private String languageCode;
+	@Column(name = "language_name")
+	private String name;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "language")
-    private Collection<ArticleContent> articleContents;
+	@Column(name = "language_code")
+	private String languageCode;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "language")
-    private Collection<ArticleTag> articleTags;
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	@OneToMany(mappedBy = "language")
+	private Collection<ArticleContent> articleContents;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "language")
-    private Collection<AlertTranslation> alertTranslations;
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	@OneToMany(mappedBy = "language")
+	private Collection<ArticleTag> articleTags;
 
-    @JsonIgnore
-    @Version
-    private Long version;
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	@OneToMany(mappedBy = "language")
+	private Collection<AlertTranslation> alertTranslations;
+
+	@JsonIgnore
+	@Version
+	private Long version;
 
 }

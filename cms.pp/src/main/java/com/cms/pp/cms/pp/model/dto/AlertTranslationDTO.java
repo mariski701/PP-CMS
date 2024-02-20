@@ -6,8 +6,13 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AlertTranslationDTO {
-    private int id;
-    private String alertCode;
-    private String alertName;
-    private String language;
+
+	private int id;
+
+	private String alertCode;
+
+	private String alertName;
+
+	private String language;
+
 }

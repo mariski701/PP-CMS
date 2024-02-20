@@ -10,13 +10,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class EditUserNameRequestValidator {
-    private final static String ANONYMOUS_USER = "anonymousUser";
 
-    public Object validateEditUserName(String newUsername, String username) {
-        if (newUsername == null || newUsername.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
-        if (username == null || username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-        return null;
-    }
+	private final static String ANONYMOUS_USER = "anonymousUser";
+
+	public Object validateEditUserName(String newUsername, String username) {
+		if (newUsername == null || newUsername.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
+		if (username == null || username.equals(ANONYMOUS_USER))
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+		return null;
+	}
+
 }

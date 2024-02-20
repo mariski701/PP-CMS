@@ -11,11 +11,13 @@ import org.springframework.stereotype.Component;
 @Data
 @RequiredArgsConstructor
 public class EditLanguageRequestValidator {
-    public Object validateEditLanguage(Language lang) {
-        if (lang.getName() == null ||lang.getName().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
-        if (lang.getLanguageCode() == null || lang.getLanguageCode().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
-        return null;
-    }
+
+	public Object validateEditLanguage(Language lang) {
+		if (lang.getName() == null || lang.getName().isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3037.getValue());
+		if (lang.getLanguageCode() == null || lang.getLanguageCode().isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3038.getValue());
+		return null;
+	}
+
 }

@@ -11,13 +11,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class AddCommentRequestValidator {
-    private static final String ANONYMOUS_USER = "anonymousUser";
 
-    public Object validateAddComment(CommentDTO commentDTO, String username) {
-        if (commentDTO.getContent() == null || commentDTO.getContent().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
-        if (username == null || username.equals(ANONYMOUS_USER))
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
-        return null;
-    }
+	private static final String ANONYMOUS_USER = "anonymousUser";
+
+	public Object validateAddComment(CommentDTO commentDTO, String username) {
+		if (commentDTO.getContent() == null || commentDTO.getContent().isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3004.getValue());
+		if (username == null || username.equals(ANONYMOUS_USER))
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3005.getValue());
+		return null;
+	}
+
 }

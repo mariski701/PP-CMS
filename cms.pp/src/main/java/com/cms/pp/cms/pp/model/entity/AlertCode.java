@@ -14,24 +14,26 @@ import java.util.Collection;
 @Accessors(chain = true)
 @Table(name = "alert_code")
 public class AlertCode {
-    @Id
-    @GeneratedValue
-    @Column(unique = true, length = 128)
-    private int id;
 
-    @Column(name = "alert_code")
-    private String alertCode;
+	@Id
+	@GeneratedValue
+	@Column(unique = true, length = 128)
+	private int id;
 
-    @Column(name = "alert_name")
-    private String alertName;
+	@Column(name = "alert_code")
+	private String alertCode;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "alertCode")
-    private Collection<AlertTranslation> alertTranslation;
+	@Column(name = "alert_name")
+	private String alertName;
 
-    @JsonIgnore
-    @Version
-    private Long version;
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	@OneToMany(mappedBy = "alertCode")
+	private Collection<AlertTranslation> alertTranslation;
+
+	@JsonIgnore
+	@Version
+	private Long version;
+
 }

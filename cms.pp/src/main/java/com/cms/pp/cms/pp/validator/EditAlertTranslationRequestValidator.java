@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class EditAlertTranslationRequestValidator {
-    public Object validateEditAlertTranslation(String errorTranslation) {
-        if (errorTranslation == null ||errorTranslation.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
-        return null;
-    }
+
+	public Object validateEditAlertTranslation(String errorTranslation) {
+		if (errorTranslation == null || errorTranslation.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3043.getValue());
+		return null;
+	}
+
 }

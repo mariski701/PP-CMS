@@ -15,35 +15,37 @@ import java.util.Map;
 @RestController
 @CustomCorsConfigAnnotation
 public class ArticleTagController {
-    private final IArticleTagService IArticleTagService;
 
-    @GetMapping("/api/tags")
-    public List<ArticleTag> getArticleTags () {
-        return IArticleTagService.getArticleTags();
-    }
+	private final IArticleTagService IArticleTagService;
 
-    @GetMapping("/api/tag/{id}")
-    public ArticleTag getArticleTag(@PathVariable int id) {
-        return IArticleTagService.getArticleTag(id);
-    }
+	@GetMapping("/api/tags")
+	public List<ArticleTag> getArticleTags() {
+		return IArticleTagService.getArticleTags();
+	}
 
-    @PostMapping("/api/tag/add")
-    public Object addTag (@RequestBody Map<String, String> body) {
-        return IArticleTagService.addTag(body.get("language"), body.get("name"));
-    }
+	@GetMapping("/api/tag/{id}")
+	public ArticleTag getArticleTag(@PathVariable int id) {
+		return IArticleTagService.getArticleTag(id);
+	}
 
-    @DeleteMapping("/api/tag/remove/{id}")
-    public Object removeTag(@PathVariable int id) {
-        return IArticleTagService.removeTag(id);
-    }
+	@PostMapping("/api/tag/add")
+	public Object addTag(@RequestBody Map<String, String> body) {
+		return IArticleTagService.addTag(body.get("language"), body.get("name"));
+	}
 
-    @PutMapping("/api/tag/modify/{id}")
-    public Object modifyTag(@RequestBody ArticleTag articleTag, @PathVariable int id) {
-        return IArticleTagService.modifyTag(id, articleTag);
-    }
+	@DeleteMapping("/api/tag/remove/{id}")
+	public Object removeTag(@PathVariable int id) {
+		return IArticleTagService.removeTag(id);
+	}
 
-    @GetMapping("/api/tag/language/{lang}")
-    public List<ArticleTag> findByLanguage(@PathVariable  String lang) {
-        return IArticleTagService.findByLanguage(lang);
-    }
+	@PutMapping("/api/tag/modify/{id}")
+	public Object modifyTag(@RequestBody ArticleTag articleTag, @PathVariable int id) {
+		return IArticleTagService.modifyTag(id, articleTag);
+	}
+
+	@GetMapping("/api/tag/language/{lang}")
+	public List<ArticleTag> findByLanguage(@PathVariable String lang) {
+		return IArticleTagService.findByLanguage(lang);
+	}
+
 }

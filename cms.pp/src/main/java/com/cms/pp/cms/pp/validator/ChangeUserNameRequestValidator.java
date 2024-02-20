@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Data
 public class ChangeUserNameRequestValidator {
-    public Object validateChangeUserName(String newUserName) {
-        if (newUserName == null || newUserName.isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
-        return null;
-    }
+
+	public Object validateChangeUserName(String newUserName) {
+		if (newUserName == null || newUserName.isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3006.getValue());
+		return null;
+	}
+
 }

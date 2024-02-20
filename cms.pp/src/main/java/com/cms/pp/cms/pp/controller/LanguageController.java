@@ -14,36 +14,37 @@ import java.util.List;
 @RestController
 @CustomCorsConfigAnnotation
 public class LanguageController {
-    private final ILanguageService languageService;
 
-    @PostMapping("/api/language/add")
-    public Object addLanguage(@RequestBody Language language) {
-        return languageService.addLanguage(language);
-    }
+	private final ILanguageService languageService;
 
-    @DeleteMapping("/api/language/remove/{id}")
-    public Object removeLanguage(@PathVariable int id) {
-        return languageService.removeLanguage(id);
-    }
+	@PostMapping("/api/language/add")
+	public Object addLanguage(@RequestBody Language language) {
+		return languageService.addLanguage(language);
+	}
 
-    @GetMapping("/api/languages")
-    public List<Language> getAllLanguages() {
-        return languageService.getAllLanguages();
-    }
+	@DeleteMapping("/api/language/remove/{id}")
+	public Object removeLanguage(@PathVariable int id) {
+		return languageService.removeLanguage(id);
+	}
 
-    @GetMapping("/api/language/{name}")
-    public Language getLanguage(@PathVariable String name) {
-        return languageService.getLanguage(name);
-    }
+	@GetMapping("/api/languages")
+	public List<Language> getAllLanguages() {
+		return languageService.getAllLanguages();
+	}
 
-    @PutMapping("/api/language/edit")
-    public Object editLanguage(@RequestBody Language language) {
-        return languageService.editLanguage(language);
-    }
+	@GetMapping("/api/language/{name}")
+	public Language getLanguage(@PathVariable String name) {
+		return languageService.getLanguage(name);
+	}
 
-    @GetMapping("/api/language/id/{id}")
-    public Language getLanguageById(@PathVariable int id) {
-        return languageService.getLanguageById(id);
-    }
+	@PutMapping("/api/language/edit")
+	public Object editLanguage(@RequestBody Language language) {
+		return languageService.editLanguage(language);
+	}
+
+	@GetMapping("/api/language/id/{id}")
+	public Language getLanguageById(@PathVariable int id) {
+		return languageService.getLanguageById(id);
+	}
 
 }

@@ -19,46 +19,52 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service("AlertTranslationService")
 public class AlertTranslationService implements IAlertTranslationService {
-    private final AlertTranslationRepository alertTranslationRepository;
-    private final LanguageRepository languageRepository;
-    private final AlertCodeRepository alertCodeRepository;
-    private final AlertTranslationMapper alertTranslationMapper;
-    private final EditAlertTranslationRequestValidator editAlertTranslationRequestValidator;
 
-    @Override
-    public List<AlertTranslationDTO> findByLanguage(String language) {
-        if (language.equals("english"))
-            return alertTranslationMapper.mapToAlertTranslationDTOList(alertCodeRepository.findAll());
-        return alertTranslationMapper.mapToAlertTranslationDTOList(alertTranslationRepository.findAlertTranslationByLanguage(
-                        languageRepository.findByName(language)),
-                language);
-    }
+	private final AlertTranslationRepository alertTranslationRepository;
 
-    @Override
-    public Object addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
-        alertTranslationRepository.save(new AlertTranslation()
-                .setLanguage(languageRepository.findByName(alertTranslationDTO.getLanguage()))
-                .setAlertCode(alertCodeRepository.findByAlertCode(alertTranslationDTO.getAlertCode()))
-                .setErrorTranslation(alertTranslationDTO.getAlertName()));
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
-    }
+	private final LanguageRepository languageRepository;
 
-    @Override
-    public Object editAlertTranslation(int id, String errorTranslation) {
-        Object validateRequest = editAlertTranslationRequestValidator.validateEditAlertTranslation(errorTranslation);
-        if (validateRequest != null) return validateRequest;
-        AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
-        if (alertTranslation == null)
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
-        alertTranslation.setErrorTranslation(errorTranslation);
-        alertTranslationRepository.save(alertTranslation);
-        return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	private final AlertCodeRepository alertCodeRepository;
 
-    }
+	private final AlertTranslationMapper alertTranslationMapper;
 
-    @Override
-    public AlertTranslation findById(int id) {
-        return alertTranslationRepository.findById(id).orElse(null);
-    }
+	private final EditAlertTranslationRequestValidator editAlertTranslationRequestValidator;
+
+	@Override
+	public List<AlertTranslationDTO> findByLanguage(String language) {
+		if (language.equals("english"))
+			return alertTranslationMapper.mapToAlertTranslationDTOList(alertCodeRepository.findAll());
+		return alertTranslationMapper.mapToAlertTranslationDTOList(
+				alertTranslationRepository.findAlertTranslationByLanguage(languageRepository.findByName(language)),
+				language);
+	}
+
+	@Override
+	public Object addAlertTranslation(AlertTranslationDTO alertTranslationDTO) {
+		alertTranslationRepository
+			.save(new AlertTranslation().setLanguage(languageRepository.findByName(alertTranslationDTO.getLanguage()))
+				.setAlertCode(alertCodeRepository.findByAlertCode(alertTranslationDTO.getAlertCode()))
+				.setErrorTranslation(alertTranslationDTO.getAlertName()));
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+	}
+
+	@Override
+	public Object editAlertTranslation(int id, String errorTranslation) {
+		Object validateRequest = editAlertTranslationRequestValidator.validateEditAlertTranslation(errorTranslation);
+		if (validateRequest != null)
+			return validateRequest;
+		AlertTranslation alertTranslation = alertTranslationRepository.findById(id).orElse(null);
+		if (alertTranslation == null)
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3041.getValue());
+		alertTranslation.setErrorTranslation(errorTranslation);
+		alertTranslationRepository.save(alertTranslation);
+		return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_2001.getValue());
+
+	}
+
+	@Override
+	public AlertTranslation findById(int id) {
+		return alertTranslationRepository.findById(id).orElse(null);
+	}
 
 }

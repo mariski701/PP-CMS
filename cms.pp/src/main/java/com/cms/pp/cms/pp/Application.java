@@ -21,12 +21,11 @@ public class Application {
 	}
 
 	@Bean
-	public WebMvcConfigurer corsConfigurer() { //no cors
+	public WebMvcConfigurer corsConfigurer() { // no cors
 		return new WebMvcConfigurerAdapter() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS");
+				registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS");
 			}
 		};
 	}
@@ -55,7 +54,5 @@ public class Application {
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
 	}
-
-
 
 }

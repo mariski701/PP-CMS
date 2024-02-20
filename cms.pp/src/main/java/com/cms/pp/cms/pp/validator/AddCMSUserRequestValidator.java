@@ -14,17 +14,19 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @Data
 public class AddCMSUserRequestValidator {
-    public Object validateAddCMSUser(CMSUserDTO cmsUserDTO) {
-        if (cmsUserDTO.getRole() == null || !(Arrays.asList(RoleName.ROLE_ADMIN.getRoleName(),
-                        RoleName.ROLE_EDITOR.getRoleName(),
-                        RoleName.ROLE_MODERATOR.getRoleName())
-                .contains(cmsUserDTO.getRole()))) {
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
-        }
-        if (cmsUserDTO.getUserName() == null || cmsUserDTO.getUserName().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
-        if (cmsUserDTO.getUserPassword() == null || cmsUserDTO.getUserPassword().isEmpty())
-            return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
-        return null;
-    }
+
+	public Object validateAddCMSUser(CMSUserDTO cmsUserDTO) {
+		if (cmsUserDTO.getRole() == null || !(Arrays
+			.asList(RoleName.ROLE_ADMIN.getRoleName(), RoleName.ROLE_EDITOR.getRoleName(),
+					RoleName.ROLE_MODERATOR.getRoleName())
+			.contains(cmsUserDTO.getRole()))) {
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3020.getValue());
+		}
+		if (cmsUserDTO.getUserName() == null || cmsUserDTO.getUserName().isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3023.getValue());
+		if (cmsUserDTO.getUserPassword() == null || cmsUserDTO.getUserPassword().isEmpty())
+			return ErrorProvidedDataHandlerUtils.getErrorProvidedDataHandler(Code.CODE_3024.getValue());
+		return null;
+	}
+
 }

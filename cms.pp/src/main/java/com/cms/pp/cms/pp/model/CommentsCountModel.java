@@ -4,27 +4,30 @@ import lombok.ToString;
 
 @ToString
 public class CommentsCountModel {
-    private int userId;
-    private long total;
 
-    public int getCommentId() {
-        return userId;
-    }
+	private int userId;
 
-    public void setCommentId(int userId) {
-        this.userId = userId;
-    }
+	private long total;
 
-    public long getTotal() {
-        return total;
-    }
+	public int getCommentId() {
+		return userId;
+	}
 
-    public void setTotal(long total) {
-        this.total = total;
-    }
+	public void setCommentId(int userId) {
+		this.userId = userId;
+	}
 
-    public CommentsCountModel(int userId, long total) {
-        this.userId = userId;
-        this.total = total;
-    }
+	public long getTotal() {
+		return total;
+	}
+
+	public void setTotal(long total) {
+		this.total = total;
+	}
+
+	public CommentsCountModel(int userId, long total) {
+		this.userId = userId;
+		this.total = total;
+	}
+
 }

@@ -15,27 +15,26 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AlertTranslationMapper {
 
-    public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertCode> alertCodeList) {
-        return alertCodeList.stream()
-                .map(alertCode -> createAlertTranslationDTO(alertCode.getAlertCode(), alertCode.getAlertName(), "english", alertCode.getId()))
-                .collect(Collectors.toList());
-    }
+	public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertCode> alertCodeList) {
+		return alertCodeList.stream()
+			.map(alertCode -> createAlertTranslationDTO(alertCode.getAlertCode(), alertCode.getAlertName(), "english",
+					alertCode.getId()))
+			.collect(Collectors.toList());
+	}
 
-    public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertTranslation> alertTranslationList, String language) {
-        return alertTranslationList.stream()
-                .map(alertTranslation -> createAlertTranslationDTO(
-                        alertTranslation.getAlertCode().getAlertCode(),
-                        alertTranslation.getErrorTranslation(),
-                        language,
-                        alertTranslation.getId()))
-                .collect(Collectors.toList());
-    }
+	public List<AlertTranslationDTO> mapToAlertTranslationDTOList(List<AlertTranslation> alertTranslationList,
+			String language) {
+		return alertTranslationList.stream()
+			.map(alertTranslation -> createAlertTranslationDTO(alertTranslation.getAlertCode().getAlertCode(),
+					alertTranslation.getErrorTranslation(), language, alertTranslation.getId()))
+			.collect(Collectors.toList());
+	}
 
-    private AlertTranslationDTO createAlertTranslationDTO(String alertCode, String alertName, String language, int id) {
-        return new AlertTranslationDTO()
-                .setId(id)
-                .setAlertName(alertName)
-                .setAlertCode(alertCode)
-                .setLanguage(language);
-    }
+	private AlertTranslationDTO createAlertTranslationDTO(String alertCode, String alertName, String language, int id) {
+		return new AlertTranslationDTO().setId(id)
+			.setAlertName(alertName)
+			.setAlertCode(alertCode)
+			.setLanguage(language);
+	}
+
 }

@@ -26,39 +26,42 @@ import java.util.List;
 @Service("UserDetailsService")
 @Transactional
 public class MyUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
-        User user = userRepository.findByUserMail(mail);
-        if (user == null) {
-            return new org.springframework.security.core.userdetails.User(" ", " ",true, true, true, true, getAuthorities(Arrays.asList(roleRepository.findByName(RoleName.ROLE_GUEST.getRoleName()))));
+	private final UserRepository userRepository;
 
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getUserPassword(), user.isEnabled(), true, true, true, getAuthorities(user.getRoles()));
-    }
+	private final RoleRepository roleRepository;
 
-    private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
-        return getGrantedAuthorities(getPrivileges(roles));
-    }
+	@Override
+	public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+		User user = userRepository.findByUserMail(mail);
+		if (user == null) {
+			return new org.springframework.security.core.userdetails.User(" ", " ", true, true, true, true,
+					getAuthorities(Arrays.asList(roleRepository.findByName(RoleName.ROLE_GUEST.getRoleName()))));
 
-    private List<String> getPrivileges(Collection<Role> roles) {
-        List<String> privileges = new ArrayList<>();
-        List<Privilege> collection = new ArrayList<>();
-        roles.forEach(role -> {
-            privileges.add(role.getName());
-            collection.addAll(role.getPrivileges());
-        });
-        collection.forEach(privilege ->
-            privileges.add(privilege.getName())
-        );
-        return privileges;
-    }
+		}
+		return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getUserPassword(),
+				user.isEnabled(), true, true, true, getAuthorities(user.getRoles()));
+	}
 
-    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        privileges.forEach(privilege -> authorities.add(new SimpleGrantedAuthority(privilege)));
-        return authorities;
-    }
+	private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
+		return getGrantedAuthorities(getPrivileges(roles));
+	}
+
+	private List<String> getPrivileges(Collection<Role> roles) {
+		List<String> privileges = new ArrayList<>();
+		List<Privilege> collection = new ArrayList<>();
+		roles.forEach(role -> {
+			privileges.add(role.getName());
+			collection.addAll(role.getPrivileges());
+		});
+		collection.forEach(privilege -> privileges.add(privilege.getName()));
+		return privileges;
+	}
+
+	private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		privileges.forEach(privilege -> authorities.add(new SimpleGrantedAuthority(privilege)));
+		return authorities;
+	}
+
 }

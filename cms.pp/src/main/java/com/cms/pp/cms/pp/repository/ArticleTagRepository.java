@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface ArticleTagRepository extends JpaRepository<ArticleTag, Integer> {
-    ArticleTag findByName(String name);
-    List<ArticleTag> findByLanguage(Language language);
+
+	ArticleTag findByName(String name);
+
+	List<ArticleTag> findByLanguage(Language language);
+
 }

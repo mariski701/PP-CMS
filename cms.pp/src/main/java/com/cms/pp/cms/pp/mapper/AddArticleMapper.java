@@ -20,22 +20,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Data
 public class AddArticleMapper {
-    private final ArticleTagRepository articleTagRepository;
-    public ArticleContent mapToArticleContent(ArticleContentDTO articleContentDTO, User user, Language language) {
-        return new ArticleContent()
-                .setTitle(articleContentDTO.getTitle())
-                .setArticleTags(getTags(articleContentDTO.getTags()))
-                .setContent(articleContentDTO.getContent())
-                .setLanguage(language)
-                .setPublished(ArticleStatus.UNPUBLSHED.getStatus())
-                .setImage(articleContentDTO.getImage())
-                .setCommentsAllowed(true)
-                .setUser(user);
-    }
 
-    private List<ArticleTag> getTags(Collection<Map<String, String>> tags) {
-        return tags.stream()
-                .map(names -> articleTagRepository.findByName(names.get("name")))
-                .collect(Collectors.toList());
-    }
+	private final ArticleTagRepository articleTagRepository;
+
+	public ArticleContent mapToArticleContent(ArticleContentDTO articleContentDTO, User user, Language language) {
+		return new ArticleContent().setTitle(articleContentDTO.getTitle())
+			.setArticleTags(getTags(articleContentDTO.getTags()))
+			.setContent(articleContentDTO.getContent())
+			.setLanguage(language)
+			.setPublished(ArticleStatus.UNPUBLSHED.getStatus())
+			.setImage(articleContentDTO.getImage())
+			.setCommentsAllowed(true)
+			.setUser(user);
+	}
+
+	private List<ArticleTag> getTags(Collection<Map<String, String>> tags) {
+		return tags.stream()
+			.map(names -> articleTagRepository.findByName(names.get("name")))
+			.collect(Collectors.toList());
+	}
+
 }
